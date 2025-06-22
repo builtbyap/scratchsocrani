@@ -20,6 +20,19 @@ export const stripeConfig = {
 // Payment plans configuration
 export const paymentPlans = [
   {
+    id: 'free',
+    name: 'Free Plan',
+    price: 0,
+    interval: 'month',
+    features: [
+      'Basic consultation',
+      'Project quote',
+      'Email support',
+      'Basic resources'
+    ],
+    stripePriceId: 'price_1RcpmqHGzbgxTdhY9tzBiKpv'
+  },
+  {
     id: 'monthly',
     name: 'Basic Plan',
     price: 15,
@@ -31,7 +44,7 @@ export const paymentPlans = [
       'Basic SEO setup',
       'Email support'
     ],
-    stripePriceId: 'price_TEST_MONTHLY_ID'
+    stripePriceId: 'price_1RcegqHGzbgxTdhYuH7fRKTP'
   },
   {
     id: 'annual',
@@ -46,7 +59,7 @@ export const paymentPlans = [
       'Priority support',
       'Analytics dashboard'
     ],
-    stripePriceId: 'price_TEST_ANNUAL_ID'
+    stripePriceId: 'price_1RcegzHGzbgxTdhY1RTHRUPh'
   }
 ]
 

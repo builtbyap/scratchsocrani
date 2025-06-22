@@ -26,7 +26,30 @@ export default function PricingPage() {
       const plan = paymentPlans.find(p => p.id === planId)
       if (!plan) throw new Error('Plan not found')
 
-      // Create checkout session
+      // Handle free plan differently - no Stripe checkout needed
+      if (plan.price === 0) {
+        // For free plan, directly update user subscription in database
+        const response = await fetch('/api/subscribe-free', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            planId: plan.id,
+            customerEmail: user.email,
+          }),
+        })
+
+        const { success, error } = await response.json()
+        
+        if (error) throw new Error(error)
+
+        // Redirect to dashboard with success message
+        window.location.href = '/dashboard?success=true&plan=free'
+        return
+      }
+
+      // Create checkout session for paid plans
       const response = await fetch('/api/create-checkout-session', {
         method: 'POST',
         headers: {
@@ -105,7 +128,7 @@ export default function PricingPage() {
           transition={{ duration: 0.8, delay: 0.2 }}
           className="flex-1 flex items-center justify-center px-4 pb-8"
         >
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl w-full">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl w-full">
             {paymentPlans.map((plan, index) => (
               <motion.div
                 key={plan.id}
@@ -114,12 +137,20 @@ export default function PricingPage() {
                 transition={{ duration: 0.5, delay: 0.3 + index * 0.1 }}
                 className={`glass-effect rounded-3xl p-8 relative ${
                   plan.id === 'annual' ? 'ring-2 ring-primary-500 scale-105' : ''
-                }`}
+                } ${plan.id === 'free' ? 'border-2 border-gray-600' : ''}`}
               >
                 {plan.id === 'annual' && (
                   <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
                     <span className="bg-gradient-to-r from-primary-500 to-primary-600 text-white px-4 py-2 rounded-full text-sm font-semibold">
                       Most Popular
+                    </span>
+                  </div>
+                )}
+
+                {plan.id === 'free' && (
+                  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                    <span className="bg-gradient-to-r from-green-500 to-green-600 text-white px-4 py-2 rounded-full text-sm font-semibold">
+                      Free Forever
                     </span>
                   </div>
                 )}
@@ -130,7 +161,11 @@ export default function PricingPage() {
                     {formatPrice(plan.price)}
                     <span className="text-lg text-gray-400">/{plan.interval}</span>
                   </div>
-                  <p className="text-gray-300">Perfect for {plan.id === 'monthly' ? 'startups and small businesses' : 'growing businesses'}</p>
+                  <p className="text-gray-300">
+                    {plan.id === 'free' ? 'Perfect for getting started' : 
+                     plan.id === 'monthly' ? 'Perfect for startups and small businesses' : 
+                     'Perfect for growing businesses'}
+                  </p>
                 </div>
 
                 <ul className="space-y-4 mb-8">
@@ -148,6 +183,8 @@ export default function PricingPage() {
                   className={`w-full py-3 px-6 rounded-xl font-semibold transition-all duration-300 ${
                     plan.id === 'annual'
                       ? 'bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white'
+                      : plan.id === 'free'
+                      ? 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white'
                       : 'bg-white/10 border border-white/20 hover:bg-white/20 text-white'
                   } disabled:opacity-50 disabled:cursor-not-allowed`}
                 >
@@ -157,7 +194,7 @@ export default function PricingPage() {
                       Processing...
                     </div>
                   ) : (
-                    `Get ${plan.name}`
+                    plan.id === 'free' ? 'Get Started Free' : `Get ${plan.name}`
                   )}
                 </button>
               </motion.div>
