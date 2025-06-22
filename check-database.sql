@@ -30,4 +30,15 @@ AND routine_name IN ('handle_new_user', 'update_updated_at_column');
 -- Check RLS policies
 SELECT schemaname, tablename, policyname, permissive, roles, cmd, qual
 FROM pg_policies 
-WHERE tablename = 'users'; 
+WHERE tablename = 'users';
+
+-- Check if the table has the correct primary key type
+SELECT 
+  column_name,
+  data_type,
+  is_nullable,
+  column_default
+FROM information_schema.columns 
+WHERE table_schema = 'public' 
+AND table_name = 'users' 
+AND column_name = 'id'; 

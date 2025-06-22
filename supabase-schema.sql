@@ -78,5 +78,4 @@ CREATE OR REPLACE TRIGGER update_users_updated_at
 
 -- Grant necessary permissions
 GRANT USAGE ON SCHEMA public TO anon, authenticated;
-GRANT ALL ON public.users TO anon, authenticated;
-GRANT ALL ON public.users_id_seq TO anon, authenticated; 
+GRANT ALL ON public.users TO anon, authenticated; 
