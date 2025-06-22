@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
+import SubscriptionGuard from '@/components/SubscriptionGuard'
 import { 
   Sparkles, 
   BarChart3, 
@@ -217,247 +218,284 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-dark-900 via-dark-800 to-dark-900">
-      {/* Background Elements */}
-      <div className="absolute inset-0">
-        <div className="absolute top-20 left-20 w-72 h-72 bg-primary-500/10 rounded-full blur-3xl animate-float"></div>
-        <div className="absolute bottom-20 right-20 w-96 h-96 bg-primary-600/10 rounded-full blur-3xl animate-float-delayed"></div>
-      </div>
+    <SubscriptionGuard>
+      <div className="min-h-screen bg-gradient-to-br from-dark-900 via-dark-800 to-dark-900">
+        {/* Background Elements */}
+        <div className="absolute inset-0">
+          <div className="absolute top-20 left-20 w-72 h-72 bg-primary-500/10 rounded-full blur-3xl animate-float"></div>
+          <div className="absolute bottom-20 right-20 w-96 h-96 bg-primary-600/10 rounded-full blur-3xl animate-float-delayed"></div>
+        </div>
 
-      <div className="relative z-10 flex">
-        {/* Sidebar */}
-        <motion.aside
-          initial={{ x: -300 }}
-          animate={{ x: 0 }}
-          transition={{ duration: 0.5 }}
-          className="w-64 bg-dark-800/50 backdrop-blur-md border-r border-white/10 min-h-screen p-6"
-        >
-          {/* Logo */}
-          <div className="flex items-center space-x-2 text-xl font-bold mb-8">
-            <Sparkles className="w-6 h-6 text-primary-400" />
-            <span className="gradient-text">TechFlow</span>
-          </div>
-
-          {/* Navigation */}
-          <nav className="space-y-2">
-            <button
-              onClick={() => setActiveTab('overview')}
-              className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 ${
-                activeTab === 'overview'
-                  ? 'bg-primary-500/20 text-primary-400 border border-primary-500/30'
-                  : 'text-gray-300 hover:bg-white/10 hover:text-white'
-              }`}
-            >
-              <BarChart3 className="w-5 h-5" />
-              <span>Overview</span>
-            </button>
-            <button
-              onClick={() => setActiveTab('projects')}
-              className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 ${
-                activeTab === 'projects'
-                  ? 'bg-primary-500/20 text-primary-400 border border-primary-500/30'
-                  : 'text-gray-300 hover:bg-white/10 hover:text-white'
-              }`}
-            >
-              <Folder className="w-5 h-5" />
-              <span>Projects</span>
-            </button>
-            <button
-              onClick={() => setActiveTab('clients')}
-              className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 ${
-                activeTab === 'clients'
-                  ? 'bg-primary-500/20 text-primary-400 border border-primary-500/30'
-                  : 'text-gray-300 hover:bg-white/10 hover:text-white'
-              }`}
-            >
-              <Users className="w-5 h-5" />
-              <span>Clients</span>
-            </button>
-            <button
-              onClick={() => setActiveTab('messages')}
-              className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 ${
-                activeTab === 'messages'
-                  ? 'bg-primary-500/20 text-primary-400 border border-primary-500/30'
-                  : 'text-gray-300 hover:bg-white/10 hover:text-white'
-              }`}
-            >
-              <MessageSquare className="w-5 h-5" />
-              <span>Messages</span>
-            </button>
-          </nav>
-
-          {/* Bottom Actions */}
-          <div className="absolute bottom-6 left-6 right-6 space-y-2">
-            <button className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-300 hover:bg-white/10 hover:text-white transition-all duration-200">
-              <Settings className="w-5 h-5" />
-              <span>Settings</span>
-            </button>
-            <button 
-              onClick={handleSignOut}
-              disabled={isSigningOut}
-              className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-300 hover:bg-white/10 hover:text-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isSigningOut ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-gray-300 border-t-transparent rounded-full animate-spin"></div>
-                  <span>Signing out...</span>
-                </>
-              ) : (
-                <>
-                  <LogOut className="w-5 h-5" />
-                  <span>Sign Out</span>
-                </>
-              )}
-            </button>
-          </div>
-        </motion.aside>
-
-        {/* Main Content */}
-        <div className="flex-1 p-8">
-          {/* Header */}
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="flex items-center justify-between mb-8"
+        <div className="relative z-10 flex">
+          {/* Sidebar */}
+          <motion.aside
+            initial={{ x: -300 }}
+            animate={{ x: 0 }}
+            transition={{ duration: 0.5 }}
+            className="w-64 bg-dark-800/50 backdrop-blur-md border-r border-white/10 min-h-screen p-6"
           >
-            <div>
-              <h1 className="text-3xl font-bold text-white">Dashboard</h1>
-              <p className="text-gray-400">Welcome back! Here's what's happening today.</p>
+            {/* Logo */}
+            <div className="flex items-center space-x-2 text-xl font-bold mb-8">
+              <Sparkles className="w-6 h-6 text-primary-400" />
+              <span className="gradient-text">TechFlow</span>
             </div>
-            <div className="flex items-center space-x-4">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Search..."
-                  className="pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary-400 transition-colors"
-                />
-              </div>
-              <button className="p-2 bg-white/10 border border-white/20 rounded-xl text-gray-300 hover:bg-white/20 hover:text-white transition-all duration-200">
-                <Bell className="w-5 h-5" />
-              </button>
-              <button className="p-2 bg-white/10 border border-white/20 rounded-xl text-gray-300 hover:bg-white/20 hover:text-white transition-all duration-200">
-                <User className="w-5 h-5" />
-              </button>
-            </div>
-          </motion.div>
 
-          {/* Stats Grid */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
-          >
-            {stats.map((stat, index) => (
-              <motion.div
-                key={stat.title}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.4 + index * 0.1 }}
-                className="glass-effect rounded-2xl p-6"
+            {/* Navigation */}
+            <nav className="space-y-2">
+              <button
+                onClick={() => setActiveTab('overview')}
+                className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 ${
+                  activeTab === 'overview'
+                    ? 'bg-primary-500/20 text-primary-400 border border-primary-500/30'
+                    : 'text-gray-300 hover:bg-white/10 hover:text-white'
+                }`}
               >
-                <div className="flex items-center justify-between mb-4">
-                  <stat.icon className={`w-8 h-8 ${stat.color}`} />
-                  <TrendingUp className="w-5 h-5 text-green-400" />
-                </div>
-                <div className="mb-2">
-                  <p className="text-2xl font-bold text-white">{stat.value}</p>
-                  <p className="text-sm text-gray-400">{stat.title}</p>
-                </div>
-                <p className="text-sm text-green-400">{stat.change} from last month</p>
-              </motion.div>
-            ))}
-          </motion.div>
+                <BarChart3 className="w-5 h-5" />
+                <span>Overview</span>
+              </button>
+              <button
+                onClick={() => setActiveTab('projects')}
+                className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 ${
+                  activeTab === 'projects'
+                    ? 'bg-primary-500/20 text-primary-400 border border-primary-500/30'
+                    : 'text-gray-300 hover:bg-white/10 hover:text-white'
+                }`}
+              >
+                <Folder className="w-5 h-5" />
+                <span>Projects</span>
+              </button>
+              <button
+                onClick={() => setActiveTab('clients')}
+                className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 ${
+                  activeTab === 'clients'
+                    ? 'bg-primary-500/20 text-primary-400 border border-primary-500/30'
+                    : 'text-gray-300 hover:bg-white/10 hover:text-white'
+                }`}
+              >
+                <Users className="w-5 h-5" />
+                <span>Clients</span>
+              </button>
+              <button
+                onClick={() => setActiveTab('messages')}
+                className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 ${
+                  activeTab === 'messages'
+                    ? 'bg-primary-500/20 text-primary-400 border border-primary-500/30'
+                    : 'text-gray-300 hover:bg-white/10 hover:text-white'
+                }`}
+              >
+                <MessageSquare className="w-5 h-5" />
+                <span>Messages</span>
+              </button>
+            </nav>
 
-          {/* Main Content Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Recent Projects */}
+            {/* Bottom Actions */}
+            <div className="absolute bottom-6 left-6 right-6 space-y-2">
+              <button className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-300 hover:bg-white/10 hover:text-white transition-all duration-200">
+                <Settings className="w-5 h-5" />
+                <span>Settings</span>
+              </button>
+              <button 
+                onClick={handleSignOut}
+                disabled={isSigningOut}
+                className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-300 hover:bg-white/10 hover:text-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isSigningOut ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-gray-300 border-t-transparent rounded-full animate-spin"></div>
+                    <span>Signing out...</span>
+                  </>
+                ) : (
+                  <>
+                    <LogOut className="w-5 h-5" />
+                    <span>Sign Out</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </motion.aside>
+
+          {/* Main Content */}
+          <div className="flex-1 p-8">
+            {/* Header */}
             <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.5 }}
-              className="lg:col-span-2"
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="flex items-center justify-between mb-8"
             >
-              <div className="glass-effect rounded-2xl p-6">
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-xl font-semibold text-white">Recent Projects</h2>
-                  <button className="flex items-center space-x-2 text-primary-400 hover:text-primary-300 transition-colors">
-                    <span>View All</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </button>
+              <div>
+                <h1 className="text-3xl font-bold text-white">Dashboard</h1>
+                <p className="text-gray-400">Welcome back! Here's what's happening today.</p>
+              </div>
+              <div className="flex items-center space-x-4">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <input
+                    type="text"
+                    placeholder="Search..."
+                    className="pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary-400 transition-colors"
+                  />
                 </div>
-                <div className="space-y-4">
-                  {recentProjects.map((project) => (
-                    <div key={project.id} className="flex items-center justify-between p-4 bg-white/5 rounded-xl">
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-white mb-1">{project.name}</h3>
-                        <p className="text-sm text-gray-400 mb-2">{project.client}</p>
-                        <div className="flex items-center space-x-4">
-                          <span className={`px-2 py-1 rounded-full text-xs ${getStatusColor(project.status)}`}>
-                            {project.status}
-                          </span>
-                          <span className={`px-2 py-1 rounded-full text-xs ${getPriorityColor(project.priority)}`}>
-                            {project.priority}
-                          </span>
+                <button className="p-2 bg-white/10 border border-white/20 rounded-xl text-gray-300 hover:bg-white/20 hover:text-white transition-all duration-200">
+                  <Bell className="w-5 h-5" />
+                </button>
+                <button className="flex items-center space-x-2 px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded-xl transition-colors">
+                  <Plus className="w-4 h-4" />
+                  <span>New Project</span>
+                </button>
+              </div>
+            </motion.div>
+
+            {/* Content based on active tab */}
+            {activeTab === 'overview' && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
+                className="space-y-8"
+              >
+                {/* Stats Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                  {stats.map((stat, index) => (
+                    <motion.div
+                      key={stat.title}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5, delay: index * 0.1 }}
+                      className="glass-effect rounded-2xl p-6"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-gray-400 text-sm">{stat.title}</p>
+                          <p className="text-2xl font-bold text-white mt-1">{stat.value}</p>
+                        </div>
+                        <div className={`p-3 rounded-xl bg-white/10 ${stat.color}`}>
+                          <stat.icon className="w-6 h-6" />
                         </div>
                       </div>
-                      <div className="text-right">
-                        <div className="text-sm text-gray-400 mb-1">Progress</div>
-                        <div className="text-lg font-semibold text-white">{project.progress}%</div>
-                        <div className="text-xs text-gray-400">Due: {project.dueDate}</div>
+                      <div className="flex items-center mt-4">
+                        <TrendingUp className="w-4 h-4 text-green-400 mr-1" />
+                        <span className="text-green-400 text-sm">{stat.change}</span>
+                        <span className="text-gray-400 text-sm ml-1">from last month</span>
                       </div>
-                    </div>
+                    </motion.div>
                   ))}
                 </div>
-              </div>
-            </motion.div>
 
-            {/* Sidebar Content */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.6 }}
-              className="space-y-6"
-            >
-              {/* Upcoming Tasks */}
-              <div className="glass-effect rounded-2xl p-6">
-                <h3 className="text-lg font-semibold text-white mb-4">Upcoming Tasks</h3>
-                <div className="space-y-3">
-                  {upcomingTasks.map((task) => (
-                    <div key={task.id} className="flex items-center space-x-3 p-3 bg-white/5 rounded-xl">
-                      <div className={`w-2 h-2 rounded-full ${getPriorityColor(task.priority).split(' ')[0]}`}></div>
-                      <div className="flex-1">
-                        <p className="text-sm text-white">{task.title}</p>
-                        <p className="text-xs text-gray-400">{task.dueDate}</p>
-                      </div>
+                {/* Recent Projects and Activity */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                  {/* Recent Projects */}
+                  <motion.div
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.5, delay: 0.3 }}
+                    className="glass-effect rounded-2xl p-6"
+                  >
+                    <div className="flex items-center justify-between mb-6">
+                      <h2 className="text-xl font-semibold text-white">Recent Projects</h2>
+                      <button className="text-primary-400 hover:text-primary-300 text-sm">View All</button>
                     </div>
-                  ))}
-                </div>
-              </div>
+                    <div className="space-y-4">
+                      {recentProjects.map((project) => (
+                        <div key={project.id} className="flex items-center justify-between p-4 bg-white/5 rounded-xl">
+                          <div className="flex-1">
+                            <h3 className="text-white font-medium">{project.name}</h3>
+                            <p className="text-gray-400 text-sm">{project.client}</p>
+                          </div>
+                          <div className="text-right">
+                            <span className={`px-2 py-1 rounded-full text-xs ${getStatusColor(project.status)}`}>
+                              {project.status}
+                            </span>
+                            <div className="mt-2">
+                              <div className="w-24 h-2 bg-white/10 rounded-full overflow-hidden">
+                                <div 
+                                  className="h-full bg-primary-500 rounded-full"
+                                  style={{ width: `${project.progress}%` }}
+                                ></div>
+                              </div>
+                              <p className="text-gray-400 text-xs mt-1">{project.progress}%</p>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </motion.div>
 
-              {/* Recent Activity */}
-              <div className="glass-effect rounded-2xl p-6">
-                <h3 className="text-lg font-semibold text-white mb-4">Recent Activity</h3>
-                <div className="space-y-4">
-                  {recentActivity.map((activity) => (
-                    <div key={activity.id} className="flex items-start space-x-3">
-                      <div className="p-2 bg-primary-500/20 rounded-lg">
-                        <activity.icon className="w-4 h-4 text-primary-400" />
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-sm text-white">{activity.message}</p>
-                        <p className="text-xs text-gray-400">{activity.time}</p>
-                      </div>
+                  {/* Recent Activity */}
+                  <motion.div
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.5, delay: 0.4 }}
+                    className="glass-effect rounded-2xl p-6"
+                  >
+                    <div className="flex items-center justify-between mb-6">
+                      <h2 className="text-xl font-semibold text-white">Recent Activity</h2>
+                      <button className="text-primary-400 hover:text-primary-300 text-sm">View All</button>
                     </div>
-                  ))}
+                    <div className="space-y-4">
+                      {recentActivity.map((activity) => (
+                        <div key={activity.id} className="flex items-start space-x-3">
+                          <div className="p-2 bg-white/10 rounded-lg">
+                            <activity.icon className="w-4 h-4 text-primary-400" />
+                          </div>
+                          <div className="flex-1">
+                            <p className="text-white text-sm">{activity.message}</p>
+                            <p className="text-gray-400 text-xs mt-1">{activity.time}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </motion.div>
                 </div>
-              </div>
-            </motion.div>
+
+                {/* Upcoming Tasks */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.5 }}
+                  className="glass-effect rounded-2xl p-6"
+                >
+                  <div className="flex items-center justify-between mb-6">
+                    <h2 className="text-xl font-semibold text-white">Upcoming Tasks</h2>
+                    <button className="text-primary-400 hover:text-primary-300 text-sm">View All</button>
+                  </div>
+                  <div className="space-y-4">
+                    {upcomingTasks.map((task) => (
+                      <div key={task.id} className="flex items-center justify-between p-4 bg-white/5 rounded-xl">
+                        <div className="flex items-center space-x-3">
+                          <div className={`w-2 h-2 rounded-full ${getPriorityColor(task.priority).split(' ')[0]}`}></div>
+                          <span className="text-white">{task.title}</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Clock className="w-4 h-4 text-gray-400" />
+                          <span className="text-gray-400 text-sm">{task.dueDate}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+              </motion.div>
+            )}
+
+            {/* Other tabs would go here */}
+            {activeTab !== 'overview' && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
+                className="glass-effect rounded-2xl p-8 text-center"
+              >
+                <h2 className="text-2xl font-semibold text-white mb-4">
+                  {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} Coming Soon
+                </h2>
+                <p className="text-gray-400">
+                  This feature is currently under development. Stay tuned for updates!
+                </p>
+              </motion.div>
+            )}
           </div>
         </div>
       </div>
-    </div>
+    </SubscriptionGuard>
   )
 } 
