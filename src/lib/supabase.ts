@@ -169,6 +169,8 @@ export const auth = {
   // Get user profile
   getUserProfile: async (userId: string) => {
     try {
+      console.log('🔍 Fetching user profile for ID:', userId)
+      
       const { data, error } = await supabase
         .from('users')
         .select('*')
@@ -176,13 +178,34 @@ export const auth = {
         .single()
       
       if (error) {
-        console.error('Error fetching user profile:', error)
+        console.error('❌ Error fetching user profile:', error)
+        
+        // Provide specific error messages for common issues
+        if (error.code === '42703') {
+          console.error('❌ Database schema issue: Column "id" does not exist in users table')
+          console.error('💡 Solution: Run the database schema setup in Supabase SQL Editor')
+          return { 
+            data: null, 
+            error: { 
+              message: 'Database schema not set up. Please contact support.',
+              code: error.code,
+              details: error
+            } 
+          }
+        }
+        
+        if (error.code === 'PGRST116') {
+          console.log('ℹ️ User profile not found (this is normal for new users)')
+          return { data: null, error: { code: 'PGRST116', message: 'Profile not found' } }
+        }
+        
         return { data: null, error }
       }
       
+      console.log('✅ User profile fetched successfully')
       return { data, error: null }
     } catch (err) {
-      console.error('Error in getUserProfile:', err)
+      console.error('❌ Error in getUserProfile:', err)
       return { data: null, error: err }
     }
   },
