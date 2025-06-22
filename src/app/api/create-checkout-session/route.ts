@@ -63,6 +63,13 @@ export async function POST(request: NextRequest) {
       metadata: {
         planId: planId,
       },
+      allow_promotion_codes: true,
+      billing_address_collection: 'auto',
+      subscription_data: {
+        metadata: {
+          planId: planId,
+        },
+      },
     })
 
     console.log('✅ Checkout session created:', session.id)

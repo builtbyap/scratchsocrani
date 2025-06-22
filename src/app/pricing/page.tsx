@@ -26,30 +26,7 @@ export default function PricingPage() {
       const plan = paymentPlans.find(p => p.id === planId)
       if (!plan) throw new Error('Plan not found')
 
-      // Handle free plan differently - no Stripe checkout needed
-      if (plan.price === 0) {
-        // For free plan, directly update user subscription in database
-        const response = await fetch('/api/subscribe-free', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            planId: plan.id,
-            customerEmail: user.email,
-          }),
-        })
-
-        const { success, error } = await response.json()
-        
-        if (error) throw new Error(error)
-
-        // Redirect to dashboard with success message
-        window.location.href = '/dashboard?success=true&plan=free'
-        return
-      }
-
-      // Create checkout session for paid plans
+      // Create checkout session for all plans (including free)
       const response = await fetch('/api/create-checkout-session', {
         method: 'POST',
         headers: {
@@ -194,7 +171,7 @@ export default function PricingPage() {
                       Processing...
                     </div>
                   ) : (
-                    plan.id === 'free' ? 'Get Started Free' : `Get ${plan.name}`
+                    `Get ${plan.name}`
                   )}
                 </button>
               </motion.div>
