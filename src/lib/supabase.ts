@@ -53,7 +53,64 @@ export const auth = {
       }
     }
     
+    // If signup successful, try to create user profile manually
+    if (data.user && !error) {
+      try {
+        console.log('Creating user profile manually...')
+        const { error: profileError } = await supabase
+          .from('users')
+          .insert({
+            id: data.user.id,
+            email: data.user.email,
+            first_name: userData?.first_name || '',
+            last_name: userData?.last_name || '',
+            subscription_status: 'inactive'
+          })
+        
+        if (profileError) {
+          console.error('Error creating user profile:', profileError)
+          // Don't fail the signup if profile creation fails
+          // The trigger might have already created it
+        } else {
+          console.log('User profile created successfully')
+        }
+      } catch (profileErr) {
+        console.error('Error in manual profile creation:', profileErr)
+        // Don't fail the signup if profile creation fails
+      }
+    }
+    
     return { data, error }
+  },
+
+  // Create or update user profile
+  createUserProfile: async (userId: string, userData: any) => {
+    try {
+      const { error } = await supabase
+        .from('users')
+        .upsert({
+          id: userId,
+          email: userData.email,
+          first_name: userData.first_name || '',
+          last_name: userData.last_name || '',
+          subscription_status: 'inactive',
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        }, {
+          onConflict: 'id'
+        })
+      
+      if (error) {
+        console.error('Error creating/updating user profile:', error)
+        return { error }
+      }
+      
+      console.log('User profile created/updated successfully')
+      return { success: true }
+    } catch (err) {
+      console.error('Error in createUserProfile:', err)
+      return { error: err }
+    }
   },
 
   // Sign in with email and password
@@ -106,6 +163,71 @@ export const auth = {
   getCurrentSession: async () => {
     const response = await supabase.auth.getSession()
     return { session: response.data?.session || null, error: response.error }
+  },
+
+  // Get user profile
+  getUserProfile: async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('users')
+        .select('*')
+        .eq('id', userId)
+        .single()
+      
+      if (error) {
+        console.error('Error fetching user profile:', error)
+        return { data: null, error }
+      }
+      
+      return { data, error: null }
+    } catch (err) {
+      console.error('Error in getUserProfile:', err)
+      return { data: null, error: err }
+    }
+  },
+
+  // Ensure user profile exists (create if it doesn't)
+  ensureUserProfile: async (user: any) => {
+    if (!user) return { error: 'No user provided' }
+    
+    try {
+      // Check if profile exists
+      const { data: existingProfile, error: fetchError } = await auth.getUserProfile(user.id)
+      
+      if (fetchError && (fetchError as any).code === 'PGRST116') {
+        // Profile doesn't exist, create it
+        console.log('User profile not found, creating...')
+        const { error: createError } = await supabase
+          .from('users')
+          .insert({
+            id: user.id,
+            email: user.email,
+            first_name: user.user_metadata?.first_name || '',
+            last_name: user.user_metadata?.last_name || '',
+            subscription_status: 'inactive',
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          })
+        
+        if (createError) {
+          console.error('Error creating user profile:', createError)
+          return { error: createError }
+        }
+        
+        console.log('User profile created successfully')
+        return { success: true }
+      } else if (fetchError) {
+        console.error('Error checking user profile:', fetchError)
+        return { error: fetchError }
+      }
+      
+      // Profile exists
+      console.log('User profile already exists')
+      return { success: true, data: existingProfile }
+    } catch (err) {
+      console.error('Error in ensureUserProfile:', err)
+      return { error: err }
+    }
   },
 
   // Listen to auth changes

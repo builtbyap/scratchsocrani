@@ -27,6 +27,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const { session } = await auth.getCurrentSession()
       setSession(session)
       setUser(session?.user ?? null)
+      
+      // Ensure user profile exists if user is authenticated
+      if (session?.user) {
+        try {
+          await auth.ensureUserProfile(session.user)
+        } catch (error) {
+          console.error('Error ensuring user profile:', error)
+        }
+      }
+      
       setLoading(false)
     }
 
@@ -37,6 +47,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       async (event, session) => {
         setSession(session)
         setUser(session?.user ?? null)
+        
+        // Ensure user profile exists when auth state changes
+        if (session?.user && event === 'SIGNED_IN') {
+          try {
+            await auth.ensureUserProfile(session.user)
+          } catch (error) {
+            console.error('Error ensuring user profile:', error)
+          }
+        }
+        
         setLoading(false)
       }
     )

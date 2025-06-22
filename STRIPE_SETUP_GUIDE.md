@@ -23,6 +23,21 @@ This creates:
 - ✅ Automatic user profile creation on signup
 - ✅ Database indexes for performance
 
+**🔍 Verify Database Setup:**
+1. **Run the verification script**: Copy and paste `check-database.sql` in SQL Editor
+2. **Check results**: You should see:
+   - `table_exists: true`
+   - All required columns listed
+   - Triggers and functions present
+   - RLS policies configured
+
+**🐛 If User Profiles Aren't Created:**
+The app now includes fallback mechanisms to create user profiles manually. If the database trigger doesn't work:
+1. **Check browser console** for any errors
+2. **Verify the database schema** was applied correctly
+3. **Try signing up again** - the app will create profiles manually
+4. **Check Supabase logs** for any database errors
+
 ### **2. Set Up Stripe Webhooks**
 
 1. **Go to Stripe Dashboard** → Developers → Webhooks
