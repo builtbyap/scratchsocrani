@@ -23,10 +23,16 @@ export default function PricingPage() {
     setSelectedPlan(planId)
 
     try {
+      console.log('🔍 Starting subscription process for plan:', planId)
+      console.log('👤 User:', user.email)
+      
       const plan = paymentPlans.find(p => p.id === planId)
       if (!plan) throw new Error('Plan not found')
 
+      console.log('📋 Plan found:', plan.name, 'Price:', plan.price)
+
       // Create checkout session for all plans (including free)
+      console.log('🔄 Creating checkout session...')
       const response = await fetch('/api/create-checkout-session', {
         method: 'POST',
         headers: {
@@ -39,19 +45,40 @@ export default function PricingPage() {
         }),
       })
 
+      console.log('📡 Response status:', response.status)
+      
+      if (!response.ok) {
+        const errorText = await response.text()
+        console.error('❌ Server error:', errorText)
+        throw new Error(`Server error: ${response.status} - ${errorText}`)
+      }
+
       const { sessionId, error } = await response.json()
       
-      if (error) throw new Error(error)
+      if (error) {
+        console.error('❌ Checkout session error:', error)
+        throw new Error(error)
+      }
+
+      console.log('✅ Checkout session created:', sessionId)
 
       // Redirect to Stripe checkout
+      console.log('🔄 Redirecting to Stripe checkout...')
       const stripe = await stripePromise
       if (stripe) {
         const { error } = await stripe.redirectToCheckout({ sessionId })
-        if (error) throw error
+        if (error) {
+          console.error('❌ Stripe redirect error:', error)
+          throw error
+        }
+      } else {
+        console.error('❌ Stripe not loaded')
+        throw new Error('Stripe not loaded')
       }
     } catch (error) {
-      console.error('Error creating checkout session:', error)
-      alert('Failed to start checkout. Please try again.')
+      console.error('❌ Error creating checkout session:', error)
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
+      alert(`Failed to start checkout: ${errorMessage}`)
     } finally {
       setIsLoading(false)
       setSelectedPlan(null)
