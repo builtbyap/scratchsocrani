@@ -192,19 +192,40 @@ export const auth = {
     if (!user) return { error: 'No user provided' }
     
     try {
+      console.log('Ensuring user profile exists for:', user.email)
+      console.log('User metadata:', user.user_metadata)
+      
       // Check if profile exists
       const { data: existingProfile, error: fetchError } = await auth.getUserProfile(user.id)
       
       if (fetchError && (fetchError as any).code === 'PGRST116') {
         // Profile doesn't exist, create it
         console.log('User profile not found, creating...')
+        
+        // Extract name from Google metadata
+        let firstName = ''
+        let lastName = ''
+        
+        if (user.user_metadata?.full_name) {
+          const nameParts = user.user_metadata.full_name.split(' ')
+          firstName = nameParts[0] || ''
+          lastName = nameParts.slice(1).join(' ') || ''
+        } else if (user.user_metadata?.name) {
+          const nameParts = user.user_metadata.name.split(' ')
+          firstName = nameParts[0] || ''
+          lastName = nameParts.slice(1).join(' ') || ''
+        } else {
+          firstName = user.user_metadata?.first_name || ''
+          lastName = user.user_metadata?.last_name || ''
+        }
+        
         const { error: createError } = await supabase
           .from('users')
           .insert({
             id: user.id,
             email: user.email,
-            first_name: user.user_metadata?.first_name || '',
-            last_name: user.user_metadata?.last_name || '',
+            first_name: firstName,
+            last_name: lastName,
             subscription_status: 'inactive',
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
@@ -215,7 +236,7 @@ export const auth = {
           return { error: createError }
         }
         
-        console.log('User profile created successfully')
+        console.log('User profile created successfully for Google user:', user.email)
         return { success: true }
       } else if (fetchError) {
         console.error('Error checking user profile:', fetchError)
@@ -223,10 +244,28 @@ export const auth = {
       }
       
       // Profile exists
-      console.log('User profile already exists')
+      console.log('User profile already exists for:', user.email)
       return { success: true, data: existingProfile }
     } catch (err) {
       console.error('Error in ensureUserProfile:', err)
+      return { error: err }
+    }
+  },
+
+  // Manual function to check and create user profile (for debugging)
+  checkAndCreateUserProfile: async () => {
+    try {
+      const { user } = await auth.getCurrentUser()
+      if (!user) {
+        console.log('No user found, cannot create profile')
+        return { error: 'No user found' }
+      }
+      
+      console.log('Checking profile for user:', user.email)
+      const result = await auth.ensureUserProfile(user)
+      return result
+    } catch (err) {
+      console.error('Error in checkAndCreateUserProfile:', err)
       return { error: err }
     }
   },
