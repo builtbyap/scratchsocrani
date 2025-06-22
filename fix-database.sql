@@ -18,11 +18,13 @@ CREATE TABLE public.users (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   
   -- Subscription fields
-  subscription_status TEXT DEFAULT 'inactive' CHECK (subscription_status IN ('inactive', 'active', 'canceled', 'past_due')),
+  subscription_status TEXT DEFAULT 'inactive' CHECK (subscription_status IN ('inactive', 'active', 'canceled', 'past_due', 'trialing', 'unpaid')),
   subscription_type TEXT,
   stripe_customer_id TEXT,
+  stripe_subscription_id TEXT,
   subscription_start_date TIMESTAMP WITH TIME ZONE,
   subscription_end_date TIMESTAMP WITH TIME ZONE,
+  subscription_trial_end TIMESTAMP WITH TIME ZONE,
   
   -- Profile fields
   company_name TEXT,
