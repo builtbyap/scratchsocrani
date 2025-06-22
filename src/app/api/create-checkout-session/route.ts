@@ -13,6 +13,8 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 export async function POST(request: NextRequest) {
   try {
     console.log('🔍 Creating checkout session...')
+    console.log('🔑 Stripe secret key exists:', !!process.env.STRIPE_SECRET_KEY)
+    console.log('🔑 Stripe secret key prefix:', process.env.STRIPE_SECRET_KEY?.substring(0, 7) || 'not set')
     
     const { priceId, customerEmail, planId } = await request.json()
     
@@ -33,6 +35,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Missing customer email' },
         { status: 400 }
+      )
+    }
+
+    // Validate Stripe configuration
+    if (!process.env.STRIPE_SECRET_KEY) {
+      console.error('❌ STRIPE_SECRET_KEY is not configured')
+      return NextResponse.json(
+        { error: 'Stripe configuration error: Secret key not found' },
+        { status: 500 }
       )
     }
 
@@ -70,6 +81,12 @@ export async function POST(request: NextRequest) {
       if (error.message.includes('Invalid API key')) {
         return NextResponse.json(
           { error: 'Stripe configuration error. Please check your API keys.' },
+          { status: 500 }
+        )
+      }
+      if (error.message.includes('You did not provide an API key')) {
+        return NextResponse.json(
+          { error: 'Stripe API key is missing. Please check your environment variables.' },
           { status: 500 }
         )
       }
