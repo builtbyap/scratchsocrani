@@ -273,6 +273,44 @@ export const auth = {
   // Listen to auth changes
   onAuthStateChange: (callback: (event: string, session: any) => void) => {
     return supabase.auth.onAuthStateChange(callback)
+  },
+
+  // Manual test function to create a user profile (for debugging)
+  testCreateUserProfile: async () => {
+    try {
+      const { user } = await auth.getCurrentUser()
+      if (!user) {
+        console.log('No user found, cannot create test profile')
+        return { error: 'No user found' }
+      }
+      
+      console.log('Testing user profile creation for:', user.email)
+      
+      // Try to create a test profile
+      const { error: createError } = await supabase
+        .from('users')
+        .insert({
+          id: user.id,
+          email: user.email,
+          first_name: 'Test',
+          last_name: 'User',
+          subscription_status: 'inactive',
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        })
+        .select()
+      
+      if (createError) {
+        console.error('Error creating test profile:', createError)
+        return { error: createError }
+      }
+      
+      console.log('Test profile created successfully')
+      return { success: true }
+    } catch (err) {
+      console.error('Error in testCreateUserProfile:', err)
+      return { error: err }
+    }
   }
 }
 

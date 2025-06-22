@@ -34,6 +34,31 @@ export default function UserProfileDebug() {
     }
   }
 
+  const testCreateProfile = async () => {
+    if (!user) {
+      setStatus('No user logged in')
+      return
+    }
+
+    setStatus('Testing profile creation...')
+    
+    try {
+      const result = await auth.testCreateUserProfile()
+      
+      if (result.error) {
+        setStatus(`Test Error: ${(result.error as any).message || result.error}`)
+      } else {
+        setStatus('Test profile created successfully')
+        
+        // Fetch the actual profile data
+        const { data: profile } = await auth.getUserProfile(user.id)
+        setUserProfile(profile)
+      }
+    } catch (err) {
+      setStatus(`Test Error: ${err}`)
+    }
+  }
+
   const fetchUserProfile = async () => {
     if (!user) {
       setStatus('No user logged in')
@@ -80,6 +105,13 @@ export default function UserProfileDebug() {
           className="px-4 py-2 bg-blue-500 hover:bg-blue-600 rounded-lg text-white"
         >
           Check/Create Profile
+        </button>
+        
+        <button
+          onClick={testCreateProfile}
+          className="px-4 py-2 bg-purple-500 hover:bg-purple-600 rounded-lg text-white ml-2"
+        >
+          Test Profile Creation
         </button>
         
         <button
