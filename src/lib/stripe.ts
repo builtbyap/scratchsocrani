@@ -31,7 +31,7 @@ export const paymentPlans = [
       'Basic SEO setup',
       'Email support'
     ],
-    stripePriceId: 'price_1RcegqHGzbgxTdhYuH7fRKTP'
+    stripePriceId: 'price_YOUR_MONTHLY_PRICE_ID_HERE'
   },
   {
     id: 'annual',
@@ -46,7 +46,7 @@ export const paymentPlans = [
       'Priority support',
       'Analytics dashboard'
     ],
-    stripePriceId: 'price_1RcegzHGzbgxTdhY1RTHRUPh'
+    stripePriceId: 'price_YOUR_ANNUAL_PRICE_ID_HERE'
   }
 ]
 
