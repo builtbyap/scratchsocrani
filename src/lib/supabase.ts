@@ -138,10 +138,11 @@ export const auth = {
 
   // Sign in with Google OAuth
   signInWithGoogle: async () => {
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://socrani.com'
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/dashboard`
+        redirectTo: `${baseUrl}/dashboard`
       }
     })
     return { data, error }

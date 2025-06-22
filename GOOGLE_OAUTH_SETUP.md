@@ -23,7 +23,7 @@
    - **Authorized JavaScript origins**:
      ```
      http://localhost:3000
-     https://your-domain.com (for production)
+     https://socrani.com
      ```
    - **Authorized redirect URIs**:
      ```
@@ -52,6 +52,7 @@ Add these to your `.env.local` file:
 ```env
 # Google OAuth (Optional - for additional configuration)
 NEXT_PUBLIC_GOOGLE_CLIENT_ID=your-google-client-id.apps.googleusercontent.com
+NEXT_PUBLIC_BASE_URL=https://socrani.com
 ```
 
 ### **4. Test Google OAuth**
@@ -130,15 +131,15 @@ NEXT_PUBLIC_GOOGLE_CLIENT_ID=your-google-client-id.apps.googleusercontent.com
 ### **Update Redirect URLs for Production:**
 
 1. **Google Cloud Console**:
-   - Add your production domain to authorized origins
+   - Add your production domain to authorized origins: `https://socrani.com`
    - Update redirect URI if needed
 
 2. **Supabase Dashboard**:
-   - Update site URL in Authentication → Settings
-   - Add production domain to allowed redirect URLs
+   - Update site URL in Authentication → Settings: `https://socrani.com`
+   - Add production domain to allowed redirect URLs: `https://socrani.com/dashboard`
 
 3. **Environment Variables**:
-   - Set `NEXT_PUBLIC_BASE_URL` to your production URL
+   - Set `NEXT_PUBLIC_BASE_URL=https://socrani.com`
 
 ## 📞 **Support:**
 
