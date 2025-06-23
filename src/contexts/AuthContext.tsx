@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from 'react'
 import { User, Session } from '@supabase/supabase-js'
-import { useSupabase } from '@/lib/useSupabase'
+import { supabase } from '@/lib/supabase-client'
 
 interface AuthContextType {
   user: User | null
@@ -17,16 +17,11 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const { supabase, loading: supabaseLoading, error: supabaseError } = useSupabase()
   const [user, setUser] = useState<User | null>(null)
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (!supabase || supabaseLoading) {
-      return
-    }
-
     // Get initial session
     const getInitialSession = async () => {
       try {
@@ -151,12 +146,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       console.error('❌ Error setting up auth listener:', error)
       setLoading(false)
     }
-  }, [supabase, supabaseLoading])
+  }, [])
 
   // Helper function to ensure user profile
   const ensureUserProfile = async (user: User) => {
-    if (!supabase) return { error: 'Supabase not initialized' }
-    
     try {
       const { data: existingProfile, error: fetchError } = await supabase
         .from('users')
@@ -203,7 +196,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Auth helper functions
   const auth = {
     signUp: async (email: string, password: string) => {
-      if (!supabase) return { data: null, error: 'Supabase not initialized' }
       try {
         const { data, error } = await supabase.auth.signUp({
           email,
@@ -217,7 +209,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     },
 
     signIn: async (email: string, password: string) => {
-      if (!supabase) return { data: null, error: 'Supabase not initialized' }
       try {
         const { data, error } = await supabase.auth.signInWithPassword({
           email,
@@ -231,7 +222,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     },
 
     signInWithGoogle: async () => {
-      if (!supabase) return { data: null, error: 'Supabase not initialized' }
       try {
         const { data, error } = await supabase.auth.signInWithOAuth({
           provider: 'google',
@@ -247,7 +237,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     },
 
     signOut: async () => {
-      if (!supabase) return { error: 'Supabase not initialized' }
       try {
         const { error } = await supabase.auth.signOut()
         return { error }
@@ -261,7 +250,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const value = {
     user,
     session,
-    loading: loading || supabaseLoading,
+    loading,
     signUp: auth.signUp,
     signIn: auth.signIn,
     signInWithGoogle: auth.signInWithGoogle,
