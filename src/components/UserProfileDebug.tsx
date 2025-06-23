@@ -18,7 +18,7 @@ export default function UserProfileDebug() {
     setStatus('Checking user profile...')
     
     try {
-      const result = await auth.checkAndCreateUserProfile()
+      const result = await auth.checkAndCreateUserProfile(user)
       
       if (result.error) {
         setStatus(`Error: ${(result.error as any).message || result.error}`)
@@ -43,7 +43,7 @@ export default function UserProfileDebug() {
     setStatus('Testing profile creation...')
     
     try {
-      const result = await auth.testCreateUserProfile()
+      const result = await auth.testCreateUserProfile(user)
       
       if (result.error) {
         setStatus(`Test Error: ${(result.error as any).message || result.error}`)

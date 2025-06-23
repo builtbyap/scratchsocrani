@@ -6,7 +6,6 @@ import { ArrowLeft, Mail, Lock, Eye, EyeOff, Sparkles, User, Check } from 'lucid
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
-import { checkSupabaseStatus } from '@/lib/supabase'
 
 export default function SignUpPage() {
   const [showPassword, setShowPassword] = useState(false)
@@ -23,13 +22,6 @@ export default function SignUpPage() {
   const [error, setError] = useState('')
   const router = useRouter()
   const { signUp, signInWithGoogle } = useAuth()
-
-  // Run diagnostic check when component loads
-  useState(() => {
-    checkSupabaseStatus().then(result => {
-      console.log('Supabase status check result:', result)
-    })
-  })
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -53,10 +45,7 @@ export default function SignUpPage() {
     
     try {
       console.log('Calling signUp function...')
-      const { data, error } = await signUp(formData.email, formData.password, {
-        first_name: formData.firstName,
-        last_name: formData.lastName
-      })
+      const { data, error } = await signUp(formData.email, formData.password)
       
       console.log('Sign up response:', { data, error })
       

@@ -14,8 +14,8 @@ export async function POST(request: NextRequest) {
     console.log('🧪 Testing sign-up process for:', email)
     console.log('📝 User data:', userData)
     
-    // Test the sign-up process
-    const result = await auth.signUp(email, password, userData)
+    // Test the sign-up process (only email and password)
+    const result = await auth.signUp(email, password)
     
     if (result.error) {
       console.error('❌ Sign-up test failed:', result.error)
