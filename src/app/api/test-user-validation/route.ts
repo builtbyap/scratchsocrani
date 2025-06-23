@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { validateUserAccess, hasActiveSubscription } from '@/lib/subscription-sync'
+import { getClient } from '@/lib/supabase-client'
 
 export async function POST(request: NextRequest) {
   try {
@@ -19,21 +20,36 @@ export async function POST(request: NextRequest) {
     // Test subscription status
     const hasSubscription = await hasActiveSubscription(email)
     
+    // Fetch user profile if validation is successful
+    let userProfile = null
+    if (validation.isValid) {
+      const supabase = getClient()
+      const { data: profile, error: profileError } = await supabase
+        .from('users')
+        .select('*')
+        .eq('email', email)
+        .single()
+      
+      if (!profileError && profile) {
+        userProfile = {
+          id: profile.id,
+          email: profile.email,
+          first_name: profile.first_name,
+          last_name: profile.last_name,
+          subscription_status: profile.subscription_status,
+          subscription_tier: profile.subscription_tier,
+          created_at: profile.created_at
+        }
+      }
+    }
+    
     return NextResponse.json({
       success: true,
       email,
       validation: {
         isValid: validation.isValid,
         error: validation.error,
-        userProfile: validation.userProfile ? {
-          id: validation.userProfile.id,
-          email: validation.userProfile.email,
-          first_name: validation.userProfile.first_name,
-          last_name: validation.userProfile.last_name,
-          subscription_status: validation.userProfile.subscription_status,
-          subscription_type: validation.userProfile.subscription_type,
-          created_at: validation.userProfile.created_at
-        } : null
+        userProfile
       },
       subscription: {
         hasActiveSubscription: hasSubscription

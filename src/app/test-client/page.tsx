@@ -17,6 +17,13 @@ export default function TestClient() {
         console.log('NEXT_PUBLIC_SUPABASE_URL:', process.env.NEXT_PUBLIC_SUPABASE_URL)
         console.log('NEXT_PUBLIC_SUPABASE_ANON_KEY exists:', !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
         
+        // Check if supabase client is available
+        if (!supabase) {
+          setError('Supabase client not available')
+          setStatus('Failed')
+          return
+        }
+        
         // Test Supabase client
         const { data, error } = await supabase
           .from('users')

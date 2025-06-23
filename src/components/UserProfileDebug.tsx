@@ -19,6 +19,10 @@ export default function UserProfileDebug() {
     setStatus('Checking user profile...')
     
     try {
+      if (!supabase) {
+        setStatus('Supabase client not available')
+        return
+      }
       // Check if user profile exists
       const { data: existingProfile, error: fetchError } = await supabase
         .from('users')
@@ -68,6 +72,10 @@ export default function UserProfileDebug() {
     setStatus('Testing profile creation...')
     
     try {
+      if (!supabase) {
+        setStatus('Supabase client not available')
+        return
+      }
       // Force create a new profile (for testing)
       const { error: insertError } = await supabase
         .from('users')
@@ -101,6 +109,10 @@ export default function UserProfileDebug() {
     setStatus('Fetching user profile...')
     
     try {
+      if (!supabase) {
+        setStatus('Supabase client not available')
+        return
+      }
       const { data, error } = await supabase
         .from('users')
         .select('*')

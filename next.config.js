@@ -9,11 +9,6 @@ const nextConfig = {
     NEXT_PUBLIC_BASE_URL: process.env.NEXT_PUBLIC_BASE_URL,
   },
   
-  // Experimental features for better client-side handling
-  experimental: {
-    appDir: true,
-  },
-  
   // Webpack configuration to handle client-side environment variables
   webpack: (config, { isServer }) => {
     if (!isServer) {
