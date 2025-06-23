@@ -181,8 +181,8 @@ export default function Dashboard() {
       if (error) {
         console.error('Error signing out:', error)
       } else {
-        // Redirect to homepage after successful sign out
-        router.push('/')
+        // Redirect to sign in page after successful sign out
+        router.push('/signin')
       }
     } catch (err) {
       console.error('Error signing out:', err)
