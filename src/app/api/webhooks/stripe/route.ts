@@ -57,8 +57,17 @@ async function ensureUserProfile(email: string, stripeCustomerId?: string) {
     throw fetchError
   }
   
-  // User exists, update stripe_customer_id if provided
+  // User exists - log current status and update if needed
+  console.log('👤 Existing user profile found for:', email, {
+    current_subscription_status: existingUser.subscription_status,
+    current_subscription_tier: existingUser.subscription_tier,
+    current_stripe_customer_id: existingUser.stripe_customer_id,
+    new_stripe_customer_id: stripeCustomerId
+  })
+  
+  // Update stripe_customer_id if provided and different
   if (stripeCustomerId && existingUser.stripe_customer_id !== stripeCustomerId) {
+    console.log('🔄 Updating stripe_customer_id for existing user:', email)
     const { error: updateError } = await supabase
       .from('users')
       .update({
@@ -70,7 +79,7 @@ async function ensureUserProfile(email: string, stripeCustomerId?: string) {
     if (updateError) {
       console.error('❌ Error updating stripe_customer_id:', updateError)
     } else {
-      console.log('✅ Updated stripe_customer_id for:', email)
+      console.log('✅ Updated stripe_customer_id for existing user:', email)
     }
   }
   
@@ -121,8 +130,13 @@ export async function POST(request: NextRequest) {
         if (sessionCompleted.mode === 'subscription' && sessionCompleted.customer && sessionCompleted.customer_email) {
           console.log('✅ Valid subscription checkout session detected')
           
-          // Ensure user profile exists
-          await ensureUserProfile(sessionCompleted.customer_email, sessionCompleted.customer as string)
+          // Ensure user profile exists and log current status
+          const userProfile = await ensureUserProfile(sessionCompleted.customer_email, sessionCompleted.customer as string)
+          console.log('📋 User profile before subscription update:', {
+            email: userProfile.email,
+            previous_subscription_status: userProfile.subscription_status,
+            previous_subscription_tier: userProfile.subscription_tier
+          })
           
           // Get the subscription details
           const stripe = getStripeClient()
@@ -130,7 +144,8 @@ export async function POST(request: NextRequest) {
           console.log('📊 Retrieved subscription:', {
             id: subscription.id,
             status: subscription.status,
-            customer: subscription.customer
+            customer: subscription.customer,
+            current_period_end: new Date((subscription as any).current_period_end * 1000).toISOString()
           })
           
           // Map Stripe status to Supabase status
@@ -155,7 +170,11 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Failed to update subscription' }, { status: 500 })
           }
           
-          console.log('✅ Subscription activated successfully for:', sessionCompleted.customer_email)
+          console.log('✅ Subscription activated successfully for:', sessionCompleted.customer_email, {
+            previous_status: userProfile.subscription_status,
+            new_status: supabaseStatus,
+            subscription_id: subscription.id
+          })
         } else {
           console.log('⚠️ Not a valid subscription checkout session')
         }
@@ -175,8 +194,13 @@ export async function POST(request: NextRequest) {
           return NextResponse.json({ error: 'No customer email found' }, { status: 400 })
         }
         
-        // Ensure user profile exists
-        await ensureUserProfile(customerEmail, subscriptionCreated.customer as string)
+        // Ensure user profile exists and log current status
+        const userProfileCreated = await ensureUserProfile(customerEmail, subscriptionCreated.customer as string)
+        console.log('📋 User profile before subscription creation:', {
+          email: userProfileCreated.email,
+          previous_subscription_status: userProfileCreated.subscription_status,
+          previous_subscription_tier: userProfileCreated.subscription_tier
+        })
         
         // Map Stripe status to Supabase status
         const supabaseStatusCreated = mapStripeStatusToSupabase(subscriptionCreated.status)
@@ -200,7 +224,11 @@ export async function POST(request: NextRequest) {
           return NextResponse.json({ error: 'Failed to update subscription' }, { status: 500 })
         }
         
-        console.log('✅ Subscription created successfully for:', customerEmail)
+        console.log('✅ Subscription created successfully for:', customerEmail, {
+          previous_status: userProfileCreated.subscription_status,
+          new_status: supabaseStatusCreated,
+          subscription_id: subscriptionCreated.id
+        })
         break
 
       case 'customer.subscription.updated':
