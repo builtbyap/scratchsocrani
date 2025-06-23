@@ -1,5 +1,6 @@
 import { getClient } from './supabase-client'
 import Stripe from 'stripe'
+import { mapStripeStatusToSupabase, isActiveSubscription } from './stripe-utils'
 
 // Lazy-loaded Stripe client
 let stripeClient: Stripe | null = null
@@ -45,11 +46,15 @@ export async function syncAllSubscriptions() {
           continue
         }
         
+        // Map Stripe status to Supabase status
+        const supabaseStatus = mapStripeStatusToSupabase(subscription.status)
+        console.log(`📊 Mapping Stripe status '${subscription.status}' to Supabase status '${supabaseStatus}' for ${customerEmail}`)
+        
         // Update user subscription in Supabase
         const { error } = await supabase
           .from('users')
           .update({
-            subscription_status: subscription.status,
+            subscription_status: supabaseStatus,
             subscription_tier: subscription.items.data[0]?.price.lookup_key || 'pro',
             stripe_customer_id: subscription.customer as string,
             stripe_subscription_id: subscription.id,
@@ -94,8 +99,9 @@ export async function validateUserAccess(email: string): Promise<{ isValid: bool
       return { isValid: false, error: 'Database error' }
     }
     
-    if (userProfile.subscription_status === 'suspended' || userProfile.subscription_status === 'banned') {
-      return { isValid: false, error: 'Account is suspended or banned' }
+    // Check for invalid subscription statuses
+    if (userProfile.subscription_status === 'canceled' || userProfile.subscription_status === 'unpaid') {
+      return { isValid: false, error: 'Subscription is not active' }
     }
     
     return { isValid: true }
@@ -123,7 +129,7 @@ export async function hasActiveSubscription(email: string): Promise<boolean> {
     }
     
     // Check if subscription is active and not expired
-    if (data.subscription_status === 'active') {
+    if (isActiveSubscription(data.subscription_status)) {
       if (data.subscription_end_date) {
         const endDate = new Date(data.subscription_end_date)
         const now = new Date()

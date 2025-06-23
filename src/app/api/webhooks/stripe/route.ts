@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
 import { getClient } from '@/lib/supabase-client'
+import { mapStripeStatusToSupabase } from '@/lib/stripe-utils'
 
 // Lazy-loaded Stripe client
 let stripeClient: Stripe | null = null
@@ -35,7 +36,7 @@ async function ensureUserProfile(email: string, stripeCustomerId?: string) {
       .from('users')
       .insert({
         email: email,
-        subscription_status: 'free',
+        subscription_status: 'inactive',
         subscription_tier: 'free',
         stripe_customer_id: stripeCustomerId || null,
         created_at: new Date().toISOString(),
@@ -112,11 +113,15 @@ export async function POST(request: NextRequest) {
           const stripe = getStripeClient()
           const subscription = await stripe.subscriptions.retrieve(sessionCompleted.subscription as string)
           
+          // Map Stripe status to Supabase status
+          const supabaseStatus = mapStripeStatusToSupabase(subscription.status)
+          console.log(`📊 Mapping Stripe status '${subscription.status}' to Supabase status '${supabaseStatus}'`)
+          
           // Update user subscription in Supabase
           const { error } = await supabase
             .from('users')
             .update({
-              subscription_status: 'active',
+              subscription_status: supabaseStatus,
               subscription_tier: subscription.items.data[0]?.price.lookup_key || 'pro',
               subscription_end_date: new Date((subscription as any).current_period_end * 1000).toISOString(),
               stripe_customer_id: sessionCompleted.customer as string,
@@ -151,11 +156,15 @@ export async function POST(request: NextRequest) {
         // Ensure user profile exists
         await ensureUserProfile(customerEmail, subscriptionCreated.customer as string)
         
+        // Map Stripe status to Supabase status
+        const supabaseStatusCreated = mapStripeStatusToSupabase(subscriptionCreated.status)
+        console.log(`📊 Mapping Stripe status '${subscriptionCreated.status}' to Supabase status '${supabaseStatusCreated}'`)
+        
         // Update user subscription in Supabase
         const { error } = await supabase
           .from('users')
           .update({
-            subscription_status: 'active',
+            subscription_status: supabaseStatusCreated,
             subscription_tier: subscriptionCreated.items.data[0]?.price.lookup_key || 'pro',
             subscription_end_date: new Date((subscriptionCreated as any).current_period_end * 1000).toISOString(),
             stripe_customer_id: subscriptionCreated.customer as string,
@@ -176,11 +185,15 @@ export async function POST(request: NextRequest) {
         const subscriptionUpdated = event.data.object as Stripe.Subscription
         console.log('📝 Subscription updated:', subscriptionUpdated.id)
         
+        // Map Stripe status to Supabase status
+        const supabaseStatusUpdated = mapStripeStatusToSupabase(subscriptionUpdated.status)
+        console.log(`📊 Mapping Stripe status '${subscriptionUpdated.status}' to Supabase status '${supabaseStatusUpdated}'`)
+        
         // Update user subscription in Supabase
         const { error: updateError } = await supabase
           .from('users')
           .update({
-            subscription_status: subscriptionUpdated.status === 'active' ? 'active' : 'inactive',
+            subscription_status: supabaseStatusUpdated,
             subscription_tier: subscriptionUpdated.items.data[0]?.price.lookup_key || 'pro',
             subscription_end_date: new Date((subscriptionUpdated as any).current_period_end * 1000).toISOString(),
             updated_at: new Date().toISOString()
@@ -203,7 +216,7 @@ export async function POST(request: NextRequest) {
         const { error: deleteError } = await supabase
           .from('users')
           .update({
-            subscription_status: 'inactive',
+            subscription_status: 'canceled',
             subscription_tier: 'free',
             subscription_end_date: null,
             stripe_subscription_id: null,
