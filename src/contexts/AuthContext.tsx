@@ -25,6 +25,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Get initial session
     const getInitialSession = async () => {
       try {
+        if (!supabase) {
+          setLoading(false)
+          return
+        }
         console.log('🔍 Getting initial session...')
         const { data: { session }, error } = await supabase.auth.getSession()
         if (error) {
@@ -55,8 +59,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     // Listen for auth changes
     try {
+      if (!supabase) return
       const { data: { subscription } } = supabase.auth.onAuthStateChange(
         async (event, session) => {
+          if (!supabase) return;
           console.log('🔄 Auth state changed:', event, !!session)
           setSession(session)
           setUser(session?.user ?? null)
@@ -64,9 +70,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           // Ensure user profile exists when auth state changes
           if (session?.user && event === 'SIGNED_IN') {
             try {
+              if (!supabase) return;
               console.log('🔍 Ensuring user profile after sign in:', session.user.email)
               
               // Validate user profile in users table
+              if (!supabase) return;
               const { data: userProfile, error: profileError } = await supabase
                 .from('users')
                 .select('*')
@@ -97,6 +105,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                     lastName = session.user.user_metadata?.last_name || ''
                   }
                   
+                  if (!supabase) return;
                   const { error: createError } = await supabase
                     .from('users')
                     .insert({
@@ -122,6 +131,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 if (userProfile.subscription_status === 'suspended' || userProfile.subscription_status === 'banned') {
                   console.error('❌ User account is suspended/banned after OAuth sign in')
                   // Sign out the user if their account is suspended
+                  if (!supabase) return;
                   await supabase.auth.signOut()
                   return
                 }
@@ -150,7 +160,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Helper function to ensure user profile
   const ensureUserProfile = async (user: User) => {
+    if (!supabase) return { error: 'Supabase not initialized' }
     try {
+      if (!supabase) return { error: 'Supabase not initialized' }
       const { data: existingProfile, error: fetchError } = await supabase
         .from('users')
         .select('*')
@@ -162,6 +174,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       if (!existingProfile) {
+        if (!supabase) return { error: 'Supabase not initialized' }
         const { error: insertError } = await supabase
           .from('users')
           .insert([
@@ -196,6 +209,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Auth helper functions
   const auth = {
     signUp: async (email: string, password: string) => {
+      if (!supabase) return { data: null, error: 'Supabase not initialized' }
       try {
         const { data, error } = await supabase.auth.signUp({
           email,
@@ -209,6 +223,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     },
 
     signIn: async (email: string, password: string) => {
+      if (!supabase) return { data: null, error: 'Supabase not initialized' }
       try {
         const { data, error } = await supabase.auth.signInWithPassword({
           email,
@@ -222,6 +237,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     },
 
     signInWithGoogle: async () => {
+      if (!supabase) return { data: null, error: 'Supabase not initialized' }
       try {
         const { data, error } = await supabase.auth.signInWithOAuth({
           provider: 'google',
@@ -237,6 +253,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     },
 
     signOut: async () => {
+      if (!supabase) return { error: 'Supabase not initialized' }
       try {
         const { error } = await supabase.auth.signOut()
         return { error }
