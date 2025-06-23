@@ -1,14 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
 
-// Check if Stripe secret key is available
-if (!process.env.STRIPE_SECRET_KEY) {
-  console.error('❌ STRIPE_SECRET_KEY is not set')
-}
+// Lazy-loaded Stripe client
+let stripeClient: Stripe | null = null
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-05-28.basil',
-})
+function getStripeClient(): Stripe {
+  if (!stripeClient) {
+    if (!process.env.STRIPE_SECRET_KEY) {
+      throw new Error('STRIPE_SECRET_KEY is not set')
+    }
+    stripeClient = new Stripe(process.env.STRIPE_SECRET_KEY, {
+      apiVersion: '2025-05-28.basil',
+    })
+  }
+  return stripeClient
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -38,14 +44,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Validate Stripe configuration
-    if (!process.env.STRIPE_SECRET_KEY) {
-      console.error('❌ STRIPE_SECRET_KEY is not configured')
-      return NextResponse.json(
-        { error: 'Stripe configuration error: Secret key not found' },
-        { status: 500 }
-      )
-    }
+    // Get Stripe client
+    const stripe = getStripeClient()
 
     // Create checkout session
     const session = await stripe.checkout.sessions.create({
@@ -94,6 +94,12 @@ export async function POST(request: NextRequest) {
       if (error.message.includes('You did not provide an API key')) {
         return NextResponse.json(
           { error: 'Stripe API key is missing. Please check your environment variables.' },
+          { status: 500 }
+        )
+      }
+      if (error.message.includes('STRIPE_SECRET_KEY is not set')) {
+        return NextResponse.json(
+          { error: 'Stripe configuration error: Secret key not found' },
           { status: 500 }
         )
       }
