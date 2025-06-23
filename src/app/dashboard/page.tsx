@@ -24,7 +24,9 @@ import {
   Clock,
   CheckCircle,
   AlertCircle,
-  ArrowRight
+  ArrowRight,
+  CreditCard,
+  Crown
 } from 'lucide-react'
 
 const stats = [
@@ -189,6 +191,15 @@ export default function Dashboard() {
     }
   }
 
+  const handleManageAccount = () => {
+    console.log('🔍 Redirecting to Stripe billing portal...')
+    const billingUrl = 'https://billing.stripe.com/p/login/cNi8wO7lk9426MD07veUU00'
+    console.log('✅ Redirecting to:', billingUrl)
+    
+    // Open in new tab/window
+    window.open(billingUrl, '_blank', 'noopener,noreferrer')
+  }
+
   const getPriorityColor = (priority: string) => {
     switch (priority) {
       case 'high':
@@ -290,9 +301,12 @@ export default function Dashboard() {
 
             {/* Bottom Actions */}
             <div className="absolute bottom-6 left-6 right-6 space-y-2">
-              <button className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-300 hover:bg-white/10 hover:text-white transition-all duration-200">
-                <Settings className="w-5 h-5" />
-                <span>Settings</span>
+              <button 
+                onClick={handleManageAccount}
+                className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-300 hover:bg-white/10 hover:text-white transition-all duration-200"
+              >
+                <CreditCard className="w-5 h-5" />
+                <span>Manage Account</span>
               </button>
               <button 
                 onClick={handleSignOut}
