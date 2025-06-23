@@ -1,23 +1,56 @@
-import { createClient } from '@supabase/supabase-js'
+import { createClient, SupabaseClient } from '@supabase/supabase-js'
 
-// Ensure we always have valid credentials
-const supabaseUrl = 'https://jlkebdnvjjdwedmbfqou.supabase.co'
-const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impsa2ViZG52ampkd2VkbWJmcW91Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE0NzU5NjQsImV4cCI6MjA1NzA1MTk2NH0.0dyDFawIks508PffUcovXN-M8kaAOgomOhe5OiEal3o'
+// Get credentials from environment variables with fallbacks
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://jlkebdnvjjdwedmbfqou.supabase.co'
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impsa2ViZG52ampkd2VkbWJmcW91Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE0NzU5NjQsImV4cCI6MjA1NzA1MTk2NH0.0dyDFawIks508PffUcovXN-M8kaAOgomOhe5OiEal3o'
 
-// Debug logging
-console.log('🔍 Supabase Configuration Debug:')
-console.log('URL:', supabaseUrl)
-console.log('Key exists:', !!supabaseAnonKey)
-console.log('Key starts with:', supabaseAnonKey?.substring(0, 20) + '...')
-console.log('Full key length:', supabaseAnonKey?.length)
-console.log('Environment check:', {
-  NODE_ENV: process.env.NODE_ENV,
-  hasUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
-  hasKey: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-})
+// Validate credentials
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.error('❌ Missing Supabase credentials:')
+  console.error('URL:', supabaseUrl)
+  console.error('Key exists:', !!supabaseAnonKey)
+  throw new Error('Missing Supabase credentials. Please check your environment variables.')
+}
 
-// Create Supabase client with guaranteed valid credentials
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+// Debug logging (only in development)
+if (process.env.NODE_ENV === 'development') {
+  console.log('🔍 Supabase Configuration Debug:')
+  console.log('URL:', supabaseUrl)
+  console.log('Key exists:', !!supabaseAnonKey)
+  console.log('Key starts with:', supabaseAnonKey?.substring(0, 20) + '...')
+  console.log('Full key length:', supabaseAnonKey?.length)
+  console.log('Environment check:', {
+    NODE_ENV: process.env.NODE_ENV,
+    hasUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
+    hasKey: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  })
+}
+
+// Singleton pattern to ensure only one Supabase client is created
+let supabaseInstance: SupabaseClient | null = null
+
+function createSupabaseClient(): SupabaseClient {
+  if (!supabaseInstance) {
+    console.log('🔧 Creating new Supabase client instance...')
+    supabaseInstance = createClient(supabaseUrl, supabaseAnonKey, {
+      auth: {
+        autoRefreshToken: true,
+        persistSession: true,
+        detectSessionInUrl: true
+      },
+      realtime: {
+        params: {
+          eventsPerSecond: 10
+        }
+      }
+    })
+    console.log('✅ Supabase client created successfully')
+  }
+  return supabaseInstance
+}
+
+// Export the singleton instance
+export const supabase = createSupabaseClient()
 
 // Auth helper functions
 export const auth = {

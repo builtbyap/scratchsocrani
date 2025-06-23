@@ -24,44 +24,61 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     // Get initial session
     const getInitialSession = async () => {
-      const { session } = await auth.getCurrentSession()
-      setSession(session)
-      setUser(session?.user ?? null)
-      
-      // Ensure user profile exists if user is authenticated
-      if (session?.user) {
-        try {
-          await auth.ensureUserProfile(session.user)
-        } catch (error) {
-          console.error('Error ensuring user profile:', error)
+      try {
+        console.log('🔍 Getting initial session...')
+        const { session } = await auth.getCurrentSession()
+        console.log('✅ Initial session retrieved:', !!session)
+        setSession(session)
+        setUser(session?.user ?? null)
+        
+        // Ensure user profile exists if user is authenticated
+        if (session?.user) {
+          try {
+            console.log('🔍 Ensuring user profile for:', session.user.email)
+            await auth.ensureUserProfile(session.user)
+          } catch (error) {
+            console.error('❌ Error ensuring user profile:', error)
+          }
         }
+      } catch (error) {
+        console.error('❌ Error getting initial session:', error)
+      } finally {
+        setLoading(false)
       }
-      
-      setLoading(false)
     }
 
     getInitialSession()
 
     // Listen for auth changes
-    const { data: { subscription } } = auth.onAuthStateChange(
-      async (event, session) => {
-        setSession(session)
-        setUser(session?.user ?? null)
-        
-        // Ensure user profile exists when auth state changes
-        if (session?.user && event === 'SIGNED_IN') {
-          try {
-            await auth.ensureUserProfile(session.user)
-          } catch (error) {
-            console.error('Error ensuring user profile:', error)
+    try {
+      const { data: { subscription } } = auth.onAuthStateChange(
+        async (event, session) => {
+          console.log('🔄 Auth state changed:', event, !!session)
+          setSession(session)
+          setUser(session?.user ?? null)
+          
+          // Ensure user profile exists when auth state changes
+          if (session?.user && event === 'SIGNED_IN') {
+            try {
+              console.log('🔍 Ensuring user profile after sign in:', session.user.email)
+              await auth.ensureUserProfile(session.user)
+            } catch (error) {
+              console.error('❌ Error ensuring user profile after sign in:', error)
+            }
           }
+          
+          setLoading(false)
         }
-        
-        setLoading(false)
-      }
-    )
+      )
 
-    return () => subscription.unsubscribe()
+      return () => {
+        console.log('🧹 Cleaning up auth subscription')
+        subscription.unsubscribe()
+      }
+    } catch (error) {
+      console.error('❌ Error setting up auth listener:', error)
+      setLoading(false)
+    }
   }, [])
 
   const value = {
