@@ -128,16 +128,19 @@ export async function hasActiveSubscription(email: string): Promise<boolean> {
       return false
     }
     
-    // Check if subscription is active and not expired
+    console.log('🔍 Subscription check for', email, ':', {
+      subscription_status: data.subscription_status,
+      subscription_end_date: data.subscription_end_date,
+      isActiveStatus: isActiveSubscription(data.subscription_status)
+    })
+    
+    // Check if subscription status is active
     if (isActiveSubscription(data.subscription_status)) {
-      if (data.subscription_end_date) {
-        const endDate = new Date(data.subscription_end_date)
-        const now = new Date()
-        return endDate > now
-      }
+      console.log('✅ Active subscription detected for', email)
       return true
     }
     
+    console.log('❌ Subscription not active - status:', data.subscription_status)
     return false
   } catch (error) {
     console.error('❌ Error checking active subscription:', error)
