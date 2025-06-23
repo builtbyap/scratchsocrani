@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { auth, supabase } from '@/lib/supabase'
+import { supabase } from '@/lib/supabase-client'
 
 export async function POST(request: NextRequest) {
   try {
@@ -15,7 +15,10 @@ export async function POST(request: NextRequest) {
     console.log('📝 User data:', userData)
     
     // Test the sign-up process (only email and password)
-    const result = await auth.signUp(email, password)
+    const result = await supabase.auth.signUp({
+      email,
+      password
+    })
     
     if (result.error) {
       console.error('❌ Sign-up test failed:', result.error)

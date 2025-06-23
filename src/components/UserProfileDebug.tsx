@@ -1,8 +1,9 @@
 'use client'
 
 import { useState } from 'react'
+import { User } from '@supabase/supabase-js'
+import { supabase } from '@/lib/supabase-client'
 import { useAuth } from '@/contexts/AuthContext'
-import { auth } from '@/lib/supabase'
 
 export default function UserProfileDebug() {
   const [status, setStatus] = useState('')
@@ -18,16 +19,40 @@ export default function UserProfileDebug() {
     setStatus('Checking user profile...')
     
     try {
-      const result = await auth.checkAndCreateUserProfile(user)
-      
-      if (result.error) {
-        setStatus(`Error: ${(result.error as any).message || result.error}`)
-      } else {
-        setStatus('User profile check completed successfully')
+      // Check if user profile exists
+      const { data: existingProfile, error: fetchError } = await supabase
+        .from('users')
+        .select('*')
+        .eq('id', user.id)
+        .single()
+
+      if (fetchError && fetchError.code === 'PGRST116') {
+        // Profile doesn't exist, create it
+        setStatus('Creating user profile...')
         
-        // Fetch the actual profile data
-        const { data: profile } = await auth.getUserProfile(user.id)
-        setUserProfile(profile)
+        const { error: insertError } = await supabase
+          .from('users')
+          .insert({
+            id: user.id,
+            email: user.email,
+            first_name: user.user_metadata?.first_name || user.email?.split('@')[0] || 'User',
+            last_name: user.user_metadata?.last_name || '',
+            subscription_status: 'inactive',
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          })
+
+        if (insertError) {
+          setStatus(`Error creating profile: ${insertError.message}`)
+        } else {
+          setStatus('User profile created successfully')
+          await fetchUserProfile()
+        }
+      } else if (fetchError) {
+        setStatus(`Error checking profile: ${fetchError.message}`)
+      } else {
+        setStatus('User profile already exists')
+        setUserProfile(existingProfile)
       }
     } catch (err) {
       setStatus(`Error: ${err}`)
@@ -43,16 +68,24 @@ export default function UserProfileDebug() {
     setStatus('Testing profile creation...')
     
     try {
-      const result = await auth.testCreateUserProfile(user)
-      
-      if (result.error) {
-        setStatus(`Test Error: ${(result.error as any).message || result.error}`)
+      // Force create a new profile (for testing)
+      const { error: insertError } = await supabase
+        .from('users')
+        .upsert({
+          id: user.id,
+          email: user.email,
+          first_name: user.user_metadata?.first_name || user.email?.split('@')[0] || 'TestUser',
+          last_name: user.user_metadata?.last_name || 'Test',
+          subscription_status: 'inactive',
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        }, { onConflict: 'id' })
+
+      if (insertError) {
+        setStatus(`Test Error: ${insertError.message}`)
       } else {
-        setStatus('Test profile created successfully')
-        
-        // Fetch the actual profile data
-        const { data: profile } = await auth.getUserProfile(user.id)
-        setUserProfile(profile)
+        setStatus('Test profile created/updated successfully')
+        await fetchUserProfile()
       }
     } catch (err) {
       setStatus(`Test Error: ${err}`)
@@ -68,10 +101,14 @@ export default function UserProfileDebug() {
     setStatus('Fetching user profile...')
     
     try {
-      const { data, error } = await auth.getUserProfile(user.id)
+      const { data, error } = await supabase
+        .from('users')
+        .select('*')
+        .eq('id', user.id)
+        .single()
       
       if (error) {
-        setStatus(`Error fetching profile: ${(error as any).message || error}`)
+        setStatus(`Error fetching profile: ${error.message}`)
       } else {
         setUserProfile(data)
         setStatus('User profile fetched successfully')
