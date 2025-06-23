@@ -30,7 +30,7 @@ export const paymentPlans = [
       'Email support',
       'Basic resources'
     ],
-    stripePriceId: 'price_1RcpmqHGzbgxTdhY9tzBiKpv'
+    stripePriceId: 'price_1RczenCyTrsNmVMYJo2xgiOz'
   },
   {
     id: 'monthly',
