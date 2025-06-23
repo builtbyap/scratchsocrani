@@ -1,28 +1,13 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 
-export async function GET() {
-  const envCheck = {
-    stripe: {
-      hasPublishableKey: !!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
-      hasSecretKey: !!process.env.STRIPE_SECRET_KEY,
-      hasWebhookSecret: !!process.env.STRIPE_WEBHOOK_SECRET,
-      publishableKeyPrefix: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY?.substring(0, 7) || 'not set',
-      secretKeyPrefix: process.env.STRIPE_SECRET_KEY?.substring(0, 7) || 'not set',
-      webhookSecretPrefix: process.env.STRIPE_WEBHOOK_SECRET?.substring(0, 7) || 'not set',
-    },
-    supabase: {
-      hasUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
-      hasAnonKey: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-      url: process.env.NEXT_PUBLIC_SUPABASE_URL || 'not set',
-      anonKeyPrefix: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.substring(0, 20) || 'not set',
-    },
-    app: {
-      hasBaseUrl: !!process.env.NEXT_PUBLIC_BASE_URL,
-      baseUrl: process.env.NEXT_PUBLIC_BASE_URL || 'not set',
-    },
-    nodeEnv: process.env.NODE_ENV,
-    timestamp: new Date().toISOString(),
-  }
-
-  return NextResponse.json(envCheck)
+export async function GET(request: NextRequest) {
+  return NextResponse.json({ 
+    stripe_secret_key_exists: !!process.env.STRIPE_SECRET_KEY,
+    stripe_webhook_secret_exists: !!process.env.STRIPE_WEBHOOK_SECRET,
+    stripe_publishable_key_exists: !!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
+    supabase_url_exists: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
+    supabase_anon_key_exists: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    base_url: process.env.NEXT_PUBLIC_BASE_URL,
+    timestamp: new Date().toISOString()
+  })
 } 

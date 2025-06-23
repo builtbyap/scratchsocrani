@@ -78,8 +78,13 @@ async function ensureUserProfile(email: string, stripeCustomerId?: string) {
 }
 
 export async function POST(request: NextRequest) {
+  console.log('🔔 Webhook endpoint called!')
+  
   const body = await request.text()
   const signature = request.headers.get('stripe-signature')!
+
+  console.log('📝 Request headers:', Object.fromEntries(request.headers.entries()))
+  console.log('📝 Body length:', body.length)
 
   let event: Stripe.Event
 
@@ -90,6 +95,7 @@ export async function POST(request: NextRequest) {
       signature,
       process.env.STRIPE_WEBHOOK_SECRET!
     )
+    console.log('✅ Webhook signature verified successfully')
   } catch (err) {
     console.error('❌ Webhook signature verification failed:', err)
     return NextResponse.json({ error: 'Webhook signature verification failed' }, { status: 400 })
@@ -99,19 +105,33 @@ export async function POST(request: NextRequest) {
 
   try {
     console.log(`🔄 Processing webhook event: ${event.type}`)
+    console.log('📊 Event data:', JSON.stringify(event.data, null, 2))
     
     switch (event.type) {
       case 'checkout.session.completed':
         const sessionCompleted = event.data.object as Stripe.Checkout.Session
         console.log('📝 Checkout session completed:', sessionCompleted.id)
+        console.log('📊 Session data:', {
+          mode: sessionCompleted.mode,
+          customer: sessionCompleted.customer,
+          customer_email: sessionCompleted.customer_email,
+          subscription: sessionCompleted.subscription
+        })
         
         if (sessionCompleted.mode === 'subscription' && sessionCompleted.customer && sessionCompleted.customer_email) {
+          console.log('✅ Valid subscription checkout session detected')
+          
           // Ensure user profile exists
           await ensureUserProfile(sessionCompleted.customer_email, sessionCompleted.customer as string)
           
           // Get the subscription details
           const stripe = getStripeClient()
           const subscription = await stripe.subscriptions.retrieve(sessionCompleted.subscription as string)
+          console.log('📊 Retrieved subscription:', {
+            id: subscription.id,
+            status: subscription.status,
+            customer: subscription.customer
+          })
           
           // Map Stripe status to Supabase status
           const supabaseStatus = mapStripeStatusToSupabase(subscription.status)
@@ -136,6 +156,8 @@ export async function POST(request: NextRequest) {
           }
           
           console.log('✅ Subscription activated successfully for:', sessionCompleted.customer_email)
+        } else {
+          console.log('⚠️ Not a valid subscription checkout session')
         }
         break
 
