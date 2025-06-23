@@ -1,14 +1,19 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { supabase } from '@/lib/supabase'
+import { useSupabase } from '@/lib/useSupabase'
 
 export default function TestClient() {
+  const { supabase, loading: supabaseLoading, error: supabaseError } = useSupabase()
   const [status, setStatus] = useState<string>('Loading...')
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     async function testSupabase() {
+      if (!supabase || supabaseLoading) {
+        return
+      }
+
       try {
         setStatus('Testing Supabase connection...')
         
@@ -39,7 +44,31 @@ export default function TestClient() {
     }
 
     testSupabase()
-  }, [])
+  }, [supabase, supabaseLoading])
+
+  if (supabaseLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-dark-900 via-dark-800 to-dark-900 flex items-center justify-center">
+        <div className="glass-effect rounded-2xl p-8 max-w-md w-full text-center">
+          <h1 className="text-2xl font-bold text-white mb-4">Supabase Client Test</h1>
+          <p className="text-gray-300">Initializing Supabase...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (supabaseError) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-dark-900 via-dark-800 to-dark-900 flex items-center justify-center">
+        <div className="glass-effect rounded-2xl p-8 max-w-md w-full text-center">
+          <h1 className="text-2xl font-bold text-white mb-4">Supabase Client Test</h1>
+          <div className="mb-4 p-4 bg-red-500/20 border border-red-500/30 rounded-xl">
+            <p className="text-red-400 text-sm">Supabase Error: {supabaseError}</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-dark-900 via-dark-800 to-dark-900 flex items-center justify-center">

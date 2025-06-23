@@ -1,131 +1,129 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js'
 
-// Get credentials from environment variables with fallbacks
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://jlkebdnvjjdwedmbfqou.supabase.co'
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impsa2ViZG52ampkd2VkbWJmcW91Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE0NzU5NjQsImV4cCI6MjA1NzA1MTk2NH0.0dyDFawIks508PffUcovXN-M8kaAOgomOhe5OiEal3o'
+// Default credentials (fallback)
+const DEFAULT_SUPABASE_URL = 'https://jlkebdnvjjdwedmbfqou.supabase.co'
+const DEFAULT_SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impsa2ViZG52ampkd2VkbWJmcW91Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE0NzU5NjQsImV4cCI6MjA1NzA1MTk2NH0.0dyDFawIks508PffUcovXN-M8kaAOgomOhe5OiEal3o'
 
-// Strict validation function
-function validateSupabaseCredentials(): { isValid: boolean; error?: string } {
-  if (!supabaseUrl) {
+// Get credentials from environment variables with fallbacks
+function getSupabaseCredentials() {
+  // In browser environment, use window.__NEXT_DATA__ or process.env
+  let supabaseUrl = DEFAULT_SUPABASE_URL
+  let supabaseAnonKey = DEFAULT_SUPABASE_ANON_KEY
+
+  // Try to get from environment variables
+  if (typeof process !== 'undefined' && process.env) {
+    supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || supabaseUrl
+    supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || supabaseAnonKey
+  }
+
+  // Try to get from window object (for client-side)
+  if (typeof window !== 'undefined' && window.__NEXT_DATA__) {
+    const nextData = window.__NEXT_DATA__
+    if (nextData.props && nextData.props.env) {
+      supabaseUrl = nextData.props.env.NEXT_PUBLIC_SUPABASE_URL || supabaseUrl
+      supabaseAnonKey = nextData.props.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || supabaseAnonKey
+    }
+  }
+
+  return { supabaseUrl, supabaseAnonKey }
+}
+
+// Validation function
+function validateCredentials(url: string, key: string): { isValid: boolean; error?: string } {
+  if (!url || url.trim() === '') {
     return { isValid: false, error: 'Missing Supabase URL' }
   }
   
-  if (!supabaseAnonKey) {
+  if (!key || key.trim() === '') {
     return { isValid: false, error: 'Missing Supabase anon key' }
   }
   
-  if (!supabaseAnonKey.startsWith('eyJ')) {
+  if (!key.startsWith('eyJ')) {
     return { isValid: false, error: 'Invalid Supabase anon key format' }
   }
   
-  if (supabaseAnonKey.length < 100) {
+  if (key.length < 100) {
     return { isValid: false, error: 'Supabase anon key too short' }
   }
   
   return { isValid: true }
 }
 
-// Singleton pattern to ensure only one Supabase client is created
+// Singleton instance
 let supabaseInstance: SupabaseClient | null = null
 
+// Factory function to create Supabase client
 function createSupabaseClient(): SupabaseClient {
-  if (!supabaseInstance) {
-    try {
-      console.log('🔧 Creating new Supabase client instance...')
-      
-      // Validate credentials before creating client
-      const validation = validateSupabaseCredentials()
-      if (!validation.isValid) {
-        throw new Error(`Credential validation failed: ${validation.error}`)
-      }
-      
-      // Additional check for browser environment
-      if (typeof window !== 'undefined') {
-        console.log('🌐 Creating Supabase client in browser environment')
-      } else {
-        console.log('🖥️ Creating Supabase client in server environment')
-      }
-      
-      // Create client with validated credentials
-      supabaseInstance = createClient(supabaseUrl, supabaseAnonKey, {
-        auth: {
-          autoRefreshToken: true,
-          persistSession: true,
-          detectSessionInUrl: true
-        },
-        realtime: {
-          params: {
-            eventsPerSecond: 10
-          }
-        }
-      })
-      
-      console.log('✅ Supabase client created successfully')
-    } catch (error) {
-      console.error('❌ Error creating Supabase client:', error)
-      throw error
+  try {
+    console.log('🔧 Creating Supabase client...')
+    
+    const { supabaseUrl, supabaseAnonKey } = getSupabaseCredentials()
+    
+    // Validate credentials
+    const validation = validateCredentials(supabaseUrl, supabaseAnonKey)
+    if (!validation.isValid) {
+      console.error('❌ Credential validation failed:', validation.error)
+      throw new Error(`Credential validation failed: ${validation.error}`)
     }
+    
+    // Log environment info (development only)
+    if (process.env.NODE_ENV === 'development') {
+      console.log('🔍 Supabase Configuration:')
+      console.log('URL:', supabaseUrl)
+      console.log('Key exists:', !!supabaseAnonKey)
+      console.log('Key prefix:', supabaseAnonKey.substring(0, 20) + '...')
+      console.log('Environment:', {
+        NODE_ENV: process.env.NODE_ENV,
+        hasEnvUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
+        hasEnvKey: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+        isBrowser: typeof window !== 'undefined'
+      })
+    }
+    
+    // Create the client
+    const client = createClient(supabaseUrl, supabaseAnonKey, {
+      auth: {
+        autoRefreshToken: true,
+        persistSession: true,
+        detectSessionInUrl: true
+      },
+      realtime: {
+        params: {
+          eventsPerSecond: 10
+        }
+      }
+    })
+    
+    console.log('✅ Supabase client created successfully')
+    return client
+    
+  } catch (error) {
+    console.error('❌ Error creating Supabase client:', error)
+    
+    // Create fallback client with hardcoded credentials
+    console.log('🔄 Creating fallback Supabase client...')
+    const fallbackClient = createClient(DEFAULT_SUPABASE_URL, DEFAULT_SUPABASE_ANON_KEY, {
+      auth: {
+        autoRefreshToken: true,
+        persistSession: true,
+        detectSessionInUrl: true
+      }
+    })
+    
+    console.log('✅ Fallback Supabase client created')
+    return fallbackClient
   }
-  return supabaseInstance
 }
 
-// Lazy initialization function with better error handling
+// Get or create Supabase client instance
 function getSupabaseClient(): SupabaseClient {
   if (!supabaseInstance) {
-    try {
-      // Validate credentials immediately
-      const validation = validateSupabaseCredentials()
-      if (!validation.isValid) {
-        const error = new Error(`Supabase Configuration Error: ${validation.error}`)
-        console.error('❌ Supabase Configuration Error:', {
-          hasUrl: !!supabaseUrl,
-          hasKey: !!supabaseAnonKey,
-          url: supabaseUrl,
-          keyPrefix: supabaseAnonKey?.substring(0, 20) + '...',
-          keyLength: supabaseAnonKey?.length,
-          error: validation.error
-        })
-        throw error
-      }
-
-      // Debug logging (only in development)
-      if (process.env.NODE_ENV === 'development') {
-        console.log('🔍 Supabase Configuration Debug:')
-        console.log('URL:', supabaseUrl)
-        console.log('Key exists:', !!supabaseAnonKey)
-        console.log('Key starts with:', supabaseAnonKey?.substring(0, 20) + '...')
-        console.log('Full key length:', supabaseAnonKey?.length)
-        console.log('Environment check:', {
-          NODE_ENV: process.env.NODE_ENV,
-          hasUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
-          hasKey: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-        })
-      }
-
-      supabaseInstance = createSupabaseClient()
-    } catch (error) {
-      console.error('❌ Critical error creating Supabase client:', error)
-      
-      // Create a minimal fallback client with hardcoded credentials
-      console.log('🔄 Creating fallback Supabase client...')
-      supabaseInstance = createClient(
-        'https://jlkebdnvjjdwedmbfqou.supabase.co',
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impsa2ViZG52ampkd2VkbWJmcW91Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE0NzU5NjQsImV4cCI6MjA1NzA1MTk2NH0.0dyDFawIks508PffUcovXN-M8kaAOgomOhe5OiEal3o',
-        {
-          auth: {
-            autoRefreshToken: true,
-            persistSession: true,
-            detectSessionInUrl: true
-          }
-        }
-      )
-      console.log('✅ Fallback Supabase client created')
-    }
+    supabaseInstance = createSupabaseClient()
   }
   return supabaseInstance
 }
 
-// Export the client with lazy initialization
+// Export the client
 export const supabase = getSupabaseClient()
 
 // Auth helper functions
