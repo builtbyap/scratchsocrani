@@ -1,15 +1,28 @@
 import { getClient } from './supabase-client'
 import Stripe from 'stripe'
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-05-28.basil',
-})
+// Lazy-loaded Stripe client
+let stripeClient: Stripe | null = null
+
+function getStripeClient(): Stripe {
+  if (!stripeClient) {
+    if (!process.env.STRIPE_SECRET_KEY) {
+      throw new Error('STRIPE_SECRET_KEY is not set')
+    }
+    stripeClient = new Stripe(process.env.STRIPE_SECRET_KEY, {
+      apiVersion: '2025-05-28.basil',
+    })
+  }
+  return stripeClient
+}
 
 // Function to sync all existing subscriptions from Stripe to Supabase
 export async function syncAllSubscriptions() {
   console.log('🔄 Starting subscription sync...')
   
   try {
+    const stripe = getStripeClient()
+    
     // Get all subscriptions from Stripe
     const subscriptions = await stripe.subscriptions.list({
       limit: 100,
