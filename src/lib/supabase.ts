@@ -4,12 +4,23 @@ import { createClient, SupabaseClient } from '@supabase/supabase-js'
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://jlkebdnvjjdwedmbfqou.supabase.co'
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impsa2ViZG52ampkd2VkbWJmcW91Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE0NzU5NjQsImV4cCI6MjA1NzA1MTk2NH0.0dyDFawIks508PffUcovXN-M8kaAOgomOhe5OiEal3o'
 
-// Validate credentials
+// Validate credentials before creating client
 if (!supabaseUrl || !supabaseAnonKey) {
-  console.error('❌ Missing Supabase credentials:')
-  console.error('URL:', supabaseUrl)
-  console.error('Key exists:', !!supabaseAnonKey)
-  throw new Error('Missing Supabase credentials. Please check your environment variables.')
+  const error = new Error('Missing Supabase credentials. Please check your environment variables.')
+  console.error('❌ Supabase Configuration Error:', {
+    hasUrl: !!supabaseUrl,
+    hasKey: !!supabaseAnonKey,
+    url: supabaseUrl,
+    keyPrefix: supabaseAnonKey?.substring(0, 20) + '...'
+  })
+  throw error
+}
+
+// Additional validation for key format
+if (!supabaseAnonKey.startsWith('eyJ')) {
+  const error = new Error('Invalid Supabase anon key format')
+  console.error('❌ Invalid Supabase key format:', supabaseAnonKey?.substring(0, 20) + '...')
+  throw error
 }
 
 // Debug logging (only in development)
@@ -31,32 +42,72 @@ let supabaseInstance: SupabaseClient | null = null
 
 function createSupabaseClient(): SupabaseClient {
   if (!supabaseInstance) {
-    console.log('🔧 Creating new Supabase client instance...')
-    supabaseInstance = createClient(supabaseUrl, supabaseAnonKey, {
-      auth: {
-        autoRefreshToken: true,
-        persistSession: true,
-        detectSessionInUrl: true
-      },
-      realtime: {
-        params: {
-          eventsPerSecond: 10
-        }
+    try {
+      console.log('🔧 Creating new Supabase client instance...')
+      
+      // Double-check credentials before creating client
+      if (!supabaseUrl || !supabaseAnonKey) {
+        throw new Error('Supabase credentials are missing')
       }
-    })
-    console.log('✅ Supabase client created successfully')
+      
+      // Additional check for browser environment
+      if (typeof window !== 'undefined') {
+        console.log('🌐 Creating Supabase client in browser environment')
+      } else {
+        console.log('🖥️ Creating Supabase client in server environment')
+      }
+      
+      supabaseInstance = createClient(supabaseUrl, supabaseAnonKey, {
+        auth: {
+          autoRefreshToken: true,
+          persistSession: true,
+          detectSessionInUrl: true
+        },
+        realtime: {
+          params: {
+            eventsPerSecond: 10
+          }
+        }
+      })
+      
+      console.log('✅ Supabase client created successfully')
+    } catch (error) {
+      console.error('❌ Error creating Supabase client:', error)
+      throw error
+    }
   }
   return supabaseInstance
 }
 
-// Export the singleton instance
-export const supabase = createSupabaseClient()
+// Export the singleton instance with error handling
+let supabase: SupabaseClient
+
+// Only create the client if we're in a browser environment or if it's the first time
+if (typeof window === 'undefined' || !supabaseInstance) {
+  try {
+    supabase = createSupabaseClient()
+  } catch (error) {
+    console.error('❌ Failed to create Supabase client:', error)
+    // Create a fallback client with minimal configuration
+    supabase = createClient(
+      'https://jlkebdnvjjdwedmbfqou.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impsa2ViZG52ampkd2VkbWJmcW91Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE0NzU5NjQsImV4cCI6MjA1NzA1MTk2NH0.0dyDFawIks508PffUcovXN-M8kaAOgomOhe5OiEal3o'
+    )
+  }
+} else {
+  supabase = supabaseInstance
+}
+
+export { supabase }
 
 // Auth helper functions
 export const auth = {
   // Sign up with email and password
   signUp: async (email: string, password: string, userData?: any) => {
-    console.log('Attempting to sign up with email:', email)
+    console.log('🔐 Attempting to sign up with email:', email)
+    console.log('📝 User data provided:', userData)
+    
+    // First, create the user in Supabase Auth
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -66,7 +117,7 @@ export const auth = {
     })
     
     if (error) {
-      console.error('Sign up error:', error)
+      console.error('❌ Sign up error:', error)
       // Provide more helpful error messages
       if (error.message.includes('User already registered')) {
         return { data, error: { message: 'An account with this email already exists. Please sign in instead.' } }
@@ -84,78 +135,187 @@ export const auth = {
           } 
         }
       }
+      return { data, error }
     }
     
-    // If signup successful, try to create user profile manually
+    // If signup successful, create user profile in users table
     if (data.user && !error) {
       try {
-        console.log('Creating user profile manually...')
-        const { error: profileError } = await supabase
+        console.log('✅ Auth signup successful, creating user profile...')
+        
+        // Prepare user profile data
+        const profileData = {
+          id: data.user.id,
+          email: data.user.email,
+          first_name: userData?.first_name || data.user.user_metadata?.first_name || '',
+          last_name: userData?.last_name || data.user.user_metadata?.last_name || '',
+          subscription_status: 'inactive',
+          subscription_type: null,
+          stripe_customer_id: null,
+          stripe_subscription_id: null,
+          subscription_start_date: null,
+          subscription_end_date: null,
+          subscription_trial_end: null,
+          company_name: userData?.company_name || '',
+          phone: userData?.phone || '',
+          website: userData?.website || '',
+          bio: userData?.bio || '',
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        }
+        
+        console.log('📝 Creating user profile with data:', profileData)
+        
+        // Create user profile in users table
+        const { data: profileResult, error: profileError } = await supabase
           .from('users')
-          .insert({
-            id: data.user.id,
-            email: data.user.email,
-            first_name: userData?.first_name || '',
-            last_name: userData?.last_name || '',
-            subscription_status: 'inactive'
-          })
+          .insert(profileData)
+          .select()
         
         if (profileError) {
-          console.error('Error creating user profile:', profileError)
-          // Don't fail the signup if profile creation fails
-          // The trigger might have already created it
+          console.error('❌ Error creating user profile:', profileError)
+          
+          // Check if it's a duplicate key error (user already exists)
+          if (profileError.code === '23505') {
+            console.log('ℹ️ User profile already exists, updating instead...')
+            
+            // Try to update the existing profile
+            const { error: updateError } = await supabase
+              .from('users')
+              .update({
+                first_name: profileData.first_name,
+                last_name: profileData.last_name,
+                company_name: profileData.company_name,
+                phone: profileData.phone,
+                website: profileData.website,
+                bio: profileData.bio,
+                updated_at: new Date().toISOString()
+              })
+              .eq('id', data.user.id)
+            
+            if (updateError) {
+              console.error('❌ Error updating existing user profile:', updateError)
+              return { 
+                data, 
+                error: { 
+                  message: 'Account created but profile update failed. Please contact support.',
+                  details: updateError
+                } 
+              }
+            }
+            
+            console.log('✅ Existing user profile updated successfully')
+          } else {
+            // Other database error
+            return { 
+              data, 
+              error: { 
+                message: 'Account created but profile setup failed. Please contact support.',
+                details: profileError
+              } 
+            }
+          }
         } else {
-          console.log('User profile created successfully')
+          console.log('✅ User profile created successfully:', profileResult)
         }
+        
+        // Verify the profile was created/updated
+        const { data: verifyProfile, error: verifyError } = await supabase
+          .from('users')
+          .select('*')
+          .eq('id', data.user.id)
+          .single()
+        
+        if (verifyError) {
+          console.error('❌ Error verifying user profile:', verifyError)
+          return { 
+            data, 
+            error: { 
+              message: 'Account created but profile verification failed. Please contact support.',
+              details: verifyError
+            } 
+          }
+        }
+        
+        console.log('✅ User profile verified successfully:', verifyProfile)
+        console.log('🎉 Sign up process completed successfully')
+        
       } catch (profileErr) {
-        console.error('Error in manual profile creation:', profileErr)
-        // Don't fail the signup if profile creation fails
+        console.error('❌ Error in profile creation:', profileErr)
+        return { 
+          data, 
+          error: { 
+            message: 'Account created but profile setup failed. Please try again or contact support.',
+            details: profileErr
+          } 
+        }
       }
     }
     
-    return { data, error }
+    return { data, error: null }
   },
 
   // Create or update user profile
   createUserProfile: async (userId: string, userData: any) => {
     try {
-      const { error } = await supabase
+      console.log('📝 Creating/updating user profile for ID:', userId)
+      console.log('📋 User data:', userData)
+      
+      // Prepare comprehensive profile data
+      const profileData = {
+        id: userId,
+        email: userData.email,
+        first_name: userData.first_name || userData.user_metadata?.first_name || '',
+        last_name: userData.last_name || userData.user_metadata?.last_name || '',
+        subscription_status: userData.subscription_status || 'inactive',
+        subscription_type: userData.subscription_type || null,
+        stripe_customer_id: userData.stripe_customer_id || null,
+        stripe_subscription_id: userData.stripe_subscription_id || null,
+        subscription_start_date: userData.subscription_start_date || null,
+        subscription_end_date: userData.subscription_end_date || null,
+        subscription_trial_end: userData.subscription_trial_end || null,
+        company_name: userData.company_name || '',
+        phone: userData.phone || '',
+        website: userData.website || '',
+        bio: userData.bio || '',
+        created_at: userData.created_at || new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      }
+      
+      console.log('📝 Profile data to insert/update:', profileData)
+      
+      const { data, error } = await supabase
         .from('users')
-        .upsert({
-          id: userId,
-          email: userData.email,
-          first_name: userData.first_name || '',
-          last_name: userData.last_name || '',
-          subscription_status: 'inactive',
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        }, {
+        .upsert(profileData, {
           onConflict: 'id'
         })
+        .select()
       
       if (error) {
-        console.error('Error creating/updating user profile:', error)
+        console.error('❌ Error creating/updating user profile:', error)
         return { error }
       }
       
-      console.log('User profile created/updated successfully')
-      return { success: true }
+      console.log('✅ User profile created/updated successfully:', data)
+      return { success: true, data }
     } catch (err) {
-      console.error('Error in createUserProfile:', err)
+      console.error('❌ Error in createUserProfile:', err)
       return { error: err }
     }
   },
 
   // Sign in with email and password
   signIn: async (email: string, password: string) => {
-    console.log('Attempting to sign in with email:', email)
+    console.log('🔐 Attempting to sign in with email:', email)
+    
+    // First, authenticate with Supabase Auth
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password
     })
     
     if (error) {
-      console.error('Sign in error:', error)
+      console.error('❌ Sign in error:', error)
       // Provide more helpful error messages
       if (error.message.includes('Invalid login credentials')) {
         return { data, error: { message: 'Invalid email or password. Please check your credentials and try again.' } }
@@ -164,6 +324,89 @@ export const auth = {
       } else if (error.message.includes('Too many requests')) {
         return { data, error: { message: 'Too many sign-in attempts. Please wait a moment and try again.' } }
       }
+      return { data, error }
+    }
+    
+    // If authentication successful, validate user profile in users table
+    if (data.user) {
+      try {
+        console.log('✅ Authentication successful, validating user profile...')
+        
+        // Check if user exists in users table
+        const { data: userProfile, error: profileError } = await supabase
+          .from('users')
+          .select('*')
+          .eq('id', data.user.id)
+          .single()
+        
+        if (profileError) {
+          console.error('❌ Error fetching user profile:', profileError)
+          
+          if (profileError.code === 'PGRST116') {
+            // User profile doesn't exist, create it
+            console.log('📝 Creating user profile for:', data.user.email)
+            const { error: createError } = await supabase
+              .from('users')
+              .insert({
+                id: data.user.id,
+                email: data.user.email,
+                first_name: data.user.user_metadata?.first_name || '',
+                last_name: data.user.user_metadata?.last_name || '',
+                subscription_status: 'inactive',
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString()
+              })
+            
+            if (createError) {
+              console.error('❌ Error creating user profile:', createError)
+              return { 
+                data, 
+                error: { 
+                  message: 'Account created but profile setup failed. Please contact support.',
+                  details: createError
+                } 
+              }
+            }
+            
+            console.log('✅ User profile created successfully')
+          } else {
+            // Other database error
+            return { 
+              data, 
+              error: { 
+                message: 'Database error. Please try again or contact support.',
+                details: profileError
+              } 
+            }
+          }
+        } else {
+          console.log('✅ User profile validated:', userProfile)
+          
+          // Check if user is active (not banned/suspended)
+          if (userProfile.subscription_status === 'suspended' || userProfile.subscription_status === 'banned') {
+            console.error('❌ User account is suspended/banned')
+            return { 
+              data: null, 
+              error: { 
+                message: 'Your account has been suspended. Please contact support for assistance.' 
+              } 
+            }
+          }
+        }
+        
+        console.log('✅ Sign in process completed successfully')
+        return { data, error: null }
+        
+      } catch (err) {
+        console.error('❌ Error in sign-in validation:', err)
+        return { 
+          data, 
+          error: { 
+            message: 'Sign in successful but profile validation failed. Please try again.',
+            details: err
+          } 
+        }
+      }
     }
     
     return { data, error }
@@ -171,13 +414,25 @@ export const auth = {
 
   // Sign in with Google OAuth
   signInWithGoogle: async () => {
+    console.log('🔐 Initiating Google OAuth sign in...')
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://socrani.com'
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${baseUrl}/dashboard`
+        redirectTo: `${baseUrl}/dashboard`,
+        queryParams: {
+          access_type: 'offline',
+          prompt: 'consent'
+        }
       }
     })
+    
+    if (error) {
+      console.error('❌ Google OAuth error:', error)
+    } else {
+      console.log('✅ Google OAuth initiated successfully')
+    }
+    
     return { data, error }
   },
 

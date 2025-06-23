@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
+import { supabase } from '@/lib/supabase'
 
 export async function GET() {
   try {
@@ -20,10 +20,7 @@ export async function GET() {
       }, { status: 500 })
     }
     
-    // Test creating a client
-    const supabase = createClient(supabaseUrl, supabaseAnonKey)
-    
-    // Test a simple query
+    // Test the existing Supabase client
     const { data, error } = await supabase
       .from('users')
       .select('count')

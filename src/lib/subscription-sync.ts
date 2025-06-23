@@ -76,6 +76,84 @@ export async function syncSingleSubscription(subscription: Stripe.Subscription) 
   }
 }
 
+// Function to validate user access and profile
+export async function validateUserAccess(userEmail: string): Promise<{
+  isValid: boolean
+  userProfile: any
+  error?: string
+}> {
+  try {
+    console.log('🔍 Validating user access for:', userEmail)
+    
+    // Check if user exists in users table
+    const { data: userProfile, error } = await supabase
+      .from('users')
+      .select('*')
+      .eq('email', userEmail)
+      .single()
+    
+    if (error) {
+      console.error('❌ Error fetching user profile for validation:', error)
+      
+      if (error.code === 'PGRST116') {
+        return {
+          isValid: false,
+          userProfile: null,
+          error: 'User profile not found. Please contact support.'
+        }
+      }
+      
+      return {
+        isValid: false,
+        userProfile: null,
+        error: 'Database error during user validation.'
+      }
+    }
+    
+    if (!userProfile) {
+      return {
+        isValid: false,
+        userProfile: null,
+        error: 'User profile not found.'
+      }
+    }
+    
+    // Check if user account is active
+    if (userProfile.subscription_status === 'suspended' || userProfile.subscription_status === 'banned') {
+      console.error('❌ User account is suspended/banned:', userEmail)
+      return {
+        isValid: false,
+        userProfile,
+        error: 'Your account has been suspended. Please contact support for assistance.'
+      }
+    }
+    
+    // Check if user has required fields
+    if (!userProfile.email || !userProfile.id) {
+      console.error('❌ User profile missing required fields:', userProfile)
+      return {
+        isValid: false,
+        userProfile,
+        error: 'User profile is incomplete. Please contact support.'
+      }
+    }
+    
+    console.log('✅ User access validated successfully:', userProfile)
+    return {
+      isValid: true,
+      userProfile
+    }
+    
+  } catch (error) {
+    console.error('❌ Error in validateUserAccess:', error)
+    return {
+      isValid: false,
+      userProfile: null,
+      error: 'Validation error occurred.'
+    }
+  }
+}
+
 // Function to get user subscription status
 export async function getUserSubscriptionStatus(userEmail: string) {
   try {
