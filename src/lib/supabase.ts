@@ -69,55 +69,64 @@ function createSupabaseClient(): SupabaseClient {
   return supabaseInstance
 }
 
-// Create the client with error handling
-let supabase: SupabaseClient
-
-try {
-  // Validate credentials immediately
-  const validation = validateSupabaseCredentials()
-  if (!validation.isValid) {
-    const error = new Error(`Supabase Configuration Error: ${validation.error}`)
-    console.error('❌ Supabase Configuration Error:', {
-      hasUrl: !!supabaseUrl,
-      hasKey: !!supabaseAnonKey,
-      url: supabaseUrl,
-      keyPrefix: supabaseAnonKey?.substring(0, 20) + '...',
-      keyLength: supabaseAnonKey?.length,
-      error: validation.error
-    })
-    throw error
-  }
-
-  // Debug logging (only in development)
-  if (process.env.NODE_ENV === 'development') {
-    console.log('🔍 Supabase Configuration Debug:')
-    console.log('URL:', supabaseUrl)
-    console.log('Key exists:', !!supabaseAnonKey)
-    console.log('Key starts with:', supabaseAnonKey?.substring(0, 20) + '...')
-    console.log('Full key length:', supabaseAnonKey?.length)
-    console.log('Environment check:', {
-      NODE_ENV: process.env.NODE_ENV,
-      hasUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
-      hasKey: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-    })
-  }
-
-  supabase = createSupabaseClient()
-} catch (error) {
-  console.error('❌ Critical error creating Supabase client:', error)
-  
-  // Create a minimal fallback client
-  supabase = createClient(
-    'https://jlkebdnvjjdwedmbfqou.supabase.co',
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impsa2ViZG52ampkd2VkbWJmcW91Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE0NzU5NjQsImV4cCI6MjA1NzA1MTk2NH0.0dyDFawIks508PffUcovXN-M8kaAOgomOhe5OiEal3o',
-    {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false
+// Lazy initialization function with better error handling
+function getSupabaseClient(): SupabaseClient {
+  if (!supabaseInstance) {
+    try {
+      // Validate credentials immediately
+      const validation = validateSupabaseCredentials()
+      if (!validation.isValid) {
+        const error = new Error(`Supabase Configuration Error: ${validation.error}`)
+        console.error('❌ Supabase Configuration Error:', {
+          hasUrl: !!supabaseUrl,
+          hasKey: !!supabaseAnonKey,
+          url: supabaseUrl,
+          keyPrefix: supabaseAnonKey?.substring(0, 20) + '...',
+          keyLength: supabaseAnonKey?.length,
+          error: validation.error
+        })
+        throw error
       }
+
+      // Debug logging (only in development)
+      if (process.env.NODE_ENV === 'development') {
+        console.log('🔍 Supabase Configuration Debug:')
+        console.log('URL:', supabaseUrl)
+        console.log('Key exists:', !!supabaseAnonKey)
+        console.log('Key starts with:', supabaseAnonKey?.substring(0, 20) + '...')
+        console.log('Full key length:', supabaseAnonKey?.length)
+        console.log('Environment check:', {
+          NODE_ENV: process.env.NODE_ENV,
+          hasUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
+          hasKey: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+        })
+      }
+
+      supabaseInstance = createSupabaseClient()
+    } catch (error) {
+      console.error('❌ Critical error creating Supabase client:', error)
+      
+      // Create a minimal fallback client with hardcoded credentials
+      console.log('🔄 Creating fallback Supabase client...')
+      supabaseInstance = createClient(
+        'https://jlkebdnvjjdwedmbfqou.supabase.co',
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impsa2ViZG52ampkd2VkbWJmcW91Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE0NzU5NjQsImV4cCI6MjA1NzA1MTk2NH0.0dyDFawIks508PffUcovXN-M8kaAOgomOhe5OiEal3o',
+        {
+          auth: {
+            autoRefreshToken: true,
+            persistSession: true,
+            detectSessionInUrl: true
+          }
+        }
+      )
+      console.log('✅ Fallback Supabase client created')
     }
-  )
+  }
+  return supabaseInstance
 }
+
+// Export the client with lazy initialization
+export const supabase = getSupabaseClient()
 
 // Auth helper functions
 export const auth = {
@@ -352,7 +361,4 @@ export const auth = {
       return { error: error as any }
     }
   }
-}
-
-// Export the client
-export { supabase } 
+} 
