@@ -129,9 +129,9 @@ export default function SignUpPage() {
             transition={{ duration: 0.5, delay: 0.3 }}
             className="text-center mb-8"
           >
-            <div className="inline-flex items-center space-x-2 text-2xl font-bold">
-              <Sparkles className="w-8 h-8 text-primary-400" />
-              <span className="gradient-text">TechFlow</span>
+            <div className="flex items-center space-x-2 text-xl font-bold mb-8">
+              <Sparkles className="w-6 h-6 text-primary-400" />
+              <span className="gradient-text">Socrani</span>
             </div>
           </motion.div>
 
@@ -143,8 +143,8 @@ export default function SignUpPage() {
             className="glass-effect rounded-3xl p-8"
           >
             <div className="text-center mb-8">
-              <h1 className="text-3xl font-bold mb-2">Create Account</h1>
-              <p className="text-gray-300">Join TechFlow and start building amazing things</p>
+              <h1 className="text-3xl font-bold text-white mb-2">Create Your Account</h1>
+              <p className="text-gray-300">Join Socrani and start building amazing things</p>
             </div>
 
             {error && (

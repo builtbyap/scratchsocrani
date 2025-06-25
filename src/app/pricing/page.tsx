@@ -112,9 +112,9 @@ export default function PricingPage() {
           </Link>
 
           <div className="text-center mb-12">
-            <div className="inline-flex items-center space-x-2 text-3xl font-bold mb-4">
-              <Sparkles className="w-8 h-8 text-primary-400" />
-              <span className="gradient-text">TechFlow</span>
+            <div className="flex items-center space-x-2 text-xl font-bold mb-8">
+              <Sparkles className="w-6 h-6 text-primary-400" />
+              <span className="gradient-text">Socrani</span>
             </div>
             <h1 className="text-4xl md:text-5xl font-bold mb-4">
               Choose Your <span className="gradient-text">Plan</span>

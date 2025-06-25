@@ -104,9 +104,9 @@ export default function SignInPage() {
             transition={{ duration: 0.5, delay: 0.3 }}
             className="text-center mb-8"
           >
-            <div className="inline-flex items-center space-x-2 text-2xl font-bold">
-              <Sparkles className="w-8 h-8 text-primary-400" />
-              <span className="gradient-text">TechFlow</span>
+            <div className="flex items-center space-x-2 text-xl font-bold mb-8">
+              <Sparkles className="w-6 h-6 text-primary-400" />
+              <span className="gradient-text">Socrani</span>
             </div>
           </motion.div>
 

@@ -248,7 +248,7 @@ export default function Dashboard() {
             {/* Logo */}
             <div className="flex items-center space-x-2 text-xl font-bold mb-8">
               <Sparkles className="w-6 h-6 text-primary-400" />
-              <span className="gradient-text">TechFlow</span>
+              <span className="gradient-text">Socrani</span>
             </div>
 
             {/* Navigation */}

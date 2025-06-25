@@ -69,12 +69,13 @@ const testimonials = [
   {
     name: 'Jane Doe',
     company: 'Acme Corp',
-    quote: 'TechFlow delivered our project ahead of schedule and exceeded our expectations. Their team is top-notch!'
+    quote: 'Socrani delivered our project ahead of schedule and exceeded our expectations. Their team is top-notch!'
   },
   {
-    name: 'John Smith',
-    company: 'InnovateX',
-    quote: 'The mobile app TechFlow built for us is beautiful, fast, and reliable. Highly recommended.'
+    name: 'Sarah Chen',
+    role: 'Product Manager',
+    company: 'InnovateCorp',
+    quote: 'The mobile app Socrani built for us is beautiful, fast, and reliable. Highly recommended.'
   }
 ]
 
@@ -82,7 +83,7 @@ const socialLinks = [
   { icon: Twitter, href: '#', label: 'Twitter' },
   { icon: Linkedin, href: '#', label: 'LinkedIn' },
   { icon: Github, href: '#', label: 'GitHub' },
-  { icon: Mail, href: 'mailto:hello@techflow.agency', label: 'Email' }
+  { icon: Mail, href: 'mailto:hello@socrani.com', label: 'Email' }
 ]
 
 export default function LandingPage() {
@@ -106,7 +107,7 @@ export default function LandingPage() {
         >
           <div className="inline-flex items-center space-x-2 text-3xl font-bold mb-6">
             <Sparkles className="w-10 h-10 text-primary-400" />
-            <span className="gradient-text">TechFlow</span>
+            <span className="gradient-text">Socrani</span>
           </div>
           <h1 className="text-5xl md:text-7xl font-bold mb-6">
             <span className="gradient-text">Digital Solutions</span> for Modern Businesses
@@ -137,7 +138,7 @@ export default function LandingPage() {
         >
           <h2 className="text-3xl md:text-4xl font-bold mb-4 gradient-text">About Us</h2>
           <p className="text-lg text-gray-300">
-            TechFlow Agency is a team of passionate engineers, designers, and strategists. We build digital products that solve real business problems and delight users. Our mission is to empower your business with technology that works for you.
+            Socrani Agency is a team of passionate engineers, designers, and strategists. We build digital products that solve real business problems and delight users. Our mission is to empower your business with technology that works for you.
           </p>
         </motion.section>
 
@@ -288,7 +289,7 @@ export default function LandingPage() {
         transition={{ duration: 0.8, delay: 1.7 }}
         className="relative z-10 text-center py-8 text-gray-400"
       >
-        <p>&copy; 2024 TechFlow Agency. All rights reserved.</p>
+        <p>&copy; 2024 Socrani Agency. All rights reserved.</p>
       </motion.footer>
     </div>
   )
