@@ -161,7 +161,7 @@ export default function LandingPage() {
                 transition={{ duration: 0.5 }}
                 className="glass-effect rounded-2xl p-8 text-center"
               >
-                <p className="text-lg text-gray-200 mb-4">“{testimonial.quote}”</p>
+                <p className="text-lg text-gray-200 mb-4">"{testimonial.quote}"</p>
                 <div className="font-semibold text-primary-400">{testimonial.name}</div>
                 <div className="text-gray-400 text-sm">{testimonial.company}</div>
               </motion.div>
@@ -169,50 +169,11 @@ export default function LandingPage() {
           </div>
         </motion.section>
 
-        {/* Contact/CTA Section */}
-        <motion.section
-          id="contact"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, delay: 0.5 }}
-          className="mb-24 max-w-2xl mx-auto text-center"
-        >
-          <h2 className="text-3xl md:text-4xl font-bold mb-4 gradient-text">Let's Work Together</h2>
-          <p className="text-lg text-gray-300 mb-8">
-            Ready to start your next project or have questions? Reach out and our team will get back to you within 24 hours.
-          </p>
-          <form className="flex flex-col gap-4 items-center">
-            <input
-              type="text"
-              placeholder="Your Name"
-              className="w-full max-w-md px-6 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary-400 transition-colors"
-              required
-            />
-            <input
-              type="email"
-              placeholder="Your Email"
-              className="w-full max-w-md px-6 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary-400 transition-colors"
-              required
-            />
-            <textarea
-              placeholder="How can we help you?"
-              className="w-full max-w-md px-6 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary-400 transition-colors"
-              rows={4}
-              required
-            />
-            <button type="submit" className="px-8 py-3 bg-gradient-to-r from-primary-500 to-primary-600 rounded-xl font-semibold hover:from-primary-600 hover:to-primary-700 transition-all duration-300 flex items-center justify-center space-x-2">
-              <span>Send Message</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
-          </form>
-        </motion.section>
-
         {/* Social Links */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 1.5 }}
+          transition={{ duration: 0.8, delay: 0.5 }}
           className="flex justify-center space-x-6 mb-8"
         >
           {socialLinks.map((social) => (
