@@ -3,12 +3,8 @@
 import { motion } from 'framer-motion'
 import {
   Zap,
-  Code,
   Rocket,
   Globe,
-  ShieldCheck,
-  Smartphone,
-  Cloud,
   Users,
   ArrowRight,
   Sparkles,
@@ -18,29 +14,6 @@ import {
   Github
 } from 'lucide-react'
 import CountdownTimer from '@/components/CountdownTimer'
-
-const services = [
-  {
-    icon: Code,
-    title: 'Web Development',
-    description: 'Custom websites and web apps built for performance, scalability, and beauty.'
-  },
-  {
-    icon: Smartphone,
-    title: 'Mobile Apps',
-    description: 'iOS and Android apps that delight users and drive engagement.'
-  },
-  {
-    icon: Cloud,
-    title: 'Cloud Solutions',
-    description: 'Modern cloud infrastructure and DevOps for reliability and growth.'
-  },
-  {
-    icon: ShieldCheck,
-    title: 'Security & Compliance',
-    description: 'Enterprise-grade security and compliance for peace of mind.'
-  }
-]
 
 const features = [
   {
@@ -142,39 +115,12 @@ export default function LandingPage() {
           </p>
         </motion.section>
 
-        {/* Services Section */}
-        <motion.section
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, delay: 0.3 }}
-          className="mb-24"
-        >
-          <h2 className="text-3xl md:text-4xl font-bold mb-10 text-center gradient-text">Our Services</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {services.map((service) => (
-              <motion.div
-                key={service.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5 }}
-                className="glass-effect rounded-2xl p-8 text-center hover:glow-effect transition-all duration-300"
-              >
-                <service.icon className="w-12 h-12 text-primary-400 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold mb-2">{service.title}</h3>
-                <p className="text-gray-300 text-base">{service.description}</p>
-              </motion.div>
-            ))}
-          </div>
-        </motion.section>
-
         {/* Features Section */}
         <motion.section
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.8, delay: 0.4 }}
+          transition={{ duration: 0.8, delay: 0.3 }}
           className="mb-24"
         >
           <h2 className="text-3xl md:text-4xl font-bold mb-10 text-center gradient-text">Why Choose Us?</h2>
@@ -201,7 +147,7 @@ export default function LandingPage() {
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.8, delay: 0.5 }}
+          transition={{ duration: 0.8, delay: 0.4 }}
           className="mb-24 max-w-4xl mx-auto"
         >
           <h2 className="text-3xl md:text-4xl font-bold mb-10 text-center gradient-text">What Our Clients Say</h2>
@@ -229,7 +175,7 @@ export default function LandingPage() {
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.8, delay: 0.6 }}
+          transition={{ duration: 0.8, delay: 0.5 }}
           className="mb-24 max-w-2xl mx-auto text-center"
         >
           <h2 className="text-3xl md:text-4xl font-bold mb-4 gradient-text">Let's Work Together</h2>
