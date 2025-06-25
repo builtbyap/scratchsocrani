@@ -3,10 +3,10 @@ import './globals.css'
 import { AuthProvider } from '@/contexts/AuthContext'
 
 export const metadata: Metadata = {
-  title: 'Socrani Agency - Digital Solutions for Modern Businesses',
-  description: 'Socrani Agency helps businesses grow with innovative web, mobile, and cloud solutions. Discover our services and see how we can help you succeed.',
-  keywords: ['web development', 'mobile apps', 'cloud solutions', 'digital agency'],
-  authors: [{ name: 'Socrani Agency' }],
+  title: 'Socrani - Skip the Line. Escape the Job Queue.',
+  description: 'Socrani helps everyone grow their business and employment web. Discover our services and see how we can help you succeed.',
+  keywords: ['web development', 'mobile apps', 'cloud solutions', 'digital agency', 'employment', 'business', 'business growth', 'employment growth'],
+  authors: [{ name: 'Socrani' }],
   viewport: 'width=device-width, initial-scale=1',
   robots: 'index, follow',
 }

@@ -137,8 +137,8 @@ export default function LandingPage() {
           className="mb-24 max-w-3xl mx-auto text-center"
         >
           <h2 className="text-3xl md:text-4xl font-bold mb-4 gradient-text">About Us</h2>
-          <p className="text-lg text-gray-300">
-            Socrani Agency is a team of passionate engineers, designers, and strategists. We build digital products that solve real business problems and delight users. Our mission is to empower your business with technology that works for you.
+          <p className="text-lg text-gray-300 leading-relaxed mb-12">
+            We built a digital solution that connects the unemployed and employed with major companies. Our mission is to help people get their dream jobs.
           </p>
         </motion.section>
 
