@@ -39,7 +39,9 @@ import {
   Users2,
   Building2,
   Globe,
-  Zap
+  Zap,
+  X,
+  Send
 } from 'lucide-react'
 
 const stats = [
@@ -380,6 +382,16 @@ export default function Dashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [activeTab, setActiveTab] = useState('overview')
   const [isSigningOut, setIsSigningOut] = useState(false)
+  const [showChatPopup, setShowChatPopup] = useState(false)
+  const [chatMessages, setChatMessages] = useState([
+    {
+      id: 1,
+      type: 'bot',
+      message: 'Hello! I\'m here to help you add a new subscriber. What\'s their email address?',
+      timestamp: new Date()
+    }
+  ])
+  const [currentInput, setCurrentInput] = useState('')
   const router = useRouter()
   const { user, loading, signOut } = useAuth()
 
@@ -432,6 +444,55 @@ export default function Dashboard() {
     
     // Open in new tab/window
     window.open(billingUrl, '_blank', 'noopener,noreferrer')
+  }
+
+  const handleOpenChatPopup = () => {
+    setShowChatPopup(true)
+    // Reset chat to initial state
+    setChatMessages([
+      {
+        id: 1,
+        type: 'bot',
+        message: 'Hello! I\'m here to help you add a new subscriber. What\'s their email address?',
+        timestamp: new Date()
+      }
+    ])
+    setCurrentInput('')
+  }
+
+  const handleCloseChatPopup = () => {
+    setShowChatPopup(false)
+  }
+
+  const handleSendMessage = () => {
+    if (!currentInput.trim()) return
+
+    const userMessage = {
+      id: Date.now(),
+      type: 'user',
+      message: currentInput,
+      timestamp: new Date()
+    }
+
+    setChatMessages(prev => [...prev, userMessage])
+    setCurrentInput('')
+
+    // Simulate bot response
+    setTimeout(() => {
+      const botResponse = {
+        id: Date.now() + 1,
+        type: 'bot',
+        message: 'Great! I\'ve added that email to your subscriber list. Is there anything else you\'d like me to help you with?',
+        timestamp: new Date()
+      }
+      setChatMessages(prev => [...prev, botResponse])
+    }, 1000)
+  }
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSendMessage()
+    }
   }
 
   const getPriorityColor = (priority: string) => {
@@ -576,9 +637,12 @@ export default function Dashboard() {
                 <button className="p-2 bg-white/10 border border-white/20 rounded-xl text-gray-300 hover:bg-white/20 hover:text-white transition-all duration-200">
                   <Bell className="w-5 h-5" />
                 </button>
-                <button className="flex items-center space-x-2 px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded-xl transition-colors">
+                <button 
+                  onClick={handleOpenChatPopup}
+                  className="flex items-center space-x-2 px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded-xl transition-colors"
+                >
                   <Plus className="w-4 h-4" />
-                  <span>Add Subscriber</span>
+                  <span>Add Email</span>
                 </button>
               </div>
             </motion.div>
@@ -759,9 +823,12 @@ export default function Dashboard() {
                 >
                   <h2 className="text-xl font-semibold text-white mb-6">Quick Actions</h2>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <button className="flex items-center space-x-3 p-4 bg-white/5 rounded-xl hover:bg-white/10 transition-colors">
+                    <button 
+                      onClick={handleOpenChatPopup}
+                      className="flex items-center space-x-3 p-4 bg-white/5 rounded-xl hover:bg-white/10 transition-colors"
+                    >
                       <Plus className="w-5 h-5 text-primary-400" />
-                      <span className="text-white">Add Subscriber</span>
+                      <span className="text-white">Add Email</span>
                     </button>
                     <button className="flex items-center space-x-3 p-4 bg-white/5 rounded-xl hover:bg-white/10 transition-colors">
                       <Mail className="w-5 h-5 text-primary-400" />
@@ -1075,6 +1142,88 @@ export default function Dashboard() {
             )}
           </div>
         </div>
+
+        {/* Chat Popup */}
+        {showChatPopup && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            onClick={handleCloseChatPopup}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="glass-effect rounded-2xl w-full max-w-md h-96 flex flex-col"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Chat Header */}
+              <div className="flex items-center justify-between p-4 border-b border-white/10">
+                <div className="flex items-center space-x-3">
+                  <div className="w-8 h-8 bg-primary-500/20 rounded-full flex items-center justify-center">
+                    <MessageSquare className="w-4 h-4 text-primary-400" />
+                  </div>
+                  <div>
+                    <h3 className="text-white font-semibold">Add Email</h3>
+                    <p className="text-gray-400 text-xs">AI Assistant</p>
+                  </div>
+                </div>
+                <button
+                  onClick={handleCloseChatPopup}
+                  className="p-2 text-gray-400 hover:text-white transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Chat Messages */}
+              <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                {chatMessages.map((message) => (
+                  <div
+                    key={message.id}
+                    className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
+                  >
+                    <div
+                      className={`max-w-xs px-4 py-2 rounded-2xl ${
+                        message.type === 'user'
+                          ? 'bg-primary-500 text-white'
+                          : 'bg-white/10 text-gray-300'
+                      }`}
+                    >
+                      <p className="text-sm">{message.message}</p>
+                      <p className="text-xs opacity-70 mt-1">
+                        {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Chat Input */}
+              <div className="p-4 border-t border-white/10">
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="text"
+                    value={currentInput}
+                    onChange={(e) => setCurrentInput(e.target.value)}
+                    onKeyPress={handleKeyPress}
+                    placeholder="Type your message..."
+                    className="flex-1 px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary-400 transition-colors"
+                  />
+                  <button
+                    onClick={handleSendMessage}
+                    disabled={!currentInput.trim()}
+                    className="p-2 bg-primary-500 hover:bg-primary-600 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-xl transition-colors"
+                  >
+                    <Send className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
       </div>
     </SubscriptionGuard>
   )
