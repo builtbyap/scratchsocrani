@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import SubscriptionGuard from '@/components/SubscriptionGuard'
+import ChatModal from '@/components/ChatModal'
 import { 
   Sparkles, 
   BarChart3, 
@@ -380,6 +381,7 @@ export default function Dashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [activeTab, setActiveTab] = useState('overview')
   const [isSigningOut, setIsSigningOut] = useState(false)
+  const [isChatOpen, setIsChatOpen] = useState(false)
   const router = useRouter()
   const { user, loading, signOut } = useAuth()
 
@@ -432,6 +434,20 @@ export default function Dashboard() {
     
     // Open in new tab/window
     window.open(billingUrl, '_blank', 'noopener,noreferrer')
+  }
+
+  const handleOpenChat = () => {
+    setIsChatOpen(true)
+  }
+
+  const handleCloseChat = () => {
+    setIsChatOpen(false)
+  }
+
+  const handleEmailAdded = (email: string) => {
+    console.log('Email added through chat:', email)
+    // Here you could add the email to your actual email list
+    // For now, we'll just log it
   }
 
   const getPriorityColor = (priority: string) => {
@@ -576,7 +592,10 @@ export default function Dashboard() {
                 <button className="p-2 bg-white/10 border border-white/20 rounded-xl text-gray-300 hover:bg-white/20 hover:text-white transition-all duration-200">
                   <Bell className="w-5 h-5" />
                 </button>
-                <button className="flex items-center space-x-2 px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded-xl transition-colors">
+                <button 
+                  onClick={handleOpenChat}
+                  className="flex items-center space-x-2 px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded-xl transition-colors"
+                >
                   <Plus className="w-4 h-4" />
                   <span>Add Email</span>
                 </button>
@@ -759,7 +778,10 @@ export default function Dashboard() {
                 >
                   <h2 className="text-xl font-semibold text-white mb-6">Quick Actions</h2>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <button className="flex items-center space-x-3 p-4 bg-white/5 rounded-xl hover:bg-white/10 transition-colors">
+                    <button 
+                      onClick={handleOpenChat}
+                      className="flex items-center space-x-3 p-4 bg-white/5 rounded-xl hover:bg-white/10 transition-colors"
+                    >
                       <Plus className="w-5 h-5 text-primary-400" />
                       <span className="text-white">Add Email</span>
                     </button>
@@ -1076,6 +1098,13 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+
+      {/* Chat Modal */}
+      <ChatModal
+        isOpen={isChatOpen}
+        onClose={handleCloseChat}
+        onEmailAdded={handleEmailAdded}
+      />
     </SubscriptionGuard>
   )
 } 

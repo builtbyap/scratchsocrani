@@ -223,53 +223,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     },
 
     signIn: async (email: string, password: string) => {
-      if (!supabase) {
-        console.error('❌ Supabase client not initialized')
-        return { data: null, error: { message: 'Authentication service not available' } }
-      }
-      
+      if (!supabase) return { data: null, error: 'Supabase not initialized' }
       try {
-        console.log('🔐 Attempting to sign in user:', email)
-        
         const { data, error } = await supabase.auth.signInWithPassword({
           email,
           password,
         })
-        
-        console.log('📥 Supabase auth response:', { data, error })
-        
-        if (error) {
-          console.error('❌ Supabase auth error:', error)
-          return { data, error }
-        }
-        
-        if (data?.user) {
-          console.log('✅ User authenticated successfully:', data.user.email)
-          
-          // Ensure user profile exists
-          try {
-            console.log('🔍 Ensuring user profile exists...')
-            const profileResult = await ensureUserProfile(data.user)
-            
-            if (profileResult.error) {
-              console.error('❌ Error ensuring user profile:', profileResult.error)
-              // Don't fail the sign-in, but log the error
-            } else {
-              console.log('✅ User profile validated/created successfully')
-            }
-          } catch (profileError) {
-            console.error('❌ Error in profile validation:', profileError)
-            // Don't fail the sign-in, but log the error
-          }
-          
-          return { data, error: null }
-        } else {
-          console.error('❌ No user data returned from Supabase auth')
-          return { data: null, error: { message: 'Authentication failed. Please try again.' } }
-        }
+        return { data, error }
       } catch (error) {
-        console.error('❌ Unexpected sign in error:', error)
-        return { data: null, error: { message: 'An unexpected error occurred. Please try again.' } }
+        console.error('Sign in error:', error)
+        return { data: null, error: error as any }
       }
     },
 

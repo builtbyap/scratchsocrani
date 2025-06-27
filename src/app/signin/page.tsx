@@ -20,29 +20,19 @@ export default function SignInPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    console.log('🔐 Sign in attempt for email:', formData.email)
     setIsLoading(true)
     setError('')
     
     try {
-      console.log('📞 Calling signIn function...')
       const { data, error } = await signIn(formData.email, formData.password)
       
-      console.log('📥 Sign in response:', { data, error })
-      
       if (error) {
-        console.error('❌ Sign in error:', error)
-        setError(error.message || 'Sign in failed. Please check your credentials.')
-      } else if (data?.user) {
-        console.log('✅ Sign in successful for user:', data.user.email)
+        setError(error.message)
+      } else {
         // Redirect to dashboard on successful sign in
         router.push('/dashboard')
-      } else {
-        console.error('❌ No user data returned from sign in')
-        setError('Sign in failed. Please try again.')
       }
     } catch (err) {
-      console.error('❌ Unexpected sign in error:', err)
       setError('An unexpected error occurred. Please try again.')
     } finally {
       setIsLoading(false)
@@ -72,19 +62,6 @@ export default function SignInPage() {
       ...formData,
       [e.target.name]: e.target.value
     })
-  }
-
-  const testAuthConnection = async () => {
-    console.log('🧪 Testing authentication connection...')
-    try {
-      const { data, error } = await signIn('test@example.com', 'testpassword')
-      console.log('🧪 Test auth result:', { data, error })
-      if (error) {
-        console.log('🧪 Expected error for test credentials:', error.message)
-      }
-    } catch (err) {
-      console.error('🧪 Test auth error:', err)
-    }
   }
 
   return (
@@ -147,19 +124,13 @@ export default function SignInPage() {
 
             {error && (
               <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm">
-                <div className="font-semibold mb-1">Sign In Error:</div>
-                <div>{error}</div>
+                {error}
                 {error.includes('Invalid email or password') && (
                   <div className="mt-2 text-xs">
                     💡 <strong>Tip:</strong> If you don't have an account yet, please{' '}
                     <Link href="/signup" className="text-primary-400 hover:text-primary-300 underline">
                       create one here
                     </Link>
-                  </div>
-                )}
-                {error.includes('network') || error.includes('connection') && (
-                  <div className="mt-2 text-xs">
-                    🔧 <strong>Network Issue:</strong> Please check your internet connection and try again.
                   </div>
                 )}
               </div>
@@ -281,20 +252,6 @@ export default function SignInPage() {
                 >
                   Sign up
                 </Link>
-              </p>
-            </div>
-
-            {/* Debug Section - Remove in production */}
-            <div className="mt-6 pt-6 border-t border-white/10">
-              <button
-                type="button"
-                onClick={testAuthConnection}
-                className="w-full py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-xl text-sm transition-colors"
-              >
-                🧪 Test Auth Connection (Debug)
-              </button>
-              <p className="text-xs text-gray-500 mt-2 text-center">
-                Check browser console for debug info
               </p>
             </div>
           </motion.div>
