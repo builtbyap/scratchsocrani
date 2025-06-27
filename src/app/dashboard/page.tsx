@@ -776,22 +776,13 @@ export default function Dashboard() {
                   transition={{ duration: 0.5, delay: 0.5 }}
                   className="glass-effect rounded-2xl p-6"
                 >
-                  <h2 className="text-xl font-semibold text-white mb-6">Quick Actions</h2>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 gap-4">
                     <button 
                       onClick={handleOpenChat}
-                      className="flex items-center space-x-3 p-4 bg-white/5 rounded-xl hover:bg-white/10 transition-colors"
+                      className="flex items-center justify-center space-x-3 p-6 bg-white/5 rounded-xl hover:bg-white/10 transition-colors"
                     >
-                      <Plus className="w-5 h-5 text-primary-400" />
-                      <span className="text-white">Add Email</span>
-                    </button>
-                    <button className="flex items-center space-x-3 p-4 bg-white/5 rounded-xl hover:bg-white/10 transition-colors">
-                      <Mail className="w-5 h-5 text-primary-400" />
-                      <span className="text-white">Create Campaign</span>
-                    </button>
-                    <button className="flex items-center space-x-3 p-4 bg-white/5 rounded-xl hover:bg-white/10 transition-colors">
-                      <BarChart3 className="w-5 h-5 text-primary-400" />
-                      <span className="text-white">View Analytics</span>
+                      <Plus className="w-6 h-6 text-primary-400" />
+                      <span className="text-white text-lg font-medium">Add Email</span>
                     </button>
                   </div>
                 </motion.div>
@@ -935,7 +926,6 @@ export default function Dashboard() {
                   transition={{ duration: 0.5, delay: 0.5 }}
                   className="glass-effect rounded-2xl p-6"
                 >
-                  <h2 className="text-xl font-semibold text-white mb-6">Quick Actions</h2>
                   <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <button className="flex items-center space-x-3 p-4 bg-white/5 rounded-xl hover:bg-white/10 transition-colors">
                       <Plus className="w-5 h-5 text-primary-400" />
