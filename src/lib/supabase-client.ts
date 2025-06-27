@@ -11,6 +11,12 @@ let supabaseClient: SupabaseClient | null = null
 function createSupabaseClient(): SupabaseClient {
   try {
     console.log('🔧 Creating Supabase client with hardcoded credentials...')
+    console.log('🔗 Supabase URL:', SUPABASE_URL)
+    console.log('🔑 Anon Key length:', SUPABASE_ANON_KEY.length)
+    
+    if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+      throw new Error('Missing Supabase credentials')
+    }
     
     const client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
       auth: {
@@ -26,6 +32,18 @@ function createSupabaseClient(): SupabaseClient {
     })
     
     console.log('✅ Supabase client created successfully')
+    
+    // Test the client connection
+    client.auth.getSession().then(({ data, error }) => {
+      if (error) {
+        console.error('❌ Error testing Supabase connection:', error)
+      } else {
+        console.log('✅ Supabase connection test successful')
+      }
+    }).catch(error => {
+      console.error('❌ Error testing Supabase connection:', error)
+    })
+    
     return client
   } catch (error) {
     console.error('❌ Error creating Supabase client:', error)
