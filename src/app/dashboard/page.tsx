@@ -52,6 +52,30 @@ export default function Dashboard() {
   const router = useRouter()
   const { user, loading, signOut } = useAuth()
 
+  const fetchEmails = async () => {
+    if (!user) return
+    
+    setLoadingEmails(true)
+    try {
+      const supabase = getSupabaseClient()
+      const { data, error } = await supabase
+        .from('emails')
+        .select('*')
+        .order('created_at', { ascending: false })
+      
+      if (error) {
+        console.error('Error fetching emails:', error)
+        return
+      }
+      
+      setEmails(data || [])
+    } catch (error) {
+      console.error('Error fetching emails:', error)
+    } finally {
+      setLoadingEmails(false)
+    }
+  }
+
   // Redirect to sign in if not authenticated
   useEffect(() => {
     if (!loading && !user) {
@@ -113,30 +137,6 @@ export default function Dashboard() {
   const handleAddEmail = () => {
     const formUrl = 'http://localhost:5678/form/6272f3aa-a2f6-417a-9977-2b11ec3488a7'
     window.open(formUrl, '_blank', 'noopener,noreferrer')
-  }
-
-  const fetchEmails = async () => {
-    if (!user) return
-    
-    setLoadingEmails(true)
-    try {
-      const supabase = getSupabaseClient()
-      const { data, error } = await supabase
-        .from('emails')
-        .select('*')
-        .order('created_at', { ascending: false })
-      
-      if (error) {
-        console.error('Error fetching emails:', error)
-        return
-      }
-      
-      setEmails(data || [])
-    } catch (error) {
-      console.error('Error fetching emails:', error)
-    } finally {
-      setLoadingEmails(false)
-    }
   }
 
   // Define stats with real data
