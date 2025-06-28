@@ -479,12 +479,6 @@ export default function Dashboard() {
       value: emails.length.toString(),
       icon: Users,
       color: 'text-blue-400'
-    },
-    {
-      title: 'LinkedIn Connections',
-      value: uniqueLinkedInConnections.length.toString(),
-      icon: Users2,
-      color: 'text-green-400'
     }
   ]
 
