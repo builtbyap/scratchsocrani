@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import SubscriptionGuard from '@/components/SubscriptionGuard'
+import { getSupabaseClient } from '@/lib/supabase-client'
 import { 
   Sparkles, 
   BarChart3, 
@@ -42,330 +43,12 @@ import {
   Zap
 } from 'lucide-react'
 
-const stats = [
-  {
-    title: 'Total Emails',
-    value: '1,247',
-    change: '+23%',
-    icon: Users,
-    color: 'text-blue-400'
-  },
-  {
-    title: 'Saved Emails',
-    value: '23',
-    change: '-8%',
-    icon: AlertCircle,
-    color: 'text-orange-400'
-  }
-]
-
-const emailList = [
-  {
-    id: 1,
-    email: 'john.doe@example.com',
-    name: 'John Doe',
-    status: 'Active',
-    subscribedDate: '2024-01-15',
-    lastEmailSent: '2024-02-01',
-    openRate: 85,
-    clickRate: 15,
-    tags: ['VIP', 'Newsletter']
-  },
-  {
-    id: 2,
-    email: 'jane.smith@company.com',
-    name: 'Jane Smith',
-    status: 'Active',
-    subscribedDate: '2024-01-20',
-    lastEmailSent: '2024-02-01',
-    openRate: 72,
-    clickRate: 8,
-    tags: ['Newsletter']
-  },
-  {
-    id: 3,
-    email: 'mike.wilson@startup.io',
-    name: 'Mike Wilson',
-    status: 'Inactive',
-    subscribedDate: '2024-01-10',
-    lastEmailSent: '2024-01-25',
-    openRate: 45,
-    clickRate: 3,
-    tags: ['Promotional']
-  },
-  {
-    id: 4,
-    email: 'sarah.jones@tech.com',
-    name: 'Sarah Jones',
-    status: 'Active',
-    subscribedDate: '2024-01-28',
-    lastEmailSent: '2024-02-01',
-    openRate: 91,
-    clickRate: 22,
-    tags: ['VIP', 'Newsletter', 'Promotional']
-  },
-  {
-    id: 5,
-    email: 'alex.brown@design.co',
-    name: 'Alex Brown',
-    status: 'Active',
-    subscribedDate: '2024-02-01',
-    lastEmailSent: '2024-02-01',
-    openRate: 78,
-    clickRate: 12,
-    tags: ['Newsletter']
-  }
-]
-
-const recentCampaigns = [
-  {
-    id: 1,
-    name: 'Weekly Newsletter #45',
-    sentDate: '2024-02-01',
-    recipients: 1247,
-    openRate: 68.5,
-    clickRate: 12.3,
-    status: 'Sent'
-  },
-  {
-    id: 2,
-    name: 'Product Launch Announcement',
-    sentDate: '2024-01-28',
-    recipients: 1247,
-    openRate: 72.1,
-    clickRate: 18.7,
-    status: 'Sent'
-  },
-  {
-    id: 3,
-    name: 'Holiday Special Offer',
-    sentDate: '2024-01-25',
-    recipients: 1247,
-    openRate: 65.3,
-    clickRate: 14.2,
-    status: 'Sent'
-  }
-]
-
-const linkedInConnections = [
-  {
-    id: 1,
-    name: 'Sarah Johnson',
-    title: 'Senior Product Manager',
-    company: 'TechCorp Inc.',
-    avatar: '/api/placeholder/40/40',
-    connectionDate: '2024-01-15',
-    mutualConnections: 12,
-    lastInteraction: '2 days ago',
-    status: 'Active',
-    tags: ['Tech', 'Product', 'Networking']
-  },
-  {
-    id: 2,
-    name: 'Michael Chen',
-    title: 'Software Engineer',
-    company: 'StartupXYZ',
-    avatar: '/api/placeholder/40/40',
-    connectionDate: '2024-01-20',
-    mutualConnections: 8,
-    lastInteraction: '1 week ago',
-    status: 'Active',
-    tags: ['Engineering', 'Startup']
-  },
-  {
-    id: 3,
-    name: 'Emily Rodriguez',
-    title: 'Marketing Director',
-    company: 'Global Solutions',
-    avatar: '/api/placeholder/40/40',
-    connectionDate: '2024-01-10',
-    mutualConnections: 15,
-    lastInteraction: '3 days ago',
-    status: 'Active',
-    tags: ['Marketing', 'Leadership']
-  },
-  {
-    id: 4,
-    name: 'David Kim',
-    title: 'UX Designer',
-    company: 'Design Studio',
-    avatar: '/api/placeholder/40/40',
-    connectionDate: '2024-01-25',
-    mutualConnections: 6,
-    lastInteraction: '5 days ago',
-    status: 'Inactive',
-    tags: ['Design', 'UX']
-  },
-  {
-    id: 5,
-    name: 'Lisa Thompson',
-    title: 'Business Development',
-    company: 'Enterprise Corp',
-    avatar: '/api/placeholder/40/40',
-    connectionDate: '2024-02-01',
-    mutualConnections: 20,
-    lastInteraction: '1 day ago',
-    status: 'Active',
-    tags: ['Business', 'Sales']
-  }
-]
-
-const linkedInPosts = [
-  {
-    id: 1,
-    title: 'The Future of AI in Product Development',
-    content: 'Excited to share insights on how AI is transforming product development...',
-    publishedDate: '2024-02-01',
-    likes: 45,
-    comments: 12,
-    shares: 8,
-    views: 1200,
-    status: 'Published',
-    tags: ['AI', 'Product Development', 'Innovation']
-  },
-  {
-    id: 2,
-    title: 'Building Strong Professional Relationships',
-    content: 'Networking isn\'t just about collecting business cards...',
-    publishedDate: '2024-01-28',
-    likes: 32,
-    comments: 8,
-    shares: 5,
-    views: 850,
-    status: 'Published',
-    tags: ['Networking', 'Professional Growth']
-  },
-  {
-    id: 3,
-    title: 'Draft: Industry Trends 2024',
-    content: 'Here are the key trends I\'ve observed in our industry...',
-    publishedDate: null,
-    likes: 0,
-    comments: 0,
-    shares: 0,
-    views: 0,
-    status: 'Draft',
-    tags: ['Industry Trends', 'Analysis']
-  }
-]
-
-const linkedInAnalytics = [
-  {
-    title: 'Profile Views',
-    value: '1,247',
-    change: '+23%',
-    icon: Eye,
-    color: 'text-blue-400'
-  },
-  {
-    title: 'Connection Requests',
-    value: '18',
-    change: '+8%',
-    icon: Users2,
-    color: 'text-green-400'
-  },
-  {
-    title: 'Post Reach',
-    value: '45.2K',
-    change: '+15%',
-    icon: Share2,
-    color: 'text-purple-400'
-  },
-  {
-    title: 'Engagement Rate',
-    value: '4.8%',
-    change: '+2.1%',
-    icon: Target,
-    color: 'text-orange-400'
-  }
-]
-
-const recentProjects = [
-  {
-    id: 1,
-    name: 'E-commerce Platform',
-    client: 'TechCorp Inc.',
-    status: 'In Progress',
-    progress: 75,
-    dueDate: '2024-02-15',
-    priority: 'high'
-  },
-  {
-    id: 2,
-    name: 'Mobile App Redesign',
-    client: 'StartupXYZ',
-    status: 'Review',
-    progress: 90,
-    dueDate: '2024-02-10',
-    priority: 'medium'
-  },
-  {
-    id: 3,
-    name: 'Cloud Migration',
-    client: 'Enterprise Solutions',
-    status: 'Planning',
-    progress: 25,
-    dueDate: '2024-03-01',
-    priority: 'low'
-  }
-]
-
-const recentActivity = [
-  {
-    id: 1,
-    type: 'project',
-    message: 'E-commerce Platform - Phase 2 completed',
-    time: '2 hours ago',
-    icon: CheckCircle
-  },
-  {
-    id: 2,
-    type: 'client',
-    message: 'New client onboarding - TechCorp Inc.',
-    time: '4 hours ago',
-    icon: Users
-  },
-  {
-    id: 3,
-    type: 'task',
-    message: 'Mobile app testing completed',
-    time: '6 hours ago',
-    icon: Activity
-  },
-  {
-    id: 4,
-    type: 'meeting',
-    message: 'Client meeting scheduled for tomorrow',
-    time: '1 day ago',
-    icon: Calendar
-  }
-]
-
-const upcomingTasks = [
-  {
-    id: 1,
-    title: 'Review mobile app designs',
-    dueDate: 'Today',
-    priority: 'high'
-  },
-  {
-    id: 2,
-    title: 'Client presentation prep',
-    dueDate: 'Tomorrow',
-    priority: 'medium'
-  },
-  {
-    id: 3,
-    title: 'Code review for e-commerce',
-    dueDate: 'Feb 12',
-    priority: 'low'
-  }
-]
-
 export default function Dashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [activeTab, setActiveTab] = useState('overview')
   const [isSigningOut, setIsSigningOut] = useState(false)
+  const [emails, setEmails] = useState<any[]>([])
+  const [loadingEmails, setLoadingEmails] = useState(false)
   const router = useRouter()
   const { user, loading, signOut } = useAuth()
 
@@ -375,6 +58,13 @@ export default function Dashboard() {
       router.push('/signin')
     }
   }, [user, loading, router])
+
+  // Fetch emails when user is authenticated
+  useEffect(() => {
+    if (user) {
+      fetchEmails()
+    }
+  }, [user])
 
   // Show loading while checking authentication
   if (loading) {
@@ -424,6 +114,293 @@ export default function Dashboard() {
     const formUrl = 'http://localhost:5678/form/6272f3aa-a2f6-417a-9977-2b11ec3488a7'
     window.open(formUrl, '_blank', 'noopener,noreferrer')
   }
+
+  const fetchEmails = async () => {
+    if (!user) return
+    
+    setLoadingEmails(true)
+    try {
+      const supabase = getSupabaseClient()
+      const { data, error } = await supabase
+        .from('emails')
+        .select('*')
+        .order('created_at', { ascending: false })
+      
+      if (error) {
+        console.error('Error fetching emails:', error)
+        return
+      }
+      
+      setEmails(data || [])
+    } catch (error) {
+      console.error('Error fetching emails:', error)
+    } finally {
+      setLoadingEmails(false)
+    }
+  }
+
+  // Define stats with real data
+  const stats = [
+    {
+      title: 'Total Emails',
+      value: emails.length.toString(),
+      change: '+23%',
+      icon: Users,
+      color: 'text-blue-400'
+    },
+    {
+      title: 'Saved Emails',
+      value: emails.filter((email: any) => email.status === 'active').length.toString(),
+      change: '-8%',
+      icon: AlertCircle,
+      color: 'text-orange-400'
+    }
+  ]
+
+  const recentCampaigns = [
+    {
+      id: 1,
+      name: 'Weekly Newsletter #45',
+      sentDate: '2024-02-01',
+      recipients: 1247,
+      openRate: 68.5,
+      clickRate: 12.3,
+      status: 'Sent'
+    },
+    {
+      id: 2,
+      name: 'Product Launch Announcement',
+      sentDate: '2024-01-28',
+      recipients: 1247,
+      openRate: 72.1,
+      clickRate: 18.7,
+      status: 'Sent'
+    },
+    {
+      id: 3,
+      name: 'Holiday Special Offer',
+      sentDate: '2024-01-25',
+      recipients: 1247,
+      openRate: 65.3,
+      clickRate: 14.2,
+      status: 'Sent'
+    }
+  ]
+
+  const linkedInConnections = [
+    {
+      id: 1,
+      name: 'Sarah Johnson',
+      title: 'Senior Product Manager',
+      company: 'TechCorp Inc.',
+      avatar: '/api/placeholder/40/40',
+      connectionDate: '2024-01-15',
+      mutualConnections: 12,
+      lastInteraction: '2 days ago',
+      status: 'Active',
+      tags: ['Tech', 'Product', 'Networking']
+    },
+    {
+      id: 2,
+      name: 'Michael Chen',
+      title: 'Software Engineer',
+      company: 'StartupXYZ',
+      avatar: '/api/placeholder/40/40',
+      connectionDate: '2024-01-20',
+      mutualConnections: 8,
+      lastInteraction: '1 week ago',
+      status: 'Active',
+      tags: ['Engineering', 'Startup']
+    },
+    {
+      id: 3,
+      name: 'Emily Rodriguez',
+      title: 'Marketing Director',
+      company: 'Global Solutions',
+      avatar: '/api/placeholder/40/40',
+      connectionDate: '2024-01-10',
+      mutualConnections: 15,
+      lastInteraction: '3 days ago',
+      status: 'Active',
+      tags: ['Marketing', 'Leadership']
+    },
+    {
+      id: 4,
+      name: 'David Kim',
+      title: 'UX Designer',
+      company: 'Design Studio',
+      avatar: '/api/placeholder/40/40',
+      connectionDate: '2024-01-25',
+      mutualConnections: 6,
+      lastInteraction: '5 days ago',
+      status: 'Inactive',
+      tags: ['Design', 'UX']
+    },
+    {
+      id: 5,
+      name: 'Lisa Thompson',
+      title: 'Business Development',
+      company: 'Enterprise Corp',
+      avatar: '/api/placeholder/40/40',
+      connectionDate: '2024-02-01',
+      mutualConnections: 20,
+      lastInteraction: '1 day ago',
+      status: 'Active',
+      tags: ['Business', 'Sales']
+    }
+  ]
+
+  const linkedInPosts = [
+    {
+      id: 1,
+      title: 'The Future of AI in Product Development',
+      content: 'Excited to share insights on how AI is transforming product development...',
+      publishedDate: '2024-02-01',
+      likes: 45,
+      comments: 12,
+      shares: 8,
+      views: 1200,
+      status: 'Published',
+      tags: ['AI', 'Product Development', 'Innovation']
+    },
+    {
+      id: 2,
+      title: 'Building Strong Professional Relationships',
+      content: 'Networking isn\'t just about collecting business cards...',
+      publishedDate: '2024-01-28',
+      likes: 32,
+      comments: 8,
+      shares: 5,
+      views: 850,
+      status: 'Published',
+      tags: ['Networking', 'Professional Growth']
+    },
+    {
+      id: 3,
+      title: 'Draft: Industry Trends 2024',
+      content: 'Here are the key trends I\'ve observed in our industry...',
+      publishedDate: null,
+      likes: 0,
+      comments: 0,
+      shares: 0,
+      views: 0,
+      status: 'Draft',
+      tags: ['Industry Trends', 'Analysis']
+    }
+  ]
+
+  const linkedInAnalytics = [
+    {
+      title: 'Profile Views',
+      value: '1,247',
+      change: '+23%',
+      icon: Eye,
+      color: 'text-blue-400'
+    },
+    {
+      title: 'Connection Requests',
+      value: '18',
+      change: '+8%',
+      icon: Users2,
+      color: 'text-green-400'
+    },
+    {
+      title: 'Post Reach',
+      value: '45.2K',
+      change: '+15%',
+      icon: Share2,
+      color: 'text-purple-400'
+    },
+    {
+      title: 'Engagement Rate',
+      value: '4.8%',
+      change: '+2.1%',
+      icon: Target,
+      color: 'text-orange-400'
+    }
+  ]
+
+  const recentProjects = [
+    {
+      id: 1,
+      name: 'E-commerce Platform',
+      client: 'TechCorp Inc.',
+      status: 'In Progress',
+      progress: 75,
+      dueDate: '2024-02-15',
+      priority: 'high'
+    },
+    {
+      id: 2,
+      name: 'Mobile App Redesign',
+      client: 'StartupXYZ',
+      status: 'Review',
+      progress: 90,
+      dueDate: '2024-02-10',
+      priority: 'medium'
+    },
+    {
+      id: 3,
+      name: 'Cloud Migration',
+      client: 'Enterprise Solutions',
+      status: 'Planning',
+      progress: 25,
+      dueDate: '2024-03-01',
+      priority: 'low'
+    }
+  ]
+
+  const recentActivity = [
+    {
+      id: 1,
+      type: 'project',
+      message: 'E-commerce Platform - Phase 2 completed',
+      time: '2 hours ago',
+      icon: CheckCircle
+    },
+    {
+      id: 2,
+      type: 'client',
+      message: 'New client onboarding - TechCorp Inc.',
+      time: '4 hours ago',
+      icon: Users
+    },
+    {
+      id: 3,
+      type: 'task',
+      message: 'Mobile app testing completed',
+      time: '6 hours ago',
+      icon: Activity
+    },
+    {
+      id: 4,
+      type: 'meeting',
+      message: 'Client meeting scheduled for tomorrow',
+      time: '1 day ago',
+      icon: Calendar
+    }
+  ]
+
+  const upcomingTasks = [
+    {
+      id: 1,
+      title: 'Review mobile app designs',
+      dueDate: 'Today',
+      priority: 'high'
+    },
+    {
+      id: 2,
+      title: 'Client presentation prep',
+      dueDate: 'Tomorrow',
+      priority: 'medium'
+    },
+    {
+      id: 3,
+      title: 'Code review for e-commerce',
+      dueDate: 'Feb 12',
+      priority: 'low'
+    }
+  ]
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
@@ -776,48 +753,64 @@ export default function Dashboard() {
                       <button className="text-primary-400 hover:text-primary-300 text-sm">View All</button>
                     </div>
                     <div className="space-y-4 max-h-96 overflow-y-auto">
-                      {emailList.map((subscriber) => (
-                        <div key={subscriber.id} className="flex items-center justify-between p-4 bg-white/5 rounded-xl">
-                          <div className="flex-1">
-                            <div className="flex items-center space-x-3">
-                              <div className="w-10 h-10 bg-primary-500/20 rounded-full flex items-center justify-center">
-                                <User className="w-5 h-5 text-primary-400" />
-                              </div>
-                              <div>
-                                <h3 className="text-white font-medium">{subscriber.name}</h3>
-                                <p className="text-gray-400 text-sm">{subscriber.email}</p>
-                              </div>
-                            </div>
-                            <div className="flex items-center space-x-2 mt-2">
-                              {subscriber.tags.map((tag, index) => (
-                                <span key={index} className="px-2 py-1 bg-primary-500/20 text-primary-400 text-xs rounded-full">
-                                  {tag}
-                                </span>
-                              ))}
-                            </div>
-                          </div>
-                          <div className="text-right">
-                            <span className={`px-2 py-1 rounded-full text-xs ${
-                              subscriber.status === 'Active' 
-                                ? 'text-green-400 bg-green-400/10' 
-                                : 'text-gray-400 bg-gray-400/10'
-                            }`}>
-                              {subscriber.status}
-                            </span>
-                            <div className="flex items-center space-x-2 mt-2">
-                              <button className="p-1 text-gray-400 hover:text-white transition-colors">
-                                <Eye className="w-4 h-4" />
-                              </button>
-                              <button className="p-1 text-gray-400 hover:text-white transition-colors">
-                                <Edit className="w-4 h-4" />
-                              </button>
-                              <button className="p-1 text-gray-400 hover:text-red-400 transition-colors">
-                                <Trash2 className="w-4 h-4" />
-                              </button>
-                            </div>
-                          </div>
+                      {loadingEmails ? (
+                        <div className="flex items-center justify-center p-8">
+                          <div className="w-8 h-8 border-4 border-primary-500 border-t-transparent rounded-full animate-spin"></div>
+                          <span className="ml-3 text-gray-400">Loading emails...</span>
                         </div>
-                      ))}
+                      ) : emails.length === 0 ? (
+                        <div className="text-center p-8">
+                          <Mail className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                          <p className="text-gray-400">No emails found</p>
+                          <p className="text-gray-500 text-sm">Add your first email to get started</p>
+                        </div>
+                      ) : (
+                        emails.map((email: any) => (
+                          <div key={email.id} className="flex items-center justify-between p-4 bg-white/5 rounded-xl">
+                            <div className="flex-1">
+                              <div className="flex items-center space-x-3">
+                                <div className="w-10 h-10 bg-primary-500/20 rounded-full flex items-center justify-center">
+                                  <User className="w-5 h-5 text-primary-400" />
+                                </div>
+                                <div>
+                                  <h3 className="text-white font-medium">{email.email || 'No email'}</h3>
+                                  <p className="text-gray-400 text-sm">{email.company || 'No company'}</p>
+                                  <p className="text-gray-500 text-xs">{email.first_name} {email.last_name}</p>
+                                </div>
+                              </div>
+                              {email.tags && email.tags.length > 0 && (
+                                <div className="flex items-center space-x-2 mt-2">
+                                  {email.tags.map((tag: string, index: number) => (
+                                    <span key={index} className="px-2 py-1 bg-primary-500/20 text-primary-400 text-xs rounded-full">
+                                      {tag}
+                                    </span>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                            <div className="text-right">
+                              <span className={`px-2 py-1 rounded-full text-xs ${
+                                email.status === 'active' 
+                                  ? 'text-green-400 bg-green-400/10' 
+                                  : 'text-gray-400 bg-gray-400/10'
+                              }`}>
+                                {email.status || 'Unknown'}
+                              </span>
+                              <div className="flex items-center space-x-2 mt-2">
+                                <button className="p-1 text-gray-400 hover:text-white transition-colors">
+                                  <Eye className="w-4 h-4" />
+                                </button>
+                                <button className="p-1 text-gray-400 hover:text-white transition-colors">
+                                  <Edit className="w-4 h-4" />
+                                </button>
+                                <button className="p-1 text-gray-400 hover:text-red-400 transition-colors">
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        ))
+                      )}
                     </div>
                   </motion.div>
 
