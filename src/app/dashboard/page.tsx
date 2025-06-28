@@ -5,7 +5,6 @@ import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import SubscriptionGuard from '@/components/SubscriptionGuard'
-import ChatModal from '@/components/ChatModal'
 import { 
   Sparkles, 
   BarChart3, 
@@ -367,7 +366,6 @@ export default function Dashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [activeTab, setActiveTab] = useState('overview')
   const [isSigningOut, setIsSigningOut] = useState(false)
-  const [isChatOpen, setIsChatOpen] = useState(false)
   const router = useRouter()
   const { user, loading, signOut } = useAuth()
 
@@ -422,18 +420,9 @@ export default function Dashboard() {
     window.open(billingUrl, '_blank', 'noopener,noreferrer')
   }
 
-  const handleOpenChat = () => {
-    setIsChatOpen(true)
-  }
-
-  const handleCloseChat = () => {
-    setIsChatOpen(false)
-  }
-
-  const handleEmailAdded = (email: string) => {
-    console.log('Email added through chat:', email)
-    // Here you could add the email to your actual email list
-    // For now, we'll just log it
+  const handleAddEmail = () => {
+    const formUrl = 'http://localhost:5678/form/6272f3aa-a2f6-417a-9977-2b11ec3488a7'
+    window.open(formUrl, '_blank', 'noopener,noreferrer')
   }
 
   const getPriorityColor = (priority: string) => {
@@ -579,7 +568,7 @@ export default function Dashboard() {
                   <Bell className="w-5 h-5" />
                 </button>
                 <button 
-                  onClick={handleOpenChat}
+                  onClick={handleAddEmail}
                   className="flex items-center space-x-2 px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded-xl transition-colors"
                 >
                   <Plus className="w-4 h-4" />
@@ -764,7 +753,7 @@ export default function Dashboard() {
                 >
                   <div className="grid grid-cols-1 gap-4">
                     <button 
-                      onClick={handleOpenChat}
+                      onClick={handleAddEmail}
                       className="flex items-center justify-center space-x-3 p-6 bg-white/5 rounded-xl hover:bg-white/10 transition-colors"
                     >
                       <Plus className="w-6 h-6 text-primary-400" />
@@ -1074,13 +1063,6 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
-
-      {/* Chat Modal */}
-      <ChatModal
-        isOpen={isChatOpen}
-        onClose={handleCloseChat}
-        onEmailAdded={handleEmailAdded}
-      />
     </SubscriptionGuard>
   )
 } 
