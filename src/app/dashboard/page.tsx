@@ -52,6 +52,7 @@ export default function Dashboard() {
   const [loadingEmails, setLoadingEmails] = useState(false)
   const [deletingEmails, setDeletingEmails] = useState<Set<number>>(new Set())
   const [recentlyViewedEmails, setRecentlyViewedEmails] = useState<any[]>([])
+  const [savedEmails, setSavedEmails] = useState<any[]>([])
   const [emailSearchTerm, setEmailSearchTerm] = useState('')
   const router = useRouter()
   const { user, loading, signOut } = useAuth()
@@ -213,6 +214,9 @@ export default function Dashboard() {
       // Also remove from recently viewed if it's there
       setRecentlyViewedEmails(prev => prev.filter(e => e.id !== email.id))
       
+      // Also remove from saved emails if it's there
+      setSavedEmails(prev => prev.filter(e => e.id !== email.id))
+      
     } catch (error) {
       console.error('❌ Unexpected error deleting email:', error)
     } finally {
@@ -234,11 +238,13 @@ export default function Dashboard() {
 
   const handleSaveEmail = (email: any) => {
     console.log('💾 Saving email:', email)
-    // Here you could implement save functionality like:
-    // - Adding to favorites/saved list
-    // - Exporting to CSV
-    // - Adding to a specific category
-    // - Saving to local storage
+    
+    // Add to saved emails (limit to 10 most recent)
+    setSavedEmails(prev => {
+      const filtered = prev.filter(e => e.id !== email.id) // Remove if already exists
+      return [email, ...filtered].slice(0, 10) // Keep only 10 most recent
+    })
+    
     alert(`Email "${email.name}" from ${email.company} has been saved!`)
   }
 
@@ -831,7 +837,7 @@ export default function Dashboard() {
                 </motion.div>
 
                 {/* Email List Table and Recent Campaigns */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                   {/* Email List Table */}
                   <motion.div
                     initial={{ opacity: 0, x: -20 }}
@@ -987,6 +993,71 @@ export default function Dashboard() {
                                   className="p-1 text-gray-400 hover:text-primary-400 transition-colors"
                                 >
                                   <Save className="w-4 h-4" />
+                                </button>
+                                <button 
+                                  onClick={() => handleDeleteEmail(email)}
+                                  className="p-1 text-gray-400 hover:text-red-400 transition-colors"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  </motion.div>
+
+                  {/* Saved Emails */}
+                  <motion.div
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.5, delay: 0.5 }}
+                    className="glass-effect rounded-2xl p-6"
+                  >
+                    <div className="flex items-center justify-between mb-6">
+                      <h2 className="text-xl font-semibold text-white">Saved Emails</h2>
+                      <button className="text-primary-400 hover:text-primary-300 text-sm">View All</button>
+                    </div>
+                    <div className="space-y-4 max-h-96 overflow-y-auto">
+                      {savedEmails.length === 0 ? (
+                        <div className="text-center p-8">
+                          <Save className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                          <p className="text-gray-400">No saved emails</p>
+                          <p className="text-gray-500 text-sm">Click the save icon to save emails</p>
+                        </div>
+                      ) : (
+                        savedEmails.map((email) => (
+                          <div key={email.id} className="flex items-center justify-between p-4 bg-white/5 rounded-xl">
+                            <div className="flex-1">
+                              <div className="flex items-center space-x-3">
+                                <div className="w-10 h-10 bg-primary-500/20 rounded-full flex items-center justify-center">
+                                  <User className="w-5 h-5 text-primary-400" />
+                                </div>
+                                <div>
+                                  <h3 className="text-white font-medium">{email.name || 'No name'}</h3>
+                                  <p className="text-gray-400 text-sm">{email.company || 'No company'}</p>
+                                  <p className="text-gray-500 text-xs">{email.email || 'No email'}</p>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <span className="px-2 py-1 rounded-full text-xs text-yellow-400 bg-yellow-400/10">
+                                Saved
+                              </span>
+                              <div className="flex items-center space-x-2 mt-2">
+                                <button 
+                                  onClick={() => handleViewEmail(email)}
+                                  disabled={deletingEmails.has(email.id)}
+                                  className="p-1 text-gray-400 hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                  <Eye className="w-4 h-4" />
+                                </button>
+                                <button 
+                                  onClick={() => handleSendEmail(email)}
+                                  className="p-1 text-gray-400 hover:text-primary-400 transition-colors"
+                                >
+                                  <Mail className="w-4 h-4" />
                                 </button>
                                 <button 
                                   onClick={() => handleDeleteEmail(email)}
