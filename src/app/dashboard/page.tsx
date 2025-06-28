@@ -260,6 +260,16 @@ export default function Dashboard() {
       if (error) {
         console.error('Error signing out:', error)
       } else {
+        // Clear all local state data
+        setEmails([])
+        setLinkedInConnections([])
+        setRecentlyViewedEmails([])
+        setSavedEmails([])
+        setRecentlyViewedLinkedIn([])
+        setSavedLinkedIn([])
+        setEmailSearchTerm('')
+        setLinkedInSearchTerm('')
+        
         // Redirect to sign in page after successful sign out
         router.push('/signin')
       }
