@@ -477,9 +477,14 @@ export default function Dashboard() {
     {
       title: 'Total Emails',
       value: emails.length.toString(),
-      change: '+23%',
       icon: Users,
       color: 'text-blue-400'
+    },
+    {
+      title: 'LinkedIn Connections',
+      value: uniqueLinkedInConnections.length.toString(),
+      icon: Users2,
+      color: 'text-green-400'
     }
   ]
 
@@ -785,7 +790,7 @@ export default function Dashboard() {
                 className="space-y-8"
               >
                 {/* Stats Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {stats.map((stat, index) => (
                     <motion.div
                       key={stat.title}
@@ -926,7 +931,7 @@ export default function Dashboard() {
                 className="space-y-8"
               >
                 {/* Email List Stats */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {stats.map((stat, index) => (
                     <motion.div
                       key={stat.title}
@@ -1211,7 +1216,7 @@ export default function Dashboard() {
                 className="space-y-8"
               >
                 {/* LinkedIn Stats */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {linkedInAnalytics.map((stat, index) => (
                     <motion.div
                       key={stat.title}
