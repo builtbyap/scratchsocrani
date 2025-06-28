@@ -82,7 +82,7 @@ export default function LandingPage() {
             <Sparkles className="w-10 h-10 text-primary-400" />
             <span className="gradient-text">Socrani</span>
           </div>
-          <h1 className="text-5xl md:text-7xl font-bold mb-6">
+          <h1 className="text-5xl md:text-7xl font-bold mb-12">
             <span className="gradient-text">AI</span> <span className="text-white font-normal">for Job Referrals</span>
           </h1>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
