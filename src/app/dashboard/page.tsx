@@ -406,8 +406,8 @@ export default function Dashboard() {
 
   const linkedInAnalytics = [
     {
-      title: 'Profile Views',
-      value: '1,247',
+      title: 'LinkedIn Connections',
+      value: linkedInConnections.length.toString(),
       change: '+23%',
       icon: Eye,
       color: 'text-blue-400'
