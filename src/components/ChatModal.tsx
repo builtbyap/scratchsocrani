@@ -67,8 +67,8 @@ export default function ChatModal({ isOpen, onClose, onEmailAdded }: ChatModalPr
     setMessages(prev => [...prev, userMessage])
     setInputValue('')
     
-    // Check if conversation is complete (after last name question)
-    if (messages.length >= 5) { // Company Q + Company A + First Name Q + First Name A + Last Name Q
+    // Check if conversation is complete (after success message has been shown)
+    if (messages.length >= 6) { // Company Q + Company A + First Name Q + First Name A + Last Name Q + Last Name A + Success Message
       return // Don't send bot response after conversation is complete
     }
     
