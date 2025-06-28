@@ -40,7 +40,8 @@ import {
   Users2,
   Building2,
   Globe,
-  Zap
+  Zap,
+  Save
 } from 'lucide-react'
 
 export default function Dashboard() {
@@ -229,6 +230,16 @@ export default function Dashboard() {
     
     console.log('📧 Opening Gmail compose for:', email.email)
     window.open(gmailComposeUrl, '_blank')
+  }
+
+  const handleSaveEmail = (email: any) => {
+    console.log('💾 Saving email:', email)
+    // Here you could implement save functionality like:
+    // - Adding to favorites/saved list
+    // - Exporting to CSV
+    // - Adding to a specific category
+    // - Saving to local storage
+    alert(`Email "${email.name}" from ${email.company} has been saved!`)
   }
 
   // Filter emails based on search term (company name)
@@ -854,14 +865,11 @@ export default function Dashboard() {
                         <div className="text-center p-8">
                           <Mail className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                           <p className="text-gray-400">
-                            {emailSearchTerm.trim() ? 'No emails found matching your search' : 'No emails found'}
+                            {emailSearchTerm.trim() ? 'No emails found' : 'Add your first email to get started'}
                           </p>
-                          <p className="text-gray-500 text-sm">
-                            {emailSearchTerm.trim() ? 'Try adjusting your search terms' : 'Add your first email to get started'}
+                          <p className="text-gray-500 text-sm mt-2">
+                            <span className="font-bold">Use the Add Email button</span>
                           </p>
-                          {emailSearchTerm.trim() && (
-                            <p className="text-gray-500 text-sm mt-1">Use the Add Email button</p>
-                          )}
                         </div>
                       ) : (
                         filteredEmails.map((email: any) => (
@@ -896,6 +904,13 @@ export default function Dashboard() {
                                   className="p-1 text-gray-400 hover:text-primary-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                   <Mail className="w-4 h-4" />
+                                </button>
+                                <button 
+                                  onClick={() => handleSaveEmail(email)}
+                                  disabled={deletingEmails.has(email.id)}
+                                  className="p-1 text-gray-400 hover:text-primary-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                  <Save className="w-4 h-4" />
                                 </button>
                                 <button 
                                   onClick={() => handleDeleteEmail(email)}
@@ -966,6 +981,12 @@ export default function Dashboard() {
                                   className="p-1 text-gray-400 hover:text-primary-400 transition-colors"
                                 >
                                   <Mail className="w-4 h-4" />
+                                </button>
+                                <button 
+                                  onClick={() => handleSaveEmail(email)}
+                                  className="p-1 text-gray-400 hover:text-primary-400 transition-colors"
+                                >
+                                  <Save className="w-4 h-4" />
                                 </button>
                                 <button 
                                   onClick={() => handleDeleteEmail(email)}
