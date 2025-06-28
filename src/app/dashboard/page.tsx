@@ -54,6 +54,12 @@ export default function Dashboard() {
   const [recentlyViewedEmails, setRecentlyViewedEmails] = useState<any[]>([])
   const [savedEmails, setSavedEmails] = useState<any[]>([])
   const [emailSearchTerm, setEmailSearchTerm] = useState('')
+  const [linkedInConnections, setLinkedInConnections] = useState<any[]>([])
+  const [loadingLinkedIn, setLoadingLinkedIn] = useState(false)
+  const [deletingLinkedIn, setDeletingLinkedIn] = useState<Set<number>>(new Set())
+  const [recentlyViewedLinkedIn, setRecentlyViewedLinkedIn] = useState<any[]>([])
+  const [savedLinkedIn, setSavedLinkedIn] = useState<any[]>([])
+  const [linkedInSearchTerm, setLinkedInSearchTerm] = useState('')
   const router = useRouter()
   const { user, loading, signOut } = useAuth()
 
@@ -112,6 +118,61 @@ export default function Dashboard() {
     }
   }
 
+  const fetchLinkedInConnections = async () => {
+    if (!user) return
+    
+    setLoadingLinkedIn(true)
+    try {
+      const supabase = getSupabaseClient()
+      console.log('🔍 Fetching LinkedIn connections from Supabase...')
+      console.log('👤 Current user:', user)
+      
+      // Test the connection first
+      const { data: testData, error: testError } = await supabase
+        .from('linkedin')
+        .select('count')
+        .limit(1)
+      
+      if (testError) {
+        console.error('❌ Test query failed:', testError)
+        console.error('❌ Error details:', {
+          message: testError.message,
+          details: testError.details,
+          hint: testError.hint,
+          code: testError.code
+        })
+        setLinkedInConnections([])
+        return
+      }
+      
+      console.log('✅ Test query successful, fetching full data...')
+      
+      const { data, error } = await supabase
+        .from('linkedin')
+        .select('*')
+      
+      if (error) {
+        console.error('❌ Error fetching LinkedIn connections:', error)
+        console.error('❌ Error details:', {
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          code: error.code
+        })
+        setLinkedInConnections([])
+        return
+      }
+      
+      console.log('✅ Successfully fetched LinkedIn connections:', data)
+      setLinkedInConnections(data || [])
+    } catch (error) {
+      console.error('❌ Unexpected error fetching LinkedIn connections:', error)
+      setLinkedInConnections([])
+    } finally {
+      setLoadingLinkedIn(false)
+    }
+  }
+
   // Redirect to sign in if not authenticated
   useEffect(() => {
     if (!loading && !user) {
@@ -123,6 +184,7 @@ export default function Dashboard() {
   useEffect(() => {
     if (user) {
       fetchEmails()
+      fetchLinkedInConnections()
     }
   }, [user])
 
@@ -248,10 +310,81 @@ export default function Dashboard() {
     alert(`Email "${email.name}" from ${email.company} has been saved!`)
   }
 
+  const handleViewLinkedIn = (connection: any) => {
+    // Add to recently viewed LinkedIn connections (limit to 5 most recent)
+    setRecentlyViewedLinkedIn(prev => {
+      const filtered = prev.filter(c => c.id !== connection.id) // Remove if already exists
+      return [connection, ...filtered].slice(0, 5) // Keep only 5 most recent
+    })
+    
+    console.log('👁️ Viewing LinkedIn connection:', connection)
+  }
+
+  const handleDeleteLinkedIn = async (connection: any) => {
+    if (!user) return
+    
+    // Add connection ID to deleting set
+    setDeletingLinkedIn(prev => new Set(prev).add(connection.id))
+    
+    try {
+      console.log('🗑️ Deleting LinkedIn connection:', connection)
+      
+      const supabase = getSupabaseClient()
+      const { error } = await supabase
+        .from('linkedin')
+        .delete()
+        .eq('id', connection.id)
+      
+      if (error) {
+        console.error('❌ Error deleting LinkedIn connection:', error)
+        return
+      }
+      
+      console.log('✅ LinkedIn connection deleted successfully')
+      
+      // Remove from local state
+      setLinkedInConnections(prev => prev.filter(c => c.id !== connection.id))
+      
+      // Also remove from recently viewed if it's there
+      setRecentlyViewedLinkedIn(prev => prev.filter(c => c.id !== connection.id))
+      
+      // Also remove from saved LinkedIn if it's there
+      setSavedLinkedIn(prev => prev.filter(c => c.id !== connection.id))
+      
+    } catch (error) {
+      console.error('❌ Unexpected error deleting LinkedIn connection:', error)
+    } finally {
+      // Remove connection ID from deleting set
+      setDeletingLinkedIn(prev => {
+        const newSet = new Set(prev)
+        newSet.delete(connection.id)
+        return newSet
+      })
+    }
+  }
+
+  const handleSaveLinkedIn = (connection: any) => {
+    console.log('💾 Saving LinkedIn connection:', connection)
+    
+    // Add to saved LinkedIn connections (limit to 10 most recent)
+    setSavedLinkedIn(prev => {
+      const filtered = prev.filter(c => c.id !== connection.id) // Remove if already exists
+      return [connection, ...filtered].slice(0, 10) // Keep only 10 most recent
+    })
+    
+    alert(`LinkedIn connection "${connection.name}" from ${connection.company} has been saved!`)
+  }
+
   // Filter emails based on search term (company name)
   const filteredEmails = emails.filter((email: any) => {
     if (!emailSearchTerm.trim()) return true
     return email.company?.toLowerCase().includes(emailSearchTerm.toLowerCase())
+  })
+
+  // Filter LinkedIn connections based on search term (company name)
+  const filteredLinkedInConnections = linkedInConnections.filter((connection: any) => {
+    if (!linkedInSearchTerm.trim()) return true
+    return connection.company?.toLowerCase().includes(linkedInSearchTerm.toLowerCase())
   })
 
   // Define stats with real data
@@ -299,69 +432,6 @@ export default function Dashboard() {
       openRate: 65.3,
       clickRate: 14.2,
       status: 'Sent'
-    }
-  ]
-
-  const linkedInConnections = [
-    {
-      id: 1,
-      name: 'Sarah Johnson',
-      title: 'Senior Product Manager',
-      company: 'TechCorp Inc.',
-      avatar: '/api/placeholder/40/40',
-      connectionDate: '2024-01-15',
-      mutualConnections: 12,
-      lastInteraction: '2 days ago',
-      status: 'Active',
-      tags: ['Tech', 'Product', 'Networking']
-    },
-    {
-      id: 2,
-      name: 'Michael Chen',
-      title: 'Software Engineer',
-      company: 'StartupXYZ',
-      avatar: '/api/placeholder/40/40',
-      connectionDate: '2024-01-20',
-      mutualConnections: 8,
-      lastInteraction: '1 week ago',
-      status: 'Active',
-      tags: ['Engineering', 'Startup']
-    },
-    {
-      id: 3,
-      name: 'Emily Rodriguez',
-      title: 'Marketing Director',
-      company: 'Global Solutions',
-      avatar: '/api/placeholder/40/40',
-      connectionDate: '2024-01-10',
-      mutualConnections: 15,
-      lastInteraction: '3 days ago',
-      status: 'Active',
-      tags: ['Marketing', 'Leadership']
-    },
-    {
-      id: 4,
-      name: 'David Kim',
-      title: 'UX Designer',
-      company: 'Design Studio',
-      avatar: '/api/placeholder/40/40',
-      connectionDate: '2024-01-25',
-      mutualConnections: 6,
-      lastInteraction: '5 days ago',
-      status: 'Inactive',
-      tags: ['Design', 'UX']
-    },
-    {
-      id: 5,
-      name: 'Lisa Thompson',
-      title: 'Business Development',
-      company: 'Enterprise Corp',
-      avatar: '/api/placeholder/40/40',
-      connectionDate: '2024-02-01',
-      mutualConnections: 20,
-      lastInteraction: '1 day ago',
-      status: 'Active',
-      tags: ['Business', 'Sales']
     }
   ]
 
@@ -418,20 +488,6 @@ export default function Dashboard() {
       change: '+8%',
       icon: Users2,
       color: 'text-green-400'
-    },
-    {
-      title: 'Post Reach',
-      value: '45.2K',
-      change: '+15%',
-      icon: Share2,
-      color: 'text-purple-400'
-    },
-    {
-      title: 'Engagement Rate',
-      value: '4.8%',
-      change: '+2.1%',
-      icon: Target,
-      color: 'text-orange-400'
     }
   ]
 
@@ -1142,6 +1198,8 @@ export default function Dashboard() {
                           <input
                             type="text"
                             placeholder="Search connections..."
+                            value={linkedInSearchTerm}
+                            onChange={(e) => setLinkedInSearchTerm(e.target.value)}
                             className="pl-9 pr-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-primary-400 transition-colors text-sm w-48"
                           />
                         </div>
@@ -1149,14 +1207,23 @@ export default function Dashboard() {
                       </div>
                     </div>
                     <div className="space-y-4 max-h-96 overflow-y-auto">
-                      {linkedInConnections.length === 0 ? (
+                      {loadingLinkedIn ? (
+                        <div className="flex items-center justify-center p-8">
+                          <div className="w-8 h-8 border-4 border-primary-500 border-t-transparent rounded-full animate-spin"></div>
+                          <span className="ml-3 text-gray-400">Loading connections...</span>
+                        </div>
+                      ) : filteredLinkedInConnections.length === 0 ? (
                         <div className="text-center p-8">
                           <Users2 className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                          <p className="text-gray-400">No connections found</p>
-                          <p className="text-gray-500 text-sm">Add your first connection to get started</p>
+                          <p className="text-gray-400">
+                            {linkedInSearchTerm.trim() ? 'No connections found' : 'Add your first connection to get started'}
+                          </p>
+                          <p className="text-gray-500 text-sm mt-2">
+                            <span className="font-bold">Use the Add Connection button</span>
+                          </p>
                         </div>
                       ) : (
-                        linkedInConnections.map((connection) => (
+                        filteredLinkedInConnections.map((connection) => (
                           <div key={connection.id} className="flex items-center justify-between p-4 bg-white/5 rounded-xl">
                             <div className="flex-1">
                               <div className="flex items-center space-x-3">
@@ -1164,32 +1231,41 @@ export default function Dashboard() {
                                   <User className="w-5 h-5 text-primary-400" />
                                 </div>
                                 <div>
-                                  <h3 className="text-white font-medium">{connection.name}</h3>
-                                  <p className="text-gray-400 text-sm">{connection.title}</p>
-                                  <p className="text-gray-500 text-xs">{connection.company}</p>
+                                  <h3 className="text-white font-medium">{connection.name || 'No name'}</h3>
+                                  <p className="text-gray-400 text-sm">{connection.title || 'No title'}</p>
+                                  <p className="text-gray-500 text-xs">{connection.company || 'No company'}</p>
                                 </div>
                               </div>
                             </div>
                             <div className="text-right">
-                              <span className={`px-2 py-1 rounded-full text-xs ${
-                                connection.status === 'Active' 
-                                  ? 'text-green-400 bg-green-400/10' 
-                                  : 'text-gray-400 bg-gray-400/10'
-                              }`}>
-                                {connection.status}
+                              <span className="px-2 py-1 rounded-full text-xs text-green-400 bg-green-400/10">
+                                Active
                               </span>
                               <div className="flex items-center space-x-2 mt-2">
-                                <button className="p-1 text-gray-400 hover:text-white transition-colors">
+                                <button 
+                                  onClick={() => handleViewLinkedIn(connection)}
+                                  disabled={deletingLinkedIn.has(connection.id)}
+                                  className="p-1 text-gray-400 hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
                                   <Eye className="w-4 h-4" />
                                 </button>
-                                <button className="p-1 text-gray-400 hover:text-primary-400 transition-colors">
-                                  <MessageSquare className="w-4 h-4" />
-                                </button>
-                                <button className="p-1 text-gray-400 hover:text-primary-400 transition-colors">
+                                <button 
+                                  onClick={() => handleSaveLinkedIn(connection)}
+                                  disabled={deletingLinkedIn.has(connection.id)}
+                                  className="p-1 text-gray-400 hover:text-primary-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
                                   <Save className="w-4 h-4" />
                                 </button>
-                                <button className="p-1 text-gray-400 hover:text-red-400 transition-colors">
-                                  <Trash2 className="w-4 h-4" />
+                                <button 
+                                  onClick={() => handleDeleteLinkedIn(connection)}
+                                  disabled={deletingLinkedIn.has(connection.id)}
+                                  className="p-1 text-gray-400 hover:text-red-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                  {deletingLinkedIn.has(connection.id) ? (
+                                    <div className="w-4 h-4 border-2 border-red-400 border-t-transparent rounded-full animate-spin"></div>
+                                  ) : (
+                                    <Trash2 className="w-4 h-4" />
+                                  )}
                                 </button>
                               </div>
                             </div>
