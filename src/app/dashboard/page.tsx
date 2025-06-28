@@ -49,7 +49,9 @@ export default function Dashboard() {
   const [isSigningOut, setIsSigningOut] = useState(false)
   const [emails, setEmails] = useState<any[]>([])
   const [loadingEmails, setLoadingEmails] = useState(false)
+  const [deletingEmails, setDeletingEmails] = useState<Set<number>>(new Set())
   const [recentlyViewedEmails, setRecentlyViewedEmails] = useState<any[]>([])
+  const [emailSearchTerm, setEmailSearchTerm] = useState('')
   const router = useRouter()
   const { user, loading, signOut } = useAuth()
 
@@ -185,6 +187,9 @@ export default function Dashboard() {
   const handleDeleteEmail = async (email: any) => {
     if (!user) return
     
+    // Add email ID to deleting set
+    setDeletingEmails(prev => new Set(prev).add(email.id))
+    
     try {
       console.log('🗑️ Deleting email:', email)
       
@@ -209,6 +214,13 @@ export default function Dashboard() {
       
     } catch (error) {
       console.error('❌ Unexpected error deleting email:', error)
+    } finally {
+      // Remove email ID from deleting set
+      setDeletingEmails(prev => {
+        const newSet = new Set(prev)
+        newSet.delete(email.id)
+        return newSet
+      })
     }
   }
 
@@ -219,18 +231,26 @@ export default function Dashboard() {
     window.open(gmailComposeUrl, '_blank')
   }
 
+  // Filter emails based on search term (company name)
+  const filteredEmails = emails.filter((email: any) => {
+    if (!emailSearchTerm.trim()) return true
+    return email.company?.toLowerCase().includes(emailSearchTerm.toLowerCase())
+  })
+
   // Define stats with real data
   const stats = [
     {
       title: 'Total Emails',
-      value: emails.length.toString(),
+      value: emailSearchTerm.trim() ? `${filteredEmails.length} of ${emails.length}` : emails.length.toString(),
       change: '+23%',
       icon: Users,
       color: 'text-blue-400'
     },
     {
       title: 'Saved Emails',
-      value: emails.filter((email: any) => email.status === 'active').length.toString(),
+      value: emailSearchTerm.trim() 
+        ? filteredEmails.filter((email: any) => email.status === 'active').length.toString()
+        : emails.filter((email: any) => email.status === 'active').length.toString(),
       change: '-8%',
       icon: AlertCircle,
       color: 'text-orange-400'
@@ -830,7 +850,19 @@ export default function Dashboard() {
                   >
                     <div className="flex items-center justify-between mb-6">
                       <h2 className="text-xl font-semibold text-white">Email List</h2>
-                      <button className="text-primary-400 hover:text-primary-300 text-sm">View All</button>
+                      <div className="flex items-center space-x-4">
+                        <div className="relative">
+                          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                          <input
+                            type="text"
+                            placeholder="Search by company..."
+                            value={emailSearchTerm}
+                            onChange={(e) => setEmailSearchTerm(e.target.value)}
+                            className="pl-9 pr-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-primary-400 transition-colors text-sm w-48"
+                          />
+                        </div>
+                        <button className="text-primary-400 hover:text-primary-300 text-sm">View All</button>
+                      </div>
                     </div>
                     <div className="space-y-4 max-h-96 overflow-y-auto">
                       {loadingEmails ? (
@@ -838,14 +870,18 @@ export default function Dashboard() {
                           <div className="w-8 h-8 border-4 border-primary-500 border-t-transparent rounded-full animate-spin"></div>
                           <span className="ml-3 text-gray-400">Loading emails...</span>
                         </div>
-                      ) : emails.length === 0 ? (
+                      ) : filteredEmails.length === 0 ? (
                         <div className="text-center p-8">
                           <Mail className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                          <p className="text-gray-400">No emails found</p>
-                          <p className="text-gray-500 text-sm">Add your first email to get started</p>
+                          <p className="text-gray-400">
+                            {emailSearchTerm.trim() ? 'No emails found matching your search' : 'No emails found'}
+                          </p>
+                          <p className="text-gray-500 text-sm">
+                            {emailSearchTerm.trim() ? 'Try adjusting your search terms' : 'Add your first email to get started'}
+                          </p>
                         </div>
                       ) : (
-                        emails.map((email: any) => (
+                        filteredEmails.map((email: any) => (
                           <div key={email.id} className="flex items-center justify-between p-4 bg-white/5 rounded-xl">
                             <div className="flex-1">
                               <div className="flex items-center space-x-3">
@@ -866,21 +902,28 @@ export default function Dashboard() {
                               <div className="flex items-center space-x-2 mt-2">
                                 <button 
                                   onClick={() => handleViewEmail(email)}
-                                  className="p-1 text-gray-400 hover:text-white transition-colors"
+                                  disabled={deletingEmails.has(email.id)}
+                                  className="p-1 text-gray-400 hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                   <Eye className="w-4 h-4" />
                                 </button>
                                 <button 
                                   onClick={() => handleSendEmail(email)}
-                                  className="p-1 text-gray-400 hover:text-primary-400 transition-colors"
+                                  disabled={deletingEmails.has(email.id)}
+                                  className="p-1 text-gray-400 hover:text-primary-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                   <Mail className="w-4 h-4" />
                                 </button>
                                 <button 
                                   onClick={() => handleDeleteEmail(email)}
-                                  className="p-1 text-gray-400 hover:text-red-400 transition-colors"
+                                  disabled={deletingEmails.has(email.id)}
+                                  className="p-1 text-gray-400 hover:text-red-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
-                                  <Trash2 className="w-4 h-4" />
+                                  {deletingEmails.has(email.id) ? (
+                                    <div className="w-4 h-4 border-2 border-red-400 border-t-transparent rounded-full animate-spin"></div>
+                                  ) : (
+                                    <Trash2 className="w-4 h-4" />
+                                  )}
                                 </button>
                               </div>
                             </div>
@@ -930,7 +973,8 @@ export default function Dashboard() {
                               <div className="flex items-center space-x-2 mt-2">
                                 <button 
                                   onClick={() => handleViewEmail(email)}
-                                  className="p-1 text-gray-400 hover:text-white transition-colors"
+                                  disabled={deletingEmails.has(email.id)}
+                                  className="p-1 text-gray-400 hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                   <Eye className="w-4 h-4" />
                                 </button>
