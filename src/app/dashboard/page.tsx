@@ -76,6 +76,7 @@ export default function Dashboard() {
       const { data: testData, error: testError } = await supabase
         .from('emails')
         .select('count')
+        .eq('user_id', user.id)
         .limit(1)
       
       if (testError) {
@@ -95,6 +96,7 @@ export default function Dashboard() {
       const { data, error } = await supabase
         .from('emails')
         .select('*')
+        .eq('user_id', user.id)
       
       if (error) {
         console.error('❌ Error fetching emails:', error)
@@ -144,6 +146,7 @@ export default function Dashboard() {
       const { data: testData, error: testError } = await supabase
         .from('Linkedin')
         .select('count')
+        .eq('user_id', user.id)
         .limit(1)
       
       if (testError) {
@@ -164,6 +167,7 @@ export default function Dashboard() {
           const { data: altData, error: altError } = await supabase
             .from(tableName)
             .select('count')
+            .eq('user_id', user.id)
             .limit(1)
           
           if (!altError) {
@@ -172,6 +176,7 @@ export default function Dashboard() {
             const { data, error } = await supabase
               .from(tableName)
               .select('*')
+              .eq('user_id', user.id)
             
             if (!error) {
               console.log(`✅ Successfully fetched from ${tableName}:`, data)
@@ -191,6 +196,7 @@ export default function Dashboard() {
       const { data, error } = await supabase
         .from('Linkedin')
         .select('*')
+        .eq('user_id', user.id)
       
       if (error) {
         console.error('❌ Error fetching LinkedIn connections:', error)
@@ -308,6 +314,7 @@ export default function Dashboard() {
         .from('emails')
         .delete()
         .eq('id', email.id)
+        .eq('user_id', user.id)
       
       if (error) {
         console.error('❌ Error deleting email:', error)
@@ -380,6 +387,7 @@ export default function Dashboard() {
         .from('Linkedin')
         .delete()
         .eq('id', connection.id)
+        .eq('user_id', user.id)
       
       if (error) {
         console.error('❌ Error deleting LinkedIn connection:', error)
