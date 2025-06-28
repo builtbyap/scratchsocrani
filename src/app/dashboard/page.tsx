@@ -773,28 +773,15 @@ export default function Dashboard() {
                                   <User className="w-5 h-5 text-primary-400" />
                                 </div>
                                 <div>
-                                  <h3 className="text-white font-medium">{email.email || 'No email'}</h3>
+                                  <h3 className="text-white font-medium">{email.name || 'No name'}</h3>
                                   <p className="text-gray-400 text-sm">{email.company || 'No company'}</p>
-                                  <p className="text-gray-500 text-xs">{email.first_name} {email.last_name}</p>
+                                  <p className="text-gray-500 text-xs">{email.email || 'No email'}</p>
                                 </div>
                               </div>
-                              {email.tags && email.tags.length > 0 && (
-                                <div className="flex items-center space-x-2 mt-2">
-                                  {email.tags.map((tag: string, index: number) => (
-                                    <span key={index} className="px-2 py-1 bg-primary-500/20 text-primary-400 text-xs rounded-full">
-                                      {tag}
-                                    </span>
-                                  ))}
-                                </div>
-                              )}
                             </div>
                             <div className="text-right">
-                              <span className={`px-2 py-1 rounded-full text-xs ${
-                                email.status === 'active' 
-                                  ? 'text-green-400 bg-green-400/10' 
-                                  : 'text-gray-400 bg-gray-400/10'
-                              }`}>
-                                {email.status || 'Unknown'}
+                              <span className="px-2 py-1 rounded-full text-xs text-green-400 bg-green-400/10">
+                                Active
                               </span>
                               <div className="flex items-center space-x-2 mt-2">
                                 <button className="p-1 text-gray-400 hover:text-white transition-colors">
