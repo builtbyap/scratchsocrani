@@ -66,19 +66,30 @@ export default function ChatModal({ isOpen, onClose, onEmailAdded }: ChatModalPr
 
     setMessages(prev => [...prev, userMessage])
     setInputValue('')
+    
+    // Check if conversation is complete (after last name question)
+    if (messages.length >= 5) { // Company Q + Company A + First Name Q + First Name A + Last Name Q
+      return // Don't send bot response after conversation is complete
+    }
+    
     setIsTyping(true)
 
     // Simulate bot response
     setTimeout(() => {
       const botResponse = generateBotResponse(inputValue.trim())
-      const botMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        text: botResponse.text,
-        sender: 'bot',
-        timestamp: new Date()
+      
+      // Only add bot message if there's actual text
+      if (botResponse.text) {
+        const botMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          text: botResponse.text,
+          sender: 'bot',
+          timestamp: new Date()
+        }
+        
+        setMessages(prev => [...prev, botMessage])
       }
       
-      setMessages(prev => [...prev, botMessage])
       setIsTyping(false)
 
       // If email was successfully added, call the callback
