@@ -118,7 +118,7 @@ export default function ChatModal({ isOpen, onClose, onEmailAdded }: ChatModalPr
     // Final step - email validation
     if (emailRegex.test(userInput)) {
       return {
-        text: `Perfect! I've added ${userInput} to your email list. You can now check your email list and search for thecompany to see the email address,
+        text: `Perfect! I've added ${userInput} to your email list. You can now check your email list and search for the company to see the email address.`,
         success: true
       }
     } else if (userInput.toLowerCase().includes('email') || userInput.toLowerCase().includes('add')) {
