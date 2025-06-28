@@ -826,7 +826,6 @@ export default function Dashboard() {
                         <div key={project.id} className="flex items-center justify-between p-4 bg-white/5 rounded-xl">
                           <div className="flex-1">
                             <h3 className="text-white font-medium">{project.name}</h3>
-                            <p className="text-gray-400 text-sm">{project.client}</p>
                           </div>
                           <div className="text-right">
                             <span className={`px-2 py-1 rounded-full text-xs ${getStatusColor(project.status)}`}>
@@ -1093,8 +1092,6 @@ export default function Dashboard() {
                                 </div>
                                 <div>
                                   <h3 className="text-white font-medium">{email.name || 'No name'}</h3>
-                                  <p className="text-gray-400 text-sm">{email.company || 'No company'}</p>
-                                  <p className="text-gray-500 text-xs">{email.email || 'No email'}</p>
                                 </div>
                               </div>
                             </div>
@@ -1164,8 +1161,6 @@ export default function Dashboard() {
                                 </div>
                                 <div>
                                   <h3 className="text-white font-medium">{email.name || 'No name'}</h3>
-                                  <p className="text-gray-400 text-sm">{email.company || 'No company'}</p>
-                                  <p className="text-gray-500 text-xs">{email.email || 'No email'}</p>
                                 </div>
                               </div>
                             </div>
@@ -1309,8 +1304,6 @@ export default function Dashboard() {
                                 </div>
                                 <div>
                                   <h3 className="text-white font-medium">{connection.name || 'No name'}</h3>
-                                  <p className="text-gray-400 text-sm">{connection.title || 'No title'}</p>
-                                  <p className="text-gray-500 text-xs">{connection.company || 'No company'}</p>
                                 </div>
                               </div>
                             </div>
@@ -1400,8 +1393,6 @@ export default function Dashboard() {
                                 </div>
                                 <div>
                                   <h3 className="text-white font-medium">{connection.name || 'No name'}</h3>
-                                  <p className="text-gray-400 text-sm">{connection.title || 'No title'}</p>
-                                  <p className="text-gray-500 text-xs">{connection.company || 'No company'}</p>
                                 </div>
                               </div>
                             </div>
