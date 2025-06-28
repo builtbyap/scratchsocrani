@@ -1384,11 +1384,55 @@ export default function Dashboard() {
                       <button className="text-primary-400 hover:text-primary-300 text-sm">View All</button>
                     </div>
                     <div className="space-y-4 max-h-96 overflow-y-auto">
-                      <div className="text-center p-8">
-                        <Save className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                        <p className="text-gray-400">No saved connections</p>
-                        <p className="text-gray-500 text-sm">Click the save icon to save connections</p>
-                      </div>
+                      {savedLinkedIn.length === 0 ? (
+                        <div className="text-center p-8">
+                          <Save className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                          <p className="text-gray-400">No saved connections</p>
+                          <p className="text-gray-500 text-sm">Click the save icon to save connections</p>
+                        </div>
+                      ) : (
+                        savedLinkedIn.map((connection) => (
+                          <div key={connection.id} className="flex items-center justify-between p-4 bg-white/5 rounded-xl">
+                            <div className="flex-1">
+                              <div className="flex items-center space-x-3">
+                                <div className="w-10 h-10 bg-primary-500/20 rounded-full flex items-center justify-center">
+                                  <User className="w-5 h-5 text-primary-400" />
+                                </div>
+                                <div>
+                                  <h3 className="text-white font-medium">{connection.name || 'No name'}</h3>
+                                  <p className="text-gray-400 text-sm">{connection.title || 'No title'}</p>
+                                  <p className="text-gray-500 text-xs">{connection.company || 'No company'}</p>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <span className="px-2 py-1 rounded-full text-xs text-yellow-400 bg-yellow-400/10">
+                                Saved
+                              </span>
+                              <div className="flex items-center space-x-2 mt-2">
+                                <button 
+                                  onClick={() => handleViewLinkedIn(connection)}
+                                  disabled={deletingLinkedIn.has(connection.id)}
+                                  className="p-1 text-gray-400 hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                  <Eye className="w-4 h-4" />
+                                </button>
+                                <button 
+                                  onClick={() => handleDeleteLinkedIn(connection)}
+                                  disabled={deletingLinkedIn.has(connection.id)}
+                                  className="p-1 text-gray-400 hover:text-red-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                  {deletingLinkedIn.has(connection.id) ? (
+                                    <div className="w-4 h-4 border-2 border-red-400 border-t-transparent rounded-full animate-spin"></div>
+                                  ) : (
+                                    <Trash2 className="w-4 h-4" />
+                                  )}
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        ))
+                      )}
                     </div>
                   </motion.div>
                 </div>
