@@ -866,6 +866,9 @@ export default function Dashboard() {
                                 <button className="p-1 text-gray-400 hover:text-white transition-colors">
                                   <Edit className="w-4 h-4" />
                                 </button>
+                                <button className="p-1 text-gray-400 hover:text-primary-400 transition-colors">
+                                  <Mail className="w-4 h-4" />
+                                </button>
                                 <button 
                                   onClick={() => handleDeleteEmail(email)}
                                   className="p-1 text-gray-400 hover:text-red-400 transition-colors"
