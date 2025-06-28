@@ -216,7 +216,7 @@ export default function Dashboard() {
     const gmailComposeUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(email.email)}`
     
     console.log('📧 Opening Gmail compose for:', email.email)
-    window.open(gmailComposeUrl, '_blank', 'width=800,height=600')
+    window.open(gmailComposeUrl, '_blank')
   }
 
   // Define stats with real data
