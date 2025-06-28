@@ -464,7 +464,7 @@ export default function Dashboard() {
       color: 'text-blue-400'
     },
     {
-      title: 'Saved Emails',
+      title: 'LinkedIn Connections',
       value: savedEmails.length.toString(),
       change: '-8%',
       icon: AlertCircle,
@@ -808,9 +808,9 @@ export default function Dashboard() {
                   ))}
                 </div>
 
-                {/* Recent Projects and Activity */}
+                {/* Email List and LinkedIn Connections */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                  {/* Recent Projects */}
+                  {/* Email List */}
                   <motion.div
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
@@ -818,34 +818,97 @@ export default function Dashboard() {
                     className="glass-effect rounded-2xl p-6"
                   >
                     <div className="flex items-center justify-between mb-6">
-                      <h2 className="text-xl font-semibold text-white">Recent Projects</h2>
+                      <h2 className="text-xl font-semibold text-white">Email List</h2>
                       <button className="text-primary-400 hover:text-primary-300 text-sm">View All</button>
                     </div>
-                    <div className="space-y-4">
-                      {recentProjects.map((project) => (
-                        <div key={project.id} className="flex items-center justify-between p-4 bg-white/5 rounded-xl">
-                          <div className="flex-1">
-                            <h3 className="text-white font-medium">{project.name}</h3>
-                          </div>
-                          <div className="text-right">
-                            <span className={`px-2 py-1 rounded-full text-xs ${getStatusColor(project.status)}`}>
-                              {project.status}
-                            </span>
-                            <div className="mt-2">
-                              <div className="w-24 h-2 bg-white/10 rounded-full overflow-hidden">
-                                <div 
-                                  className="h-full bg-primary-500 rounded-full"
-                                  style={{ width: `${project.progress}%` }}
-                                ></div>
+                    <div className="space-y-4 max-h-96 overflow-y-auto">
+                      {loadingEmails ? (
+                        <div className="flex items-center justify-center p-8">
+                          <div className="w-8 h-8 border-4 border-primary-500 border-t-transparent rounded-full animate-spin"></div>
+                          <span className="ml-3 text-gray-400">Loading emails...</span>
+                        </div>
+                      ) : emails.length === 0 ? (
+                        <div className="text-center p-8">
+                          <Mail className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                          <p className="text-gray-400">No emails found</p>
+                          <p className="text-gray-500 text-sm">Add your first email to get started</p>
+                        </div>
+                      ) : (
+                        emails.slice(0, 5).map((email: any) => (
+                          <div key={email.id} className="flex items-center justify-between p-4 bg-white/5 rounded-xl">
+                            <div className="flex-1">
+                              <div className="flex items-center space-x-3">
+                                <div className="w-10 h-10 bg-primary-500/20 rounded-full flex items-center justify-center">
+                                  <User className="w-5 h-5 text-primary-400" />
+                                </div>
+                                <div>
+                                  <h3 className="text-white font-medium">{email.name || 'No name'}</h3>
+                                  <p className="text-gray-400 text-sm">{email.company || 'No company'}</p>
+                                </div>
                               </div>
-                              <p className="text-gray-400 text-xs mt-1">{project.progress}%</p>
+                            </div>
+                            <div className="text-right">
+                              <span className="px-2 py-1 rounded-full text-xs text-green-400 bg-green-400/10">
+                                Active
+                              </span>
                             </div>
                           </div>
-                        </div>
-                      ))}
+                        ))
+                      )}
                     </div>
                   </motion.div>
 
+                  {/* LinkedIn Connections */}
+                  <motion.div
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.5, delay: 0.4 }}
+                    className="glass-effect rounded-2xl p-6"
+                  >
+                    <div className="flex items-center justify-between mb-6">
+                      <h2 className="text-xl font-semibold text-white">LinkedIn Connections</h2>
+                      <button className="text-primary-400 hover:text-primary-300 text-sm">View All</button>
+                    </div>
+                    <div className="space-y-4 max-h-96 overflow-y-auto">
+                      {loadingLinkedIn ? (
+                        <div className="flex items-center justify-center p-8">
+                          <div className="w-8 h-8 border-4 border-primary-500 border-t-transparent rounded-full animate-spin"></div>
+                          <span className="ml-3 text-gray-400">Loading connections...</span>
+                        </div>
+                      ) : linkedInConnections.length === 0 ? (
+                        <div className="text-center p-8">
+                          <Users2 className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                          <p className="text-gray-400">No connections found</p>
+                          <p className="text-gray-500 text-sm">Add your first connection to get started</p>
+                        </div>
+                      ) : (
+                        linkedInConnections.slice(0, 5).map((connection) => (
+                          <div key={connection.id} className="flex items-center justify-between p-4 bg-white/5 rounded-xl">
+                            <div className="flex-1">
+                              <div className="flex items-center space-x-3">
+                                <div className="w-10 h-10 bg-primary-500/20 rounded-full flex items-center justify-center">
+                                  <User className="w-5 h-5 text-primary-400" />
+                                </div>
+                                <div>
+                                  <h3 className="text-white font-medium">{connection.name || 'No name'}</h3>
+                                  <p className="text-gray-400 text-sm">{connection.company || 'No company'}</p>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <span className="px-2 py-1 rounded-full text-xs text-green-400 bg-green-400/10">
+                                Active
+                              </span>
+                            </div>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  </motion.div>
+                </div>
+
+                {/* Recent Activity */}
+                <div className="grid grid-cols-1 gap-8">
                   {/* Recent Activity */}
                   <motion.div
                     initial={{ opacity: 0, x: 20 }}
