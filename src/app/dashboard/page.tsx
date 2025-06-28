@@ -213,10 +213,10 @@ export default function Dashboard() {
   }
 
   const handleSendEmail = (email: any) => {
-    const mailtoLink = `mailto:${email.email}`
+    const gmailComposeUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(email.email)}`
     
-    console.log('📧 Opening email client for:', email.email)
-    window.open(mailtoLink, '_blank')
+    console.log('📧 Opening Gmail compose for:', email.email)
+    window.open(gmailComposeUrl, '_blank', 'width=800,height=600')
   }
 
   // Define stats with real data
