@@ -182,6 +182,36 @@ export default function Dashboard() {
     console.log('👁️ Viewing email:', email)
   }
 
+  const handleDeleteEmail = async (email: any) => {
+    if (!user) return
+    
+    try {
+      console.log('🗑️ Deleting email:', email)
+      
+      const supabase = getSupabaseClient()
+      const { error } = await supabase
+        .from('emails')
+        .delete()
+        .eq('id', email.id)
+      
+      if (error) {
+        console.error('❌ Error deleting email:', error)
+        return
+      }
+      
+      console.log('✅ Email deleted successfully')
+      
+      // Remove from local state
+      setEmails(prev => prev.filter(e => e.id !== email.id))
+      
+      // Also remove from recently viewed if it's there
+      setRecentlyViewedEmails(prev => prev.filter(e => e.id !== email.id))
+      
+    } catch (error) {
+      console.error('❌ Unexpected error deleting email:', error)
+    }
+  }
+
   // Define stats with real data
   const stats = [
     {
@@ -833,10 +863,13 @@ export default function Dashboard() {
                                 >
                                   <Eye className="w-4 h-4" />
                                 </button>
-                                <button className="p-1 text-gray-400 hover:text-primary-400 transition-colors">
+                                <button className="p-1 text-gray-400 hover:text-white transition-colors">
                                   <Edit className="w-4 h-4" />
                                 </button>
-                                <button className="p-1 text-gray-400 hover:text-red-400 transition-colors">
+                                <button 
+                                  onClick={() => handleDeleteEmail(email)}
+                                  className="p-1 text-gray-400 hover:text-red-400 transition-colors"
+                                >
                                   <Trash2 className="w-4 h-4" />
                                 </button>
                               </div>
@@ -893,6 +926,12 @@ export default function Dashboard() {
                                 </button>
                                 <button className="p-1 text-gray-400 hover:text-primary-400 transition-colors">
                                   <Mail className="w-4 h-4" />
+                                </button>
+                                <button 
+                                  onClick={() => handleDeleteEmail(email)}
+                                  className="p-1 text-gray-400 hover:text-red-400 transition-colors"
+                                >
+                                  <Trash2 className="w-4 h-4" />
                                 </button>
                               </div>
                             </div>
