@@ -212,6 +212,13 @@ export default function Dashboard() {
     }
   }
 
+  const handleSendEmail = (email: any) => {
+    const mailtoLink = `mailto:${email.email}`
+    
+    console.log('📧 Opening email client for:', email.email)
+    window.open(mailtoLink, '_blank')
+  }
+
   // Define stats with real data
   const stats = [
     {
@@ -863,10 +870,10 @@ export default function Dashboard() {
                                 >
                                   <Eye className="w-4 h-4" />
                                 </button>
-                                <button className="p-1 text-gray-400 hover:text-white transition-colors">
-                                  <Edit className="w-4 h-4" />
-                                </button>
-                                <button className="p-1 text-gray-400 hover:text-primary-400 transition-colors">
+                                <button 
+                                  onClick={() => handleSendEmail(email)}
+                                  className="p-1 text-gray-400 hover:text-primary-400 transition-colors"
+                                >
                                   <Mail className="w-4 h-4" />
                                 </button>
                                 <button 
@@ -927,7 +934,10 @@ export default function Dashboard() {
                                 >
                                   <Eye className="w-4 h-4" />
                                 </button>
-                                <button className="p-1 text-gray-400 hover:text-primary-400 transition-colors">
+                                <button 
+                                  onClick={() => handleSendEmail(email)}
+                                  className="p-1 text-gray-400 hover:text-primary-400 transition-colors"
+                                >
                                   <Mail className="w-4 h-4" />
                                 </button>
                                 <button 
