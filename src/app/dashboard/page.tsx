@@ -45,28 +45,14 @@ import {
 
 const stats = [
   {
-    title: 'Total Subscribers',
+    title: 'Total Emails',
     value: '1,247',
     change: '+23%',
     icon: Users,
     color: 'text-blue-400'
   },
   {
-    title: 'Open Rate',
-    value: '68.5%',
-    change: '+5.2%',
-    icon: MailOpen,
-    color: 'text-green-400'
-  },
-  {
-    title: 'Click Rate',
-    value: '12.3%',
-    change: '+2.1%',
-    icon: MailCheck,
-    color: 'text-purple-400'
-  },
-  {
-    title: 'Unsubscribes',
+    title: 'Saved Emails',
     value: '23',
     change: '-8%',
     icon: AlertCircle,
@@ -797,7 +783,7 @@ export default function Dashboard() {
                     className="glass-effect rounded-2xl p-6"
                   >
                     <div className="flex items-center justify-between mb-6">
-                      <h2 className="text-xl font-semibold text-white">Subscribers</h2>
+                      <h2 className="text-xl font-semibold text-white">Email List</h2>
                       <button className="text-primary-400 hover:text-primary-300 text-sm">View All</button>
                     </div>
                     <div className="space-y-4 max-h-96 overflow-y-auto">
@@ -846,7 +832,7 @@ export default function Dashboard() {
                     </div>
                   </motion.div>
 
-                  {/* Recent Campaigns */}
+                  {/* Recent Emails */}
                   <motion.div
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
@@ -854,7 +840,7 @@ export default function Dashboard() {
                     className="glass-effect rounded-2xl p-6"
                   >
                     <div className="flex items-center justify-between mb-6">
-                      <h2 className="text-xl font-semibold text-white">Recent Campaigns</h2>
+                      <h2 className="text-xl font-semibold text-white">Recent Emails</h2>
                       <button className="text-primary-400 hover:text-primary-300 text-sm">View All</button>
                     </div>
                     <div className="space-y-4">
