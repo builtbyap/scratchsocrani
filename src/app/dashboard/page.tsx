@@ -819,7 +819,12 @@ export default function Dashboard() {
                   >
                     <div className="flex items-center justify-between mb-6">
                       <h2 className="text-xl font-semibold text-white">Email List</h2>
-                      <button className="text-primary-400 hover:text-primary-300 text-sm">View All</button>
+                      <button 
+                        onClick={() => setActiveTab('email-list')}
+                        className="text-primary-400 hover:text-primary-300 text-sm"
+                      >
+                        View All
+                      </button>
                     </div>
                     <div className="space-y-4 max-h-96 overflow-y-auto">
                       {loadingEmails ? (
@@ -867,7 +872,12 @@ export default function Dashboard() {
                   >
                     <div className="flex items-center justify-between mb-6">
                       <h2 className="text-xl font-semibold text-white">LinkedIn Connections</h2>
-                      <button className="text-primary-400 hover:text-primary-300 text-sm">View All</button>
+                      <button 
+                        onClick={() => setActiveTab('linkedin')}
+                        className="text-primary-400 hover:text-primary-300 text-sm"
+                      >
+                        View All
+                      </button>
                     </div>
                     <div className="space-y-4 max-h-96 overflow-y-auto">
                       {loadingLinkedIn ? (
@@ -906,62 +916,6 @@ export default function Dashboard() {
                     </div>
                   </motion.div>
                 </div>
-
-                {/* Recent Activity */}
-                <div className="grid grid-cols-1 gap-8">
-                  {/* Recent Activity */}
-                  <motion.div
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.5, delay: 0.4 }}
-                    className="glass-effect rounded-2xl p-6"
-                  >
-                    <div className="flex items-center justify-between mb-6">
-                      <h2 className="text-xl font-semibold text-white">Recent Activity</h2>
-                      <button className="text-primary-400 hover:text-primary-300 text-sm">View All</button>
-                    </div>
-                    <div className="space-y-4">
-                      {recentActivity.map((activity) => (
-                        <div key={activity.id} className="flex items-start space-x-3">
-                          <div className="p-2 bg-white/10 rounded-lg">
-                            <activity.icon className="w-4 h-4 text-primary-400" />
-                          </div>
-                          <div className="flex-1">
-                            <p className="text-white text-sm">{activity.message}</p>
-                            <p className="text-gray-400 text-xs mt-1">{activity.time}</p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </motion.div>
-                </div>
-
-                {/* Upcoming Tasks */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.5 }}
-                  className="glass-effect rounded-2xl p-6"
-                >
-                  <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-xl font-semibold text-white">Upcoming Tasks</h2>
-                    <button className="text-primary-400 hover:text-primary-300 text-sm">View All</button>
-                  </div>
-                  <div className="space-y-4">
-                    {upcomingTasks.map((task) => (
-                      <div key={task.id} className="flex items-center justify-between p-4 bg-white/5 rounded-xl">
-                        <div className="flex items-center space-x-3">
-                          <div className={`w-2 h-2 rounded-full ${getPriorityColor(task.priority).split(' ')[0]}`}></div>
-                          <span className="text-white">{task.title}</span>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <Clock className="w-4 h-4 text-gray-400" />
-                          <span className="text-gray-400 text-sm">{task.dueDate}</span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </motion.div>
               </motion.div>
             )}
 
