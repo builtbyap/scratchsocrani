@@ -83,11 +83,8 @@ export default function LandingPage() {
             <span className="gradient-text">Socrani</span>
           </div>
           <h1 className="text-5xl md:text-7xl font-bold mb-6">
-            <span className="gradient-text">Digital Solutions</span> for Modern Businesses
+            <span className="gradient-text">AI for Job Referrals</span>
           </h1>
-          <p className="text-xl md:text-2xl text-gray-300 mb-8 max-w-2xl mx-auto">
-            We help startups and enterprises grow with innovative web, mobile, and cloud solutions. Partner with us to accelerate your digital transformation.
-          </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a href="/signup" className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-primary-500 to-primary-600 rounded-xl font-semibold hover:from-primary-600 hover:to-primary-700 transition-all duration-300 text-white text-lg shadow-lg">
               Get Started <ArrowRight className="w-5 h-5 ml-2" />
