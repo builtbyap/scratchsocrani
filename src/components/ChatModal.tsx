@@ -30,7 +30,7 @@ export default function ChatModal({ isOpen, onClose, onEmailAdded }: ChatModalPr
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      text: "Hi! I'm here to help you add emails to your list. What's the email address you'd like to add?",
+      text: "Hi! I'm here to help you add emails. What company are you looking into?",
       sender: 'bot',
       timestamp: new Date()
     }
@@ -91,9 +91,34 @@ export default function ChatModal({ isOpen, onClose, onEmailAdded }: ChatModalPr
   const generateBotResponse = (userInput: string): { text: string; success: boolean } => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     
+    // Check if this is the first response (after company question)
+    if (messages.length === 2) { // Company question + user's company answer
+      return {
+        text: "What's their first name?",
+        success: false
+      }
+    }
+    
+    // Check if this is the second response (after first name question)
+    if (messages.length === 4) { // Company question + company answer + first name question + user's first name answer
+      return {
+        text: "What's their last name?",
+        success: false
+      }
+    }
+    
+    // Check if this is the third response (after last name question)
+    if (messages.length === 6) { // Company question + company answer + first name question + first name answer + last name question + user's last name answer
+      return {
+        text: "Great! Now what's their email address?",
+        success: false
+      }
+    }
+    
+    // Final step - email validation
     if (emailRegex.test(userInput)) {
       return {
-        text: `Great! I've added ${userInput} to your email list. The subscriber will receive a welcome email shortly. Is there anything else you'd like me to help you with?`,
+        text: `Perfect! I've added ${userInput} to your email list. You can now check your email list and search for thecompany to see the email address,
         success: true
       }
     } else if (userInput.toLowerCase().includes('email') || userInput.toLowerCase().includes('add')) {
