@@ -110,27 +110,15 @@ export default function ChatModal({ isOpen, onClose, onEmailAdded }: ChatModalPr
     // Check if this is the third response (after last name question)
     if (messages.length === 6) { // Company question + company answer + first name question + first name answer + last name question + user's last name answer
       return {
-        text: "Great! Now what's their email address?",
-        success: false
+        text: `Perfect! I've added the contact from ${messages[1].text} to your email list. You can now check your email list and search for the company to see the contact.`,
+        success: true
       }
     }
     
-    // Final step - email validation
-    if (emailRegex.test(userInput)) {
-      return {
-        text: `Perfect! I've added ${userInput} to your email list. You can now check your email list and search for the company to see the email address.`,
-        success: true
-      }
-    } else if (userInput.toLowerCase().includes('email') || userInput.toLowerCase().includes('add')) {
-      return {
-        text: "I'd be happy to help you add an email! Please provide the email address you'd like to add to your list.",
-        success: false
-      }
-    } else {
-      return {
-        text: "I'm here to help you add emails to your list. Please provide a valid email address.",
-        success: false
-      }
+    // This should not be reached, but just in case
+    return {
+      text: "Please provide a valid response.",
+      success: false
     }
   }
 
