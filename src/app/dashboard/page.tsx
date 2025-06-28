@@ -817,11 +817,6 @@ export default function Dashboard() {
                           <stat.icon className="w-6 h-6" />
                         </div>
                       </div>
-                      <div className="flex items-center mt-4">
-                        <TrendingUp className="w-4 h-4 text-green-400 mr-1" />
-                        <span className="text-green-400 text-sm">{stat.change}</span>
-                        <span className="text-gray-400 text-sm ml-1">from last month</span>
-                      </div>
                     </motion.div>
                   ))}
                 </div>
@@ -962,11 +957,6 @@ export default function Dashboard() {
                         <div className={`p-3 rounded-xl bg-white/10 ${stat.color}`}>
                           <stat.icon className="w-6 h-6" />
                         </div>
-                      </div>
-                      <div className="flex items-center mt-4">
-                        <TrendingUp className="w-4 h-4 text-green-400 mr-1" />
-                        <span className="text-green-400 text-sm">{stat.change}</span>
-                        <span className="text-gray-400 text-sm ml-1">from last month</span>
                       </div>
                     </motion.div>
                   ))}
@@ -1252,11 +1242,6 @@ export default function Dashboard() {
                         <div className={`p-3 rounded-xl bg-white/10 ${stat.color}`}>
                           <stat.icon className="w-6 h-6" />
                         </div>
-                      </div>
-                      <div className="flex items-center mt-4">
-                        <TrendingUp className="w-4 h-4 text-green-400 mr-1" />
-                        <span className="text-green-400 text-sm">{stat.change}</span>
-                        <span className="text-gray-400 text-sm ml-1">from last month</span>
                       </div>
                     </motion.div>
                   ))}
