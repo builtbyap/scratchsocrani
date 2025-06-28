@@ -480,13 +480,6 @@ export default function Dashboard() {
       change: '+23%',
       icon: Users,
       color: 'text-blue-400'
-    },
-    {
-      title: 'LinkedIn Connections',
-      value: savedEmails.length.toString(),
-      change: '-8%',
-      icon: AlertCircle,
-      color: 'text-orange-400'
     }
   ]
 
@@ -566,13 +559,6 @@ export default function Dashboard() {
       change: '+23%',
       icon: Eye,
       color: 'text-blue-400'
-    },
-    {
-      title: 'Connection Requests',
-      value: '18',
-      change: '+8%',
-      icon: Users2,
-      color: 'text-green-400'
     }
   ]
 
