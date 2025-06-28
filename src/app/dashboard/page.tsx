@@ -265,9 +265,7 @@ export default function Dashboard() {
     },
     {
       title: 'Saved Emails',
-      value: emailSearchTerm.trim() 
-        ? filteredEmails.filter((email: any) => email.status === 'active').length.toString()
-        : emails.filter((email: any) => email.status === 'active').length.toString(),
+      value: savedEmails.length.toString(),
       change: '-8%',
       icon: AlertCircle,
       color: 'text-orange-400'
@@ -1084,7 +1082,7 @@ export default function Dashboard() {
                 transition={{ duration: 0.5 }}
                 className="space-y-8"
               >
-                {/* LinkedIn Analytics */}
+                {/* LinkedIn Stats */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                   {linkedInAnalytics.map((stat, index) => (
                     <motion.div
@@ -1119,28 +1117,16 @@ export default function Dashboard() {
                   transition={{ duration: 0.5, delay: 0.5 }}
                   className="glass-effect rounded-2xl p-6"
                 >
-                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <button className="flex items-center space-x-3 p-4 bg-white/5 rounded-xl hover:bg-white/10 transition-colors">
-                      <Plus className="w-5 h-5 text-primary-400" />
-                      <span className="text-white">New Post</span>
-                    </button>
-                    <button className="flex items-center space-x-3 p-4 bg-white/5 rounded-xl hover:bg-white/10 transition-colors">
-                      <Users2 className="w-5 h-5 text-primary-400" />
-                      <span className="text-white">Find Connections</span>
-                    </button>
-                    <button className="flex items-center space-x-3 p-4 bg-white/5 rounded-xl hover:bg-white/10 transition-colors">
-                      <BarChart3 className="w-5 h-5 text-primary-400" />
-                      <span className="text-white">View Analytics</span>
-                    </button>
-                    <button className="flex items-center space-x-3 p-4 bg-white/5 rounded-xl hover:bg-white/10 transition-colors">
-                      <Globe className="w-5 h-5 text-primary-400" />
-                      <span className="text-white">Update Profile</span>
+                  <div className="grid grid-cols-1 gap-4">
+                    <button className="flex items-center justify-center space-x-3 p-6 bg-white/5 rounded-xl hover:bg-white/10 transition-colors">
+                      <Plus className="w-6 h-6 text-primary-400" />
+                      <span className="text-white text-lg font-medium">Add Connection</span>
                     </button>
                   </div>
                 </motion.div>
 
-                {/* Connections and Posts */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {/* LinkedIn Connections and Sections */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                   {/* LinkedIn Connections */}
                   <motion.div
                     initial={{ opacity: 0, x: -20 }}
@@ -1149,56 +1135,71 @@ export default function Dashboard() {
                     className="glass-effect rounded-2xl p-6"
                   >
                     <div className="flex items-center justify-between mb-6">
-                      <h2 className="text-xl font-semibold text-white">Recent Connections</h2>
-                      <button className="text-primary-400 hover:text-primary-300 text-sm">View All</button>
+                      <h2 className="text-xl font-semibold text-white">LinkedIn Connections</h2>
+                      <div className="flex items-center space-x-4">
+                        <div className="relative">
+                          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                          <input
+                            type="text"
+                            placeholder="Search connections..."
+                            className="pl-9 pr-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-primary-400 transition-colors text-sm w-48"
+                          />
+                        </div>
+                        <button className="text-primary-400 hover:text-primary-300 text-sm">View All</button>
+                      </div>
                     </div>
                     <div className="space-y-4 max-h-96 overflow-y-auto">
-                      {linkedInConnections.map((connection) => (
-                        <div key={connection.id} className="flex items-center justify-between p-4 bg-white/5 rounded-xl">
-                          <div className="flex-1">
-                            <div className="flex items-center space-x-3">
-                              <div className="w-10 h-10 bg-primary-500/20 rounded-full flex items-center justify-center">
-                                <User className="w-5 h-5 text-primary-400" />
-                              </div>
-                              <div>
-                                <h3 className="text-white font-medium">{connection.name}</h3>
-                                <p className="text-gray-400 text-sm">{connection.title}</p>
-                                <p className="text-gray-500 text-xs">{connection.company}</p>
-                              </div>
-                            </div>
-                            <div className="flex items-center space-x-2 mt-2">
-                              {connection.tags.map((tag, index) => (
-                                <span key={index} className="px-2 py-1 bg-primary-500/20 text-primary-400 text-xs rounded-full">
-                                  {tag}
-                                </span>
-                              ))}
-                            </div>
-                          </div>
-                          <div className="text-right">
-                            <span className={`px-2 py-1 rounded-full text-xs ${
-                              connection.status === 'Active' 
-                                ? 'text-green-400 bg-green-400/10' 
-                                : 'text-gray-400 bg-gray-400/10'
-                            }`}>
-                              {connection.status}
-                            </span>
-                            <p className="text-gray-400 text-xs mt-1">{connection.mutualConnections} mutual</p>
-                            <p className="text-gray-500 text-xs">{connection.lastInteraction}</p>
-                            <div className="flex items-center space-x-2 mt-2">
-                              <button className="p-1 text-gray-400 hover:text-white transition-colors">
-                                <MessageSquare className="w-4 h-4" />
-                              </button>
-                              <button className="p-1 text-gray-400 hover:text-primary-400 transition-colors">
-                                <Eye className="w-4 h-4" />
-                              </button>
-                            </div>
-                          </div>
+                      {linkedInConnections.length === 0 ? (
+                        <div className="text-center p-8">
+                          <Users2 className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                          <p className="text-gray-400">No connections found</p>
+                          <p className="text-gray-500 text-sm">Add your first connection to get started</p>
                         </div>
-                      ))}
+                      ) : (
+                        linkedInConnections.map((connection) => (
+                          <div key={connection.id} className="flex items-center justify-between p-4 bg-white/5 rounded-xl">
+                            <div className="flex-1">
+                              <div className="flex items-center space-x-3">
+                                <div className="w-10 h-10 bg-primary-500/20 rounded-full flex items-center justify-center">
+                                  <User className="w-5 h-5 text-primary-400" />
+                                </div>
+                                <div>
+                                  <h3 className="text-white font-medium">{connection.name}</h3>
+                                  <p className="text-gray-400 text-sm">{connection.title}</p>
+                                  <p className="text-gray-500 text-xs">{connection.company}</p>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <span className={`px-2 py-1 rounded-full text-xs ${
+                                connection.status === 'Active' 
+                                  ? 'text-green-400 bg-green-400/10' 
+                                  : 'text-gray-400 bg-gray-400/10'
+                              }`}>
+                                {connection.status}
+                              </span>
+                              <div className="flex items-center space-x-2 mt-2">
+                                <button className="p-1 text-gray-400 hover:text-white transition-colors">
+                                  <Eye className="w-4 h-4" />
+                                </button>
+                                <button className="p-1 text-gray-400 hover:text-primary-400 transition-colors">
+                                  <MessageSquare className="w-4 h-4" />
+                                </button>
+                                <button className="p-1 text-gray-400 hover:text-primary-400 transition-colors">
+                                  <Save className="w-4 h-4" />
+                                </button>
+                                <button className="p-1 text-gray-400 hover:text-red-400 transition-colors">
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        ))
+                      )}
                     </div>
                   </motion.div>
 
-                  {/* LinkedIn Posts */}
+                  {/* Recently Viewed Connections */}
                   <motion.div
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
@@ -1206,56 +1207,35 @@ export default function Dashboard() {
                     className="glass-effect rounded-2xl p-6"
                   >
                     <div className="flex items-center justify-between mb-6">
-                      <h2 className="text-xl font-semibold text-white">Recent Posts</h2>
+                      <h2 className="text-xl font-semibold text-white">Recently Viewed</h2>
                       <button className="text-primary-400 hover:text-primary-300 text-sm">View All</button>
                     </div>
-                    <div className="space-y-4">
-                      {linkedInPosts.map((post) => (
-                        <div key={post.id} className="p-4 bg-white/5 rounded-xl">
-                          <div className="flex items-center justify-between mb-2">
-                            <h3 className="text-white font-medium">{post.title}</h3>
-                            <span className={`text-xs px-2 py-1 rounded-full ${
-                              post.status === 'Published' 
-                                ? 'text-green-400 bg-green-400/10' 
-                                : 'text-yellow-400 bg-yellow-400/10'
-                            }`}>
-                              {post.status}
-                            </span>
-                          </div>
-                          <p className="text-gray-400 text-sm mb-3 line-clamp-2">{post.content}</p>
-                          {post.publishedDate && (
-                            <p className="text-gray-500 text-xs mb-3">Published {post.publishedDate}</p>
-                          )}
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center space-x-4 text-xs text-gray-400">
-                              <span className="flex items-center space-x-1">
-                                <CheckCircle className="w-3 h-3" />
-                                <span>{post.likes}</span>
-                              </span>
-                              <span className="flex items-center space-x-1">
-                                <MessageSquare className="w-3 h-3" />
-                                <span>{post.comments}</span>
-                              </span>
-                              <span className="flex items-center space-x-1">
-                                <Share2 className="w-3 h-3" />
-                                <span>{post.shares}</span>
-                              </span>
-                              <span className="flex items-center space-x-1">
-                                <Eye className="w-3 h-3" />
-                                <span>{post.views}</span>
-                              </span>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              <button className="p-1 text-gray-400 hover:text-white transition-colors">
-                                <Edit className="w-4 h-4" />
-                              </button>
-                              <button className="p-1 text-gray-400 hover:text-primary-400 transition-colors">
-                                <Share2 className="w-4 h-4" />
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
+                    <div className="space-y-4 max-h-96 overflow-y-auto">
+                      <div className="text-center p-8">
+                        <Eye className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                        <p className="text-gray-400">No recently viewed connections</p>
+                        <p className="text-gray-500 text-sm">Click the eye icon to view connections</p>
+                      </div>
+                    </div>
+                  </motion.div>
+
+                  {/* Saved Connections */}
+                  <motion.div
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.5, delay: 0.5 }}
+                    className="glass-effect rounded-2xl p-6"
+                  >
+                    <div className="flex items-center justify-between mb-6">
+                      <h2 className="text-xl font-semibold text-white">Saved Connections</h2>
+                      <button className="text-primary-400 hover:text-primary-300 text-sm">View All</button>
+                    </div>
+                    <div className="space-y-4 max-h-96 overflow-y-auto">
+                      <div className="text-center p-8">
+                        <Save className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                        <p className="text-gray-400">No saved connections</p>
+                        <p className="text-gray-500 text-sm">Click the save icon to save connections</p>
+                      </div>
                     </div>
                   </motion.div>
                 </div>
