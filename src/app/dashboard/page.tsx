@@ -421,6 +421,25 @@ export default function Dashboard() {
     alert(`LinkedIn connection "${connection.name}" from ${connection.company} has been saved!`)
   }
 
+  // Deduplicate LinkedIn connections by id
+  const uniqueLinkedInConnections = Array.from(
+    new Map(linkedInConnections.map(conn => [conn.id, conn])).values()
+  )
+
+  // Filter LinkedIn connections based on search term (company name) and remove duplicates from other sections
+  const filteredLinkedInConnections = uniqueLinkedInConnections.filter((connection: any) => {
+    // First check if it matches the search term
+    if (linkedInSearchTerm.trim() && !connection.company?.toLowerCase().includes(linkedInSearchTerm.toLowerCase())) {
+      return false
+    }
+    
+    // Remove connections that are in recently viewed or saved sections
+    const isRecentlyViewed = recentlyViewedLinkedIn.some(recent => recent.id === connection.id)
+    const isSaved = savedLinkedIn.some(saved => saved.id === connection.id)
+    
+    return !isRecentlyViewed && !isSaved
+  })
+
   // Filter emails based on search term (company name) and remove duplicates from other sections
   const filteredEmails = emails.filter((email: any) => {
     // First check if it matches the search term
@@ -431,20 +450,6 @@ export default function Dashboard() {
     // Remove emails that are in recently viewed or saved sections
     const isRecentlyViewed = recentlyViewedEmails.some(recent => recent.id === email.id)
     const isSaved = savedEmails.some(saved => saved.id === email.id)
-    
-    return !isRecentlyViewed && !isSaved
-  })
-
-  // Filter LinkedIn connections based on search term (company name) and remove duplicates from other sections
-  const filteredLinkedInConnections = linkedInConnections.filter((connection: any) => {
-    // First check if it matches the search term
-    if (linkedInSearchTerm.trim() && !connection.company?.toLowerCase().includes(linkedInSearchTerm.toLowerCase())) {
-      return false
-    }
-    
-    // Remove connections that are in recently viewed or saved sections
-    const isRecentlyViewed = recentlyViewedLinkedIn.some(recent => recent.id === connection.id)
-    const isSaved = savedLinkedIn.some(saved => saved.id === connection.id)
     
     return !isRecentlyViewed && !isSaved
   })
