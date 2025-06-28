@@ -241,7 +241,7 @@ export default function Dashboard() {
   const stats = [
     {
       title: 'Total Emails',
-      value: emailSearchTerm.trim() ? `${filteredEmails.length} of ${emails.length}` : emails.length.toString(),
+      value: emails.length.toString(),
       change: '+23%',
       icon: Users,
       color: 'text-blue-400'
@@ -632,26 +632,6 @@ export default function Dashboard() {
                 <h1 className="text-3xl font-bold text-white">Dashboard</h1>
                 <p className="text-gray-400">Welcome back! Here's what's happening today.</p>
               </div>
-              <div className="flex items-center space-x-4">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                  <input
-                    type="text"
-                    placeholder="Search..."
-                    className="pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary-400 transition-colors"
-                  />
-                </div>
-                <button className="p-2 bg-white/10 border border-white/20 rounded-xl text-gray-300 hover:bg-white/20 hover:text-white transition-all duration-200">
-                  <Bell className="w-5 h-5" />
-                </button>
-                <button 
-                  onClick={handleAddEmail}
-                  className="flex items-center space-x-2 px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded-xl transition-colors"
-                >
-                  <Plus className="w-4 h-4" />
-                  <span>Add Email</span>
-                </button>
-              </div>
             </motion.div>
 
             {/* Content based on active tab */}
@@ -879,6 +859,9 @@ export default function Dashboard() {
                           <p className="text-gray-500 text-sm">
                             {emailSearchTerm.trim() ? 'Try adjusting your search terms' : 'Add your first email to get started'}
                           </p>
+                          {emailSearchTerm.trim() && (
+                            <p className="text-gray-500 text-sm mt-1">Use the Add Email button</p>
+                          )}
                         </div>
                       ) : (
                         filteredEmails.map((email: any) => (
