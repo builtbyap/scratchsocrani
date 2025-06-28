@@ -49,6 +49,7 @@ export default function Dashboard() {
   const [isSigningOut, setIsSigningOut] = useState(false)
   const [emails, setEmails] = useState<any[]>([])
   const [loadingEmails, setLoadingEmails] = useState(false)
+  const [recentlyViewedEmails, setRecentlyViewedEmails] = useState<any[]>([])
   const router = useRouter()
   const { user, loading, signOut } = useAuth()
 
@@ -168,6 +169,17 @@ export default function Dashboard() {
   const handleAddEmail = () => {
     const formUrl = 'http://localhost:5678/form/6272f3aa-a2f6-417a-9977-2b11ec3488a7'
     window.open(formUrl, '_blank', 'noopener,noreferrer')
+  }
+
+  const handleViewEmail = (email: any) => {
+    // Add to recently viewed emails (limit to 5 most recent)
+    setRecentlyViewedEmails(prev => {
+      const filtered = prev.filter(e => e.id !== email.id) // Remove if already exists
+      return [email, ...filtered].slice(0, 5) // Keep only 5 most recent
+    })
+    
+    // Here you could also open a detailed view modal or navigate to email details
+    console.log('👁️ Viewing email:', email)
   }
 
   // Define stats with real data
@@ -815,10 +827,13 @@ export default function Dashboard() {
                                 Active
                               </span>
                               <div className="flex items-center space-x-2 mt-2">
-                                <button className="p-1 text-gray-400 hover:text-white transition-colors">
+                                <button 
+                                  onClick={() => handleViewEmail(email)}
+                                  className="p-1 text-gray-400 hover:text-white transition-colors"
+                                >
                                   <Eye className="w-4 h-4" />
                                 </button>
-                                <button className="p-1 text-gray-400 hover:text-white transition-colors">
+                                <button className="p-1 text-gray-400 hover:text-primary-400 transition-colors">
                                   <Edit className="w-4 h-4" />
                                 </button>
                                 <button className="p-1 text-gray-400 hover:text-red-400 transition-colors">
@@ -840,29 +855,50 @@ export default function Dashboard() {
                     className="glass-effect rounded-2xl p-6"
                   >
                     <div className="flex items-center justify-between mb-6">
-                      <h2 className="text-xl font-semibold text-white">Recent Emails</h2>
+                      <h2 className="text-xl font-semibold text-white">Recently Viewed</h2>
                       <button className="text-primary-400 hover:text-primary-300 text-sm">View All</button>
                     </div>
-                    <div className="space-y-4">
-                      {recentCampaigns.map((campaign) => (
-                        <div key={campaign.id} className="p-4 bg-white/5 rounded-xl">
-                          <div className="flex items-center justify-between mb-2">
-                            <h3 className="text-white font-medium">{campaign.name}</h3>
-                            <span className="text-green-400 text-sm">{campaign.status}</span>
-                          </div>
-                          <p className="text-gray-400 text-sm mb-3">Sent {campaign.sentDate} • {campaign.recipients} recipients</p>
-                          <div className="grid grid-cols-2 gap-4">
-                            <div>
-                              <p className="text-gray-400 text-xs">Open Rate</p>
-                              <p className="text-white font-medium">{campaign.openRate}%</p>
-                            </div>
-                            <div>
-                              <p className="text-gray-400 text-xs">Click Rate</p>
-                              <p className="text-white font-medium">{campaign.clickRate}%</p>
-                            </div>
-                          </div>
+                    <div className="space-y-4 max-h-96 overflow-y-auto">
+                      {recentlyViewedEmails.length === 0 ? (
+                        <div className="text-center p-8">
+                          <Eye className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                          <p className="text-gray-400">No recently viewed emails</p>
+                          <p className="text-gray-500 text-sm">Click the eye icon to view emails</p>
                         </div>
-                      ))}
+                      ) : (
+                        recentlyViewedEmails.map((email) => (
+                          <div key={email.id} className="flex items-center justify-between p-4 bg-white/5 rounded-xl">
+                            <div className="flex-1">
+                              <div className="flex items-center space-x-3">
+                                <div className="w-10 h-10 bg-primary-500/20 rounded-full flex items-center justify-center">
+                                  <User className="w-5 h-5 text-primary-400" />
+                                </div>
+                                <div>
+                                  <h3 className="text-white font-medium">{email.name || 'No name'}</h3>
+                                  <p className="text-gray-400 text-sm">{email.company || 'No company'}</p>
+                                  <p className="text-gray-500 text-xs">{email.email || 'No email'}</p>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <span className="px-2 py-1 rounded-full text-xs text-blue-400 bg-blue-400/10">
+                                Viewed
+                              </span>
+                              <div className="flex items-center space-x-2 mt-2">
+                                <button 
+                                  onClick={() => handleViewEmail(email)}
+                                  className="p-1 text-gray-400 hover:text-white transition-colors"
+                                >
+                                  <Eye className="w-4 h-4" />
+                                </button>
+                                <button className="p-1 text-gray-400 hover:text-primary-400 transition-colors">
+                                  <Mail className="w-4 h-4" />
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        ))
+                      )}
                     </div>
                   </motion.div>
                 </div>
