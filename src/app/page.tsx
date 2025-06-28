@@ -78,12 +78,12 @@ export default function LandingPage() {
           transition={{ duration: 0.8 }}
           className="text-center mb-24"
         >
-          <div className="inline-flex items-center space-x-2 text-3xl font-bold mb-6">
+          <div className="inline-flex items-center space-x-2 text-3xl font-bold mb-12">
             <Sparkles className="w-10 h-10 text-primary-400" />
             <span className="gradient-text">Socrani</span>
           </div>
           <h1 className="text-5xl md:text-7xl font-bold mb-6">
-            <span className="gradient-text">AI for Job Referrals</span>
+            <span className="gradient-text">AI</span> <span className="text-white font-normal">for Job Referrals</span>
           </h1>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a href="/signup" className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-primary-500 to-primary-600 rounded-xl font-semibold hover:from-primary-600 hover:to-primary-700 transition-all duration-300 text-white text-lg shadow-lg">
