@@ -58,19 +58,50 @@ export default function Dashboard() {
     setLoadingEmails(true)
     try {
       const supabase = getSupabaseClient()
-      const { data, error } = await supabase
-        .from('emails')
-        .select('*')
-        .order('created_at', { ascending: false })
+      console.log('🔍 Fetching emails from Supabase...')
+      console.log('👤 Current user:', user)
       
-      if (error) {
-        console.error('Error fetching emails:', error)
+      // Test the connection first
+      const { data: testData, error: testError } = await supabase
+        .from('emails')
+        .select('count')
+        .limit(1)
+      
+      if (testError) {
+        console.error('❌ Test query failed:', testError)
+        console.error('❌ Error details:', {
+          message: testError.message,
+          details: testError.details,
+          hint: testError.hint,
+          code: testError.code
+        })
+        setEmails([])
         return
       }
       
+      console.log('✅ Test query successful, fetching full data...')
+      
+      const { data, error } = await supabase
+        .from('emails')
+        .select('*')
+      
+      if (error) {
+        console.error('❌ Error fetching emails:', error)
+        console.error('❌ Error details:', {
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          code: error.code
+        })
+        setEmails([])
+        return
+      }
+      
+      console.log('✅ Successfully fetched emails:', data)
       setEmails(data || [])
     } catch (error) {
-      console.error('Error fetching emails:', error)
+      console.error('❌ Unexpected error fetching emails:', error)
+      setEmails([])
     } finally {
       setLoadingEmails(false)
     }
