@@ -115,9 +115,9 @@ export default function ChatModal({ isOpen, onClose, onEmailAdded }: ChatModalPr
       }
     }
     
-    // This should not be reached, but just in case
+    // No response after conversation is complete
     return {
-      text: "Please provide a valid response.",
+      text: "",
       success: false
     }
   }
