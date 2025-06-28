@@ -885,14 +885,14 @@ export default function Dashboard() {
                           <div className="w-8 h-8 border-4 border-primary-500 border-t-transparent rounded-full animate-spin"></div>
                           <span className="ml-3 text-gray-400">Loading connections...</span>
                         </div>
-                      ) : linkedInConnections.length === 0 ? (
+                      ) : uniqueLinkedInConnections.length === 0 ? (
                         <div className="text-center p-8">
                           <Users2 className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                           <p className="text-gray-400">No connections found</p>
                           <p className="text-gray-500 text-sm">Add your first connection to get started</p>
                         </div>
                       ) : (
-                        linkedInConnections.slice(0, 5).map((connection) => (
+                        uniqueLinkedInConnections.slice(0, 5).map((connection) => (
                           <div key={connection.id} className="flex items-center justify-between p-4 bg-white/5 rounded-xl">
                             <div className="flex-1">
                               <div className="flex items-center space-x-3">
@@ -901,7 +901,6 @@ export default function Dashboard() {
                                 </div>
                                 <div>
                                   <h3 className="text-white font-medium">{connection.name || 'No name'}</h3>
-                                  <p className="text-gray-400 text-sm">{connection.company || 'No company'}</p>
                                 </div>
                               </div>
                             </div>
