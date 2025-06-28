@@ -127,9 +127,22 @@ export default function Dashboard() {
       console.log('🔍 Fetching LinkedIn connections from Supabase...')
       console.log('👤 Current user:', user)
       
+      // First, let's check what tables are available
+      console.log('🔍 Checking available tables...')
+      const { data: tables, error: tablesError } = await supabase
+        .from('information_schema.tables')
+        .select('table_name')
+        .eq('table_schema', 'public')
+      
+      if (tablesError) {
+        console.error('❌ Error checking tables:', tablesError)
+      } else {
+        console.log('📋 Available tables:', tables)
+      }
+      
       // Test the connection first
       const { data: testData, error: testError } = await supabase
-        .from('linkedin')
+        .from('Linkedin')
         .select('count')
         .limit(1)
       
@@ -141,6 +154,34 @@ export default function Dashboard() {
           hint: testError.hint,
           code: testError.code
         })
+        
+        // Try alternative table names
+        console.log('🔍 Trying alternative table names...')
+        const alternativeNames = ['linkedin_connections', 'connections', 'linkedin_data']
+        
+        for (const tableName of alternativeNames) {
+          console.log(`🔍 Trying table: ${tableName}`)
+          const { data: altData, error: altError } = await supabase
+            .from(tableName)
+            .select('count')
+            .limit(1)
+          
+          if (!altError) {
+            console.log(`✅ Found working table: ${tableName}`)
+            // Use this table name for the main query
+            const { data, error } = await supabase
+              .from(tableName)
+              .select('*')
+            
+            if (!error) {
+              console.log(`✅ Successfully fetched from ${tableName}:`, data)
+              setLinkedInConnections(data || [])
+              setLoadingLinkedIn(false)
+              return
+            }
+          }
+        }
+        
         setLinkedInConnections([])
         return
       }
@@ -148,7 +189,7 @@ export default function Dashboard() {
       console.log('✅ Test query successful, fetching full data...')
       
       const { data, error } = await supabase
-        .from('linkedin')
+        .from('Linkedin')
         .select('*')
       
       if (error) {
@@ -234,6 +275,11 @@ export default function Dashboard() {
 
   const handleAddEmail = () => {
     const formUrl = 'http://localhost:5678/form/6272f3aa-a2f6-417a-9977-2b11ec3488a7'
+    window.open(formUrl, '_blank', 'noopener,noreferrer')
+  }
+
+  const handleAddLinkedIn = () => {
+    const formUrl = 'http://localhost:5678/form/c85d7ad6-0b7b-436d-aad6-ee849404d145'
     window.open(formUrl, '_blank', 'noopener,noreferrer')
   }
 
@@ -331,7 +377,7 @@ export default function Dashboard() {
       
       const supabase = getSupabaseClient()
       const { error } = await supabase
-        .from('linkedin')
+        .from('Linkedin')
         .delete()
         .eq('id', connection.id)
       
@@ -887,6 +933,13 @@ export default function Dashboard() {
                       <Plus className="w-6 h-6 text-primary-400" />
                       <span className="text-white text-lg font-medium">Add Email</span>
                     </button>
+                    <button 
+                      onClick={handleAddLinkedIn}
+                      className="flex items-center justify-center space-x-3 p-6 bg-white/5 rounded-xl hover:bg-white/10 transition-colors"
+                    >
+                      <Plus className="w-6 h-6 text-primary-400" />
+                      <span className="text-white text-lg font-medium">Add LinkedIn</span>
+                    </button>
                   </div>
                 </motion.div>
 
@@ -1174,9 +1227,12 @@ export default function Dashboard() {
                   className="glass-effect rounded-2xl p-6"
                 >
                   <div className="grid grid-cols-1 gap-4">
-                    <button className="flex items-center justify-center space-x-3 p-6 bg-white/5 rounded-xl hover:bg-white/10 transition-colors">
+                    <button 
+                      onClick={handleAddLinkedIn}
+                      className="flex items-center justify-center space-x-3 p-6 bg-white/5 rounded-xl hover:bg-white/10 transition-colors"
+                    >
                       <Plus className="w-6 h-6 text-primary-400" />
-                      <span className="text-white text-lg font-medium">Add Connection</span>
+                      <span className="text-white text-lg font-medium">Add LinkedIn</span>
                     </button>
                   </div>
                 </motion.div>
@@ -1219,7 +1275,7 @@ export default function Dashboard() {
                             {linkedInSearchTerm.trim() ? 'No connections found' : 'Add your first connection to get started'}
                           </p>
                           <p className="text-gray-500 text-sm mt-2">
-                            <span className="font-bold">Use the Add Connection button</span>
+                            <span className="font-bold">Use the Add LinkedIn button</span>
                           </p>
                         </div>
                       ) : (
