@@ -26,7 +26,7 @@ export const paymentPlans = [
     interval: 'month',
     features: [
       'Unlimited monthly usage',
-      'unlimited Emails',
+      'Unlimited Emails',
       'Most powerful agent models',
       '24/7 customer support',
     ],
@@ -39,7 +39,7 @@ export const paymentPlans = [
     interval: 'year',
     features: [
       'Unlimited yearly usage',
-      'unlimited Emails',
+      'Unlimited Emails',
       'Most powerful agent models',
       '24/7 customer support',
     ],
