@@ -90,7 +90,7 @@ export default function SignInPage() {
           >
             <Link 
               href="/"
-              className="inline-flex items-center text-gray-300 hover:text-primary-400 transition-colors"
+              className="inline-flex items-center bg-white/10 border border-white/20 hover:bg-white/20 text-gray-300 hover:text-white transition-all duration-300 px-4 py-2 rounded-lg"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to Home

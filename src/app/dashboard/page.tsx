@@ -473,12 +473,12 @@ export default function Dashboard() {
   })
 
   // Define stats with real data
-  const stats = [
-    {
+const stats = [
+  {
       title: 'Total Emails',
       value: emails.length.toString(),
       icon: Users,
-      color: 'text-blue-400'
+    color: 'text-blue-400'
     }
   ]
 
@@ -558,90 +558,90 @@ export default function Dashboard() {
       change: '+23%',
       icon: Eye,
       color: 'text-blue-400'
-    }
-  ]
+  }
+]
 
-  const recentProjects = [
-    {
-      id: 1,
-      name: 'E-commerce Platform',
-      client: 'TechCorp Inc.',
-      status: 'In Progress',
-      progress: 75,
-      dueDate: '2024-02-15',
-      priority: 'high'
-    },
-    {
-      id: 2,
-      name: 'Mobile App Redesign',
-      client: 'StartupXYZ',
-      status: 'Review',
-      progress: 90,
-      dueDate: '2024-02-10',
-      priority: 'medium'
-    },
-    {
-      id: 3,
-      name: 'Cloud Migration',
-      client: 'Enterprise Solutions',
-      status: 'Planning',
-      progress: 25,
-      dueDate: '2024-03-01',
-      priority: 'low'
-    }
-  ]
+const recentProjects = [
+  {
+    id: 1,
+    name: 'E-commerce Platform',
+    client: 'TechCorp Inc.',
+    status: 'In Progress',
+    progress: 75,
+    dueDate: '2024-02-15',
+    priority: 'high'
+  },
+  {
+    id: 2,
+    name: 'Mobile App Redesign',
+    client: 'StartupXYZ',
+    status: 'Review',
+    progress: 90,
+    dueDate: '2024-02-10',
+    priority: 'medium'
+  },
+  {
+    id: 3,
+    name: 'Cloud Migration',
+    client: 'Enterprise Solutions',
+    status: 'Planning',
+    progress: 25,
+    dueDate: '2024-03-01',
+    priority: 'low'
+  }
+]
 
-  const recentActivity = [
-    {
-      id: 1,
-      type: 'project',
-      message: 'E-commerce Platform - Phase 2 completed',
-      time: '2 hours ago',
-      icon: CheckCircle
-    },
-    {
-      id: 2,
-      type: 'client',
-      message: 'New client onboarding - TechCorp Inc.',
-      time: '4 hours ago',
-      icon: Users
-    },
-    {
-      id: 3,
-      type: 'task',
-      message: 'Mobile app testing completed',
-      time: '6 hours ago',
-      icon: Activity
-    },
-    {
-      id: 4,
-      type: 'meeting',
-      message: 'Client meeting scheduled for tomorrow',
-      time: '1 day ago',
-      icon: Calendar
-    }
-  ]
+const recentActivity = [
+  {
+    id: 1,
+    type: 'project',
+    message: 'E-commerce Platform - Phase 2 completed',
+    time: '2 hours ago',
+    icon: CheckCircle
+  },
+  {
+    id: 2,
+    type: 'client',
+    message: 'New client onboarding - TechCorp Inc.',
+    time: '4 hours ago',
+    icon: Users
+  },
+  {
+    id: 3,
+    type: 'task',
+    message: 'Mobile app testing completed',
+    time: '6 hours ago',
+    icon: Activity
+  },
+  {
+    id: 4,
+    type: 'meeting',
+    message: 'Client meeting scheduled for tomorrow',
+    time: '1 day ago',
+    icon: Calendar
+  }
+]
 
-  const upcomingTasks = [
-    {
-      id: 1,
-      title: 'Review mobile app designs',
-      dueDate: 'Today',
-      priority: 'high'
-    },
-    {
-      id: 2,
-      title: 'Client presentation prep',
-      dueDate: 'Tomorrow',
-      priority: 'medium'
-    },
-    {
-      id: 3,
-      title: 'Code review for e-commerce',
-      dueDate: 'Feb 12',
-      priority: 'low'
-    }
-  ]
+const upcomingTasks = [
+  {
+    id: 1,
+    title: 'Review mobile app designs',
+    dueDate: 'Today',
+    priority: 'high'
+  },
+  {
+    id: 2,
+    title: 'Client presentation prep',
+    dueDate: 'Tomorrow',
+    priority: 'medium'
+  },
+  {
+    id: 3,
+    title: 'Code review for e-commerce',
+    dueDate: 'Feb 12',
+    priority: 'low'
+  }
+]
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
@@ -839,7 +839,7 @@ export default function Dashboard() {
                       ) : (
                         emails.slice(0, 5).map((email: any) => (
                           <div key={email.id} className="flex items-center justify-between p-4 bg-white/5 rounded-xl">
-                            <div className="flex-1">
+                          <div className="flex-1">
                               <div className="flex items-center space-x-3">
                                 <div className="w-10 h-10 bg-primary-500/20 rounded-full flex items-center justify-center">
                                   <User className="w-5 h-5 text-primary-400" />
@@ -849,16 +849,16 @@ export default function Dashboard() {
                                   <p className="text-gray-400 text-sm">{email.company || 'No company'}</p>
                                 </div>
                               </div>
-                            </div>
-                            <div className="text-right">
+                          </div>
+                          <div className="text-right">
                               <span className="px-2 py-1 rounded-full text-xs text-green-400 bg-green-400/10">
                                 Active
-                              </span>
+                            </span>
+                              </div>
                             </div>
-                          </div>
                         ))
                       )}
-                    </div>
+                          </div>
                   </motion.div>
 
                   {/* LinkedIn Connections */}
@@ -876,7 +876,7 @@ export default function Dashboard() {
                       >
                         View All
                       </button>
-                    </div>
+                        </div>
                     <div className="space-y-4 max-h-96 overflow-y-auto">
                       {loadingLinkedIn ? (
                         <div className="flex items-center justify-center p-8">
@@ -962,8 +962,8 @@ export default function Dashboard() {
                       <Plus className="w-6 h-6 text-primary-400" />
                       <span className="text-white text-lg font-medium">Add Email</span>
                     </button>
-                  </div>
-                </motion.div>
+                    </div>
+                  </motion.div>
 
                 {/* Email List Table and Recent Campaigns */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -1083,18 +1083,18 @@ export default function Dashboard() {
                           <Eye className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                           <p className="text-gray-400">No recently viewed emails</p>
                           <p className="text-gray-500 text-sm">Click the eye icon to view emails</p>
-                        </div>
+                          </div>
                       ) : (
                         recentlyViewedEmails.map((email) => (
                           <div key={email.id} className="flex items-center justify-between p-4 bg-white/5 rounded-xl">
-                            <div className="flex-1">
+                          <div className="flex-1">
                               <div className="flex items-center space-x-3">
                                 <div className="w-10 h-10 bg-primary-500/20 rounded-full flex items-center justify-center">
                                   <User className="w-5 h-5 text-primary-400" />
-                                </div>
+                          </div>
                                 <div>
                                   <h3 className="text-white font-medium">{email.name || 'No name'}</h3>
-                                </div>
+                        </div>
                               </div>
                             </div>
                             <div className="text-right">
@@ -1145,7 +1145,7 @@ export default function Dashboard() {
                     <div className="flex items-center justify-between mb-6">
                       <h2 className="text-xl font-semibold text-white">Saved Emails</h2>
                       <button className="text-primary-400 hover:text-primary-300 text-sm">View All</button>
-                    </div>
+                </div>
                     <div className="space-y-4 max-h-96 overflow-y-auto">
                       {savedEmails.length === 0 ? (
                         <div className="text-center p-8">
@@ -1257,9 +1257,9 @@ export default function Dashboard() {
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.5, delay: 0.3 }}
-                    className="glass-effect rounded-2xl p-6"
-                  >
-                    <div className="flex items-center justify-between mb-6">
+                  className="glass-effect rounded-2xl p-6"
+                >
+                  <div className="flex items-center justify-between mb-6">
                       <h2 className="text-xl font-semibold text-white">LinkedIn Connections</h2>
                       <div className="flex items-center space-x-4">
                         <div className="relative">
@@ -1272,8 +1272,8 @@ export default function Dashboard() {
                             className="pl-9 pr-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-primary-400 transition-colors text-sm w-48"
                           />
                         </div>
-                        <button className="text-primary-400 hover:text-primary-300 text-sm">View All</button>
-                      </div>
+                    <button className="text-primary-400 hover:text-primary-300 text-sm">View All</button>
+                  </div>
                     </div>
                     <div className="space-y-4 max-h-96 overflow-y-auto">
                       {loadingLinkedIn ? (
@@ -1295,14 +1295,14 @@ export default function Dashboard() {
                         filteredLinkedInConnections.map((connection) => (
                           <div key={connection.id} className="flex items-center justify-between p-4 bg-white/5 rounded-xl">
                             <div className="flex-1">
-                              <div className="flex items-center space-x-3">
+                        <div className="flex items-center space-x-3">
                                 <div className="w-10 h-10 bg-primary-500/20 rounded-full flex items-center justify-center">
                                   <User className="w-5 h-5 text-primary-400" />
-                                </div>
+                        </div>
                                 <div>
                                   <h3 className="text-white font-medium">{connection.name || 'No name'}</h3>
-                                </div>
-                              </div>
+                        </div>
+                      </div>
                             </div>
                             <div className="text-right">
                               <span className="px-2 py-1 rounded-full text-xs text-green-400 bg-green-400/10">
@@ -1339,8 +1339,8 @@ export default function Dashboard() {
                           </div>
                         ))
                       )}
-                    </div>
-                  </motion.div>
+                  </div>
+                </motion.div>
 
                   {/* Recently Viewed Connections */}
                   <motion.div
