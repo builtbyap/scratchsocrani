@@ -7,11 +7,7 @@ import {
   Globe,
   Users,
   ArrowRight,
-  Sparkles,
-  Mail,
-  Twitter,
-  Linkedin,
-  Github
+  Sparkles
 } from 'lucide-react'
 import CountdownTimer from '@/components/CountdownTimer'
 
@@ -36,27 +32,6 @@ const features = [
     title: 'Client-Centric',
     description: 'Your goals are our mission. We partner for your success.'
   }
-]
-
-const testimonials = [
-  {
-    name: 'Jane Doe',
-    company: 'Acme Corp',
-    quote: 'Socrani delivered our project ahead of schedule and exceeded our expectations. Their team is top-notch!'
-  },
-  {
-    name: 'Sarah Chen',
-    role: 'Product Manager',
-    company: 'InnovateCorp',
-    quote: 'The mobile app Socrani built for us is beautiful, fast, and reliable. Highly recommended.'
-  }
-]
-
-const socialLinks = [
-  { icon: Twitter, href: '#', label: 'Twitter' },
-  { icon: Linkedin, href: '#', label: 'LinkedIn' },
-  { icon: Github, href: '#', label: 'GitHub' },
-  { icon: Mail, href: 'mailto:hello@socrani.com', label: 'Email' }
 ]
 
 export default function LandingPage() {
@@ -139,7 +114,7 @@ export default function LandingPage() {
           </div>
         </motion.section>
 
-        {/* Testimonials Section */}
+        {/* FAQ Section */}
         <motion.section
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -147,43 +122,26 @@ export default function LandingPage() {
           transition={{ duration: 0.8, delay: 0.4 }}
           className="mb-24 max-w-4xl mx-auto"
         >
-          <h2 className="text-3xl md:text-4xl font-bold mb-10 text-center gradient-text">What Our Clients Say</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {testimonials.map((testimonial) => (
-              <motion.div
-                key={testimonial.name}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5 }}
-                className="glass-effect rounded-2xl p-8 text-center"
-              >
-                <p className="text-lg text-gray-200 mb-4">"{testimonial.quote}"</p>
-                <div className="font-semibold text-primary-400">{testimonial.name}</div>
-                <div className="text-gray-400 text-sm">{testimonial.company}</div>
-              </motion.div>
-            ))}
+          <h2 className="text-3xl md:text-4xl font-bold mb-10 text-center gradient-text">Frequently Asked Questions</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-left">
+            <div>
+              <h3 className="text-lg font-semibold mb-2">Can I cancel anytime?</h3>
+              <p className="text-gray-300">Yes, you can cancel your subscription at any time. No long-term contracts required.</p>
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold mb-2">What payment methods do you accept?</h3>
+              <p className="text-gray-300">We accept all major credit cards through our secure Stripe payment system.</p>
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold mb-2">Is there a setup fee?</h3>
+              <p className="text-gray-300">No setup fees. You only pay the monthly subscription amount.</p>
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold mb-2">Can I upgrade or downgrade?</h3>
+              <p className="text-gray-300">Yes, you can change your plan at any time. Changes take effect immediately.</p>
+            </div>
           </div>
         </motion.section>
-
-        {/* Social Links */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.5 }}
-          className="flex justify-center space-x-6 mb-8"
-        >
-          {socialLinks.map((social) => (
-            <a
-              key={social.label}
-              href={social.href}
-              className="glass-effect rounded-full p-3 hover:glow-effect transition-all duration-300"
-              aria-label={social.label}
-            >
-              <social.icon className="w-6 h-6 text-primary-400" />
-            </a>
-          ))}
-        </motion.div>
       </div>
 
       {/* Footer */}
