@@ -105,7 +105,7 @@ export default function PricingPage() {
         >
           <Link 
             href="/"
-            className="inline-flex items-center text-gray-300 hover:text-primary-400 transition-colors mb-8"
+            className="inline-flex items-center bg-white/10 border border-white/20 hover:bg-white/20 text-gray-300 hover:text-white transition-all duration-300 px-4 py-2 rounded-lg mb-8"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Home
@@ -120,7 +120,7 @@ export default function PricingPage() {
               Choose Your <span className="gradient-text">Plan</span>
             </h1>
             <p className="text-xl text-gray-300 max-w-2xl mx-auto">
-              Select the perfect plan for your business needs. All plans include our expert development team and ongoing support.
+              Select the perfect plan for your needs. All plans include our expert development team and ongoing support.
             </p>
           </div>
         </motion.div>
