@@ -831,8 +831,8 @@ const upcomingTasks = [
                     </div>
                   </motion.div>
 
-                {/* Email List Table and Recent Campaigns */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {/* Email List */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                   {/* Email List Table */}
                   <motion.div
                     initial={{ opacity: 0, x: -20 }}
@@ -931,138 +931,6 @@ const upcomingTasks = [
                       )}
                     </div>
                   </motion.div>
-
-                  {/* Recent Emails */}
-                  <motion.div
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.5, delay: 0.4 }}
-                    className="glass-effect rounded-2xl p-6"
-                  >
-                    <div className="flex items-center justify-between mb-6">
-                      <h2 className="text-xl font-semibold text-white">Recently Viewed</h2>
-                      <button className="text-primary-400 hover:text-primary-300 text-sm">View All</button>
-                    </div>
-                    <div className="space-y-4 max-h-96 overflow-y-auto">
-                      {recentlyViewedEmails.length === 0 ? (
-                        <div className="text-center p-8">
-                          <Eye className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                          <p className="text-gray-400">No recently viewed emails</p>
-                          <p className="text-gray-500 text-sm">Click the eye icon to view emails</p>
-                          </div>
-                      ) : (
-                        recentlyViewedEmails.map((email) => (
-                          <div key={email.id} className="flex items-center justify-between p-4 bg-white/5 rounded-xl">
-                          <div className="flex-1">
-                              <div className="flex items-center space-x-3">
-                                <div className="w-10 h-10 bg-primary-500/20 rounded-full flex items-center justify-center">
-                                  <User className="w-5 h-5 text-primary-400" />
-                          </div>
-                                <div>
-                                  <h3 className="text-white font-medium">{email.name || 'No name'}</h3>
-                        </div>
-                              </div>
-                            </div>
-                            <div className="text-right">
-                              <span className="px-2 py-1 rounded-full text-xs text-blue-400 bg-blue-400/10">
-                                Viewed
-                              </span>
-                              <div className="flex items-center space-x-2 mt-2">
-                                <button 
-                                  onClick={() => handleViewEmail(email)}
-                                  disabled={deletingEmails.has(email.id)}
-                                  className="p-1 text-gray-400 hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                                >
-                                  <Eye className="w-4 h-4" />
-                                </button>
-                                <button 
-                                  onClick={() => handleSendEmail(email)}
-                                  className="p-1 text-gray-400 hover:text-primary-400 transition-colors"
-                                >
-                                  <Mail className="w-4 h-4" />
-                                </button>
-                                <button 
-                                  onClick={() => handleSaveEmail(email)}
-                                  className="p-1 text-gray-400 hover:text-primary-400 transition-colors"
-                                >
-                                  <Save className="w-4 h-4" />
-                                </button>
-                                <button 
-                                  onClick={() => handleDeleteEmail(email)}
-                                  className="p-1 text-gray-400 hover:text-red-400 transition-colors"
-                                >
-                                  <Trash2 className="w-4 h-4" />
-                                </button>
-                              </div>
-                            </div>
-                          </div>
-                        ))
-                      )}
-                    </div>
-                  </motion.div>
-
-                  {/* Saved Emails */}
-                  <motion.div
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.5, delay: 0.5 }}
-                    className="glass-effect rounded-2xl p-6"
-                  >
-                    <div className="flex items-center justify-between mb-6">
-                      <h2 className="text-xl font-semibold text-white">Saved Emails</h2>
-                      <button className="text-primary-400 hover:text-primary-300 text-sm">View All</button>
-                </div>
-                    <div className="space-y-4 max-h-96 overflow-y-auto">
-                      {savedEmails.length === 0 ? (
-                        <div className="text-center p-8">
-                          <Save className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                          <p className="text-gray-400">No saved emails</p>
-                          <p className="text-gray-500 text-sm">Click the save icon to save emails</p>
-                        </div>
-                      ) : (
-                        savedEmails.map((email) => (
-                          <div key={email.id} className="flex items-center justify-between p-4 bg-white/5 rounded-xl">
-                            <div className="flex-1">
-                              <div className="flex items-center space-x-3">
-                                <div className="w-10 h-10 bg-primary-500/20 rounded-full flex items-center justify-center">
-                                  <User className="w-5 h-5 text-primary-400" />
-                                </div>
-                                <div>
-                                  <h3 className="text-white font-medium">{email.name || 'No name'}</h3>
-                                </div>
-                              </div>
-                            </div>
-                            <div className="text-right">
-                              <span className="px-2 py-1 rounded-full text-xs text-yellow-400 bg-yellow-400/10">
-                                Saved
-                              </span>
-                              <div className="flex items-center space-x-2 mt-2">
-                                <button 
-                                  onClick={() => handleViewEmail(email)}
-                                  disabled={deletingEmails.has(email.id)}
-                                  className="p-1 text-gray-400 hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                                >
-                                  <Eye className="w-4 h-4" />
-                                </button>
-                                <button 
-                                  onClick={() => handleSendEmail(email)}
-                                  className="p-1 text-gray-400 hover:text-primary-400 transition-colors"
-                                >
-                                  <Mail className="w-4 h-4" />
-                                </button>
-                                <button 
-                                  onClick={() => handleDeleteEmail(email)}
-                                  className="p-1 text-gray-400 hover:text-red-400 transition-colors"
-                                >
-                                  <Trash2 className="w-4 h-4" />
-                                </button>
-                              </div>
-                            </div>
-                          </div>
-                        ))
-                      )}
-                    </div>
-                  </motion.div>
                 </div>
               </motion.div>
             )}
@@ -1116,8 +984,8 @@ const upcomingTasks = [
                   </div>
                 </motion.div>
 
-                {/* LinkedIn Connections and Sections */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {/* LinkedIn Connections */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                   {/* LinkedIn Connections */}
                   <motion.div
                     initial={{ opacity: 0, x: -20 }}
@@ -1207,130 +1075,6 @@ const upcomingTasks = [
                       )}
                   </div>
                 </motion.div>
-
-                  {/* Recently Viewed Connections */}
-                  <motion.div
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.5, delay: 0.4 }}
-                    className="glass-effect rounded-2xl p-6"
-                  >
-                    <div className="flex items-center justify-between mb-6">
-                      <h2 className="text-xl font-semibold text-white">Recently Viewed</h2>
-                      <button className="text-primary-400 hover:text-primary-300 text-sm">View All</button>
-                    </div>
-                    <div className="space-y-4 max-h-96 overflow-y-auto">
-                      {recentlyViewedLinkedIn.length === 0 ? (
-                        <div className="text-center p-8">
-                          <Eye className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                          <p className="text-gray-400">No recently viewed connections</p>
-                          <p className="text-gray-500 text-sm">Click the eye icon to view connections</p>
-                        </div>
-                      ) : (
-                        recentlyViewedLinkedIn.map((connection) => (
-                          <div key={connection.id} className="flex items-center justify-between p-4 bg-white/5 rounded-xl">
-                            <div className="flex-1">
-                              <div className="flex items-center space-x-3">
-                                <div className="w-10 h-10 bg-primary-500/20 rounded-full flex items-center justify-center">
-                                  <User className="w-5 h-5 text-primary-400" />
-                                </div>
-                                <div>
-                                  <h3 className="text-white font-medium">{connection.name || 'No name'}</h3>
-                                </div>
-                              </div>
-                            </div>
-                            <div className="text-right">
-                              <span className="px-2 py-1 rounded-full text-xs text-blue-400 bg-blue-400/10">
-                                Viewed
-                              </span>
-                              <div className="flex items-center space-x-2 mt-2">
-                                <button 
-                                  onClick={() => handleViewLinkedIn(connection)}
-                                  disabled={deletingLinkedIn.has(connection.id)}
-                                  className="p-1 text-gray-400 hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                                >
-                                  <Eye className="w-4 h-4" />
-                                </button>
-                                <button 
-                                  onClick={() => handleDeleteLinkedIn(connection)}
-                                  disabled={deletingLinkedIn.has(connection.id)}
-                                  className="p-1 text-gray-400 hover:text-red-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                                >
-                                  {deletingLinkedIn.has(connection.id) ? (
-                                    <div className="w-4 h-4 border-2 border-red-400 border-t-transparent rounded-full animate-spin"></div>
-                                  ) : (
-                                    <Trash2 className="w-4 h-4" />
-                                  )}
-                                </button>
-                              </div>
-                            </div>
-                          </div>
-                        ))
-                      )}
-                    </div>
-                  </motion.div>
-
-                  {/* Saved Connections */}
-                  <motion.div
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.5, delay: 0.5 }}
-                    className="glass-effect rounded-2xl p-6"
-                  >
-                    <div className="flex items-center justify-between mb-6">
-                      <h2 className="text-xl font-semibold text-white">Saved Connections</h2>
-                      <button className="text-primary-400 hover:text-primary-300 text-sm">View All</button>
-                    </div>
-                    <div className="space-y-4 max-h-96 overflow-y-auto">
-                      {savedLinkedIn.length === 0 ? (
-                        <div className="text-center p-8">
-                          <Save className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                          <p className="text-gray-400">No saved connections</p>
-                          <p className="text-gray-500 text-sm">Click the save icon to save connections</p>
-                        </div>
-                      ) : (
-                        savedLinkedIn.map((connection) => (
-                          <div key={connection.id} className="flex items-center justify-between p-4 bg-white/5 rounded-xl">
-                            <div className="flex-1">
-                              <div className="flex items-center space-x-3">
-                                <div className="w-10 h-10 bg-primary-500/20 rounded-full flex items-center justify-center">
-                                  <User className="w-5 h-5 text-primary-400" />
-                                </div>
-                                <div>
-                                  <h3 className="text-white font-medium">{connection.name || 'No name'}</h3>
-                                </div>
-                              </div>
-                            </div>
-                            <div className="text-right">
-                              <span className="px-2 py-1 rounded-full text-xs text-yellow-400 bg-yellow-400/10">
-                                Saved
-                              </span>
-                              <div className="flex items-center space-x-2 mt-2">
-                                <button 
-                                  onClick={() => handleViewLinkedIn(connection)}
-                                  disabled={deletingLinkedIn.has(connection.id)}
-                                  className="p-1 text-gray-400 hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                                >
-                                  <Eye className="w-4 h-4" />
-                                </button>
-                                <button 
-                                  onClick={() => handleDeleteLinkedIn(connection)}
-                                  disabled={deletingLinkedIn.has(connection.id)}
-                                  className="p-1 text-gray-400 hover:text-red-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                                >
-                                  {deletingLinkedIn.has(connection.id) ? (
-                                    <div className="w-4 h-4 border-2 border-red-400 border-t-transparent rounded-full animate-spin"></div>
-                                  ) : (
-                                    <Trash2 className="w-4 h-4" />
-                                  )}
-                                </button>
-                              </div>
-                            </div>
-                          </div>
-                        ))
-                      )}
-                    </div>
-                  </motion.div>
                 </div>
               </motion.div>
             )}
