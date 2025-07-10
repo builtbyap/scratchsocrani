@@ -69,15 +69,20 @@ export default function Dashboard() {
     setLoadingEmails(true)
     try {
       const supabase = getSupabaseClient()
+      console.log('🔍 Fetching emails for user:', user.id)
+      
       const { data, error } = await supabase
         .from('emails')
         .select('*')
         .eq('user_id', user.id)
+      
       if (error) {
         console.error('❌ Error fetching emails:', error)
         setEmails([])
         return
       }
+      
+      console.log('✅ Emails fetched:', data)
       setEmails(data || [])
     } catch (error) {
       console.error('❌ Unexpected error fetching emails:', error)
@@ -93,15 +98,36 @@ export default function Dashboard() {
     setLoadingLinkedIn(true)
     try {
       const supabase = getSupabaseClient()
-      const { data, error } = await supabase
-        .from('Linkedin')
-        .select('*')
-        .eq('user_id', user.id)
+      console.log('🔍 Fetching LinkedIn connections for user:', user.id)
+      
+      // Try different table names
+      const tableNames = ['Linkedin', 'linkedin', 'linkedin_connections', 'connections']
+      let data = null
+      let error = null
+      
+      for (const tableName of tableNames) {
+        console.log(`🔍 Trying table: ${tableName}`)
+        const result = await supabase
+          .from(tableName)
+          .select('*')
+          .eq('user_id', user.id)
+        
+        if (!result.error) {
+          console.log(`✅ Found working table: ${tableName}`)
+          data = result.data
+          break
+        } else {
+          console.log(`❌ Table ${tableName} failed:`, result.error)
+        }
+      }
+      
       if (error) {
         console.error('❌ Error fetching LinkedIn connections:', error)
         setLinkedInConnections([])
         return
       }
+      
+      console.log('✅ LinkedIn connections fetched:', data)
       setLinkedInConnections(data || [])
     } catch (error) {
       console.error('❌ Unexpected error fetching LinkedIn connections:', error)
@@ -315,6 +341,10 @@ export default function Dashboard() {
     // If no search term, show all connections
     return true
   })
+  
+  console.log('🔗 LinkedIn connections state:', linkedInConnections)
+  console.log('🔗 Filtered LinkedIn connections:', filteredLinkedInConnections)
+  console.log('🔗 LinkedIn search term:', linkedInSearchTerm)
 
   // Filter emails based on search term (company name) only
   const filteredEmails = emails.filter((email: any) => {
@@ -326,6 +356,10 @@ export default function Dashboard() {
     // If no search term, show all emails
     return true
   })
+  
+  console.log('📧 Emails state:', emails)
+  console.log('📧 Filtered emails:', filteredEmails)
+  console.log('📧 Email search term:', emailSearchTerm)
 
   // Define stats with demo data
 const stats = [
