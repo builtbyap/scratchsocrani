@@ -572,21 +572,7 @@ export default function Dashboard() {
   
 
 
-  // Define stats with demo data
-const stats = [
-  {
-    title: 'Total Emails',
-    value: '8',
-    icon: Users,
-    color: 'text-blue-400'
-  },
-  {
-    title: 'LinkedIn Connections',
-    value: '8',
-    icon: Linkedin,
-    color: 'text-blue-400'
-  }
-]
+
 
   const recentCampaigns = [
     {
@@ -888,28 +874,7 @@ const upcomingTasks = [
                 transition={{ duration: 0.5 }}
                 className="space-y-8"
               >
-                {/* Stats Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {stats.map((stat, index) => (
-                    <motion.div
-                      key={stat.title}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.5, delay: index * 0.1 }}
-                      className="glass-effect rounded-2xl p-6"
-                    >
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="text-gray-400 text-sm">{stat.title}</p>
-                          <p className="text-2xl font-bold text-white mt-1">{stat.value}</p>
-                        </div>
-                        <div className={`p-3 rounded-xl bg-white/10 ${stat.color}`}>
-                          <stat.icon className="w-6 h-6" />
-                        </div>
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
+
 
                 {/* Email List and LinkedIn Connections */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -1029,28 +994,7 @@ const upcomingTasks = [
                 transition={{ duration: 0.5 }}
                 className="space-y-8"
               >
-                {/* Email List Stats */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {stats.map((stat, index) => (
-                    <motion.div
-                      key={stat.title}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.5, delay: index * 0.1 }}
-                      className="glass-effect rounded-2xl p-6"
-                    >
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="text-gray-400 text-sm">{stat.title}</p>
-                          <p className="text-2xl font-bold text-white mt-1">{stat.value}</p>
-                        </div>
-                        <div className={`p-3 rounded-xl bg-white/10 ${stat.color}`}>
-                          <stat.icon className="w-6 h-6" />
-                        </div>
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
+
 
                 {/* Quick Actions */}
                 <motion.div
