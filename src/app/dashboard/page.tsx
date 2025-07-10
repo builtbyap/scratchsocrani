@@ -643,14 +643,7 @@ export default function Dashboard() {
     }
   ]
 
-  const linkedInAnalytics = [
-    {
-      title: 'LinkedIn Connections',
-      value: '8',
-      icon: Eye,
-      color: 'text-blue-400'
-    }
-  ]
+
 
 const recentProjects = [
   {
@@ -879,12 +872,12 @@ const upcomingTasks = [
                 {/* Email List and LinkedIn Connections */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                   {/* Email List */}
-                  <motion.div
+                    <motion.div
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.5, delay: 0.3 }}
-                    className="glass-effect rounded-2xl p-6"
-                  >
+                      className="glass-effect rounded-2xl p-6"
+                    >
                     <div className="flex items-center justify-between mb-6">
                       <h2 className="text-xl font-semibold text-white">Email List</h2>
                       <button 
@@ -914,18 +907,18 @@ const upcomingTasks = [
                                 <div className="w-10 h-10 bg-primary-500/20 rounded-full flex items-center justify-center">
                                   <User className="w-5 h-5 text-primary-400" />
                                 </div>
-                                <div>
+                        <div>
                                   <h3 className="text-white font-medium">{email.name || 'No name'}</h3>
                                   <p className="text-gray-400 text-sm">{email.company || 'No company'}</p>
-                                </div>
-                              </div>
-                          </div>
+                        </div>
+                        </div>
+                      </div>
                           <div className="text-right">
                               <span className="px-2 py-1 rounded-full text-xs text-green-400 bg-green-400/10">
                                 Active
                             </span>
-                              </div>
-                            </div>
+                      </div>
+                </div>
                         ))
                       )}
                           </div>
@@ -946,7 +939,7 @@ const upcomingTasks = [
                       >
                         View All
                       </button>
-                        </div>
+                    </div>
                     <div className="space-y-4 max-h-96 overflow-y-auto">
                       {loadingLinkedIn ? (
                         <div className="flex items-center justify-center p-8">
@@ -962,7 +955,7 @@ const upcomingTasks = [
                       ) : (
                         uniqueLinkedInConnections.slice(0, 5).map((connection) => (
                           <div key={connection.id} className="flex items-center justify-between p-4 bg-white/5 rounded-xl">
-                            <div className="flex-1">
+                          <div className="flex-1">
                               <div className="flex items-center space-x-3">
                                 <div className="w-10 h-10 bg-primary-500/20 rounded-full flex items-center justify-center">
                                   <User className="w-5 h-5 text-primary-400" />
@@ -971,18 +964,18 @@ const upcomingTasks = [
                                   <h3 className="text-white font-medium">{connection.name || 'No name'}</h3>
                                 </div>
                               </div>
-                            </div>
-                            <div className="text-right">
+                          </div>
+                          <div className="text-right">
                               <span className="px-2 py-1 rounded-full text-xs text-green-400 bg-green-400/10">
                                 Active
-                              </span>
+                            </span>
+                              </div>
                             </div>
-                          </div>
                         ))
                       )}
-                    </div>
+                          </div>
                   </motion.div>
-                </div>
+                        </div>
               </motion.div>
             )}
 
@@ -1036,9 +1029,9 @@ const upcomingTasks = [
                             className="pl-9 pr-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-primary-400 transition-colors text-sm w-48"
                           />
                         </div>
-                        <button className="text-primary-400 hover:text-primary-300 text-sm">View All</button>
-                      </div>
+                      <button className="text-primary-400 hover:text-primary-300 text-sm">View All</button>
                     </div>
+                          </div>
                     <div className="space-y-4 max-h-96 overflow-y-auto">
                       {loadingEmails && emails.length === 0 ? (
                         <div className="flex items-center justify-center p-8">
@@ -1058,16 +1051,16 @@ const upcomingTasks = [
                       ) : (
                         filteredEmails.map((email: any) => (
                           <div key={email.id} className="flex items-center justify-between p-4 bg-white/5 rounded-xl">
-                            <div className="flex-1">
+                          <div className="flex-1">
                               <div className="flex items-center space-x-3">
                                 <div className="w-10 h-10 bg-primary-500/20 rounded-full flex items-center justify-center">
                                   <User className="w-5 h-5 text-primary-400" />
-                                </div>
+                          </div>
                                 <div>
                                   <h3 className="text-white font-medium">{email.name || 'No name'}</h3>
                                   <p className="text-gray-400 text-sm">{email.company || 'No company'}</p>
                                   <p className="text-gray-500 text-xs">{email.email || 'No email'}</p>
-                                </div>
+                        </div>
                               </div>
                             </div>
                             <div className="text-right">
@@ -1119,28 +1112,7 @@ const upcomingTasks = [
                 transition={{ duration: 0.5 }}
                 className="space-y-8"
               >
-                {/* LinkedIn Stats */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {linkedInAnalytics.map((stat, index) => (
-                    <motion.div
-                      key={stat.title}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.5, delay: index * 0.1 }}
-                      className="glass-effect rounded-2xl p-6"
-                    >
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="text-gray-400 text-sm">{stat.title}</p>
-                          <p className="text-2xl font-bold text-white mt-1">{stat.value}</p>
-                        </div>
-                        <div className={`p-3 rounded-xl bg-white/10 ${stat.color}`}>
-                          <stat.icon className="w-6 h-6" />
-                        </div>
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
+
 
                 {/* Quick Actions */}
                 <motion.div
