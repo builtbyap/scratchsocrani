@@ -173,13 +173,10 @@ export default function Dashboard() {
       console.log('🔍 Fetching LinkedIn connections for user:', user.id)
       console.log('🔍 User object:', user)
       
-      // Try multiple approaches to fetch LinkedIn connections
-      let linkedInData = null
-      let error = null
+      // Try to fetch LinkedIn connections from the Linkedin table
+      console.log('🔍 Fetching from Linkedin table for user:', user.id)
       
-      // Approach 1: Try the standard Linkedin table with RLS
-      console.log('🔍 Approach 1: Trying Linkedin table with RLS...')
-      console.log('🔍 User ID:', user.id)
+      let linkedInData = null
       
       // First, try without user_id filter since RLS should handle it
       console.log('🔍 Trying without user_id filter (RLS should handle it)...')
@@ -205,8 +202,8 @@ export default function Dashboard() {
         console.log('❌ Result data:', linkedinResult)
         console.log('❌ Result length:', linkedinResult?.length || 0)
         
-        // Approach 2: Try with explicit user_id filter
-        console.log('🔍 Approach 2: Trying with explicit user_id filter...')
+        // Try with explicit user_id filter as fallback
+        console.log('🔍 Trying with explicit user_id filter...')
         const { data: userLinkedin, error: userLinkedinError } = await supabase
           .from('Linkedin')
           .select('*')
@@ -225,23 +222,6 @@ export default function Dashboard() {
               hint: userLinkedinError.hint,
               code: userLinkedinError.code
             })
-          }
-          
-          // Approach 3: Try different table names
-          const tableNames = ['linkedin_connections', 'linkedin', 'connections', 'linkedin_contacts', 'professional_contacts']
-          for (const tableName of tableNames) {
-            console.log(`🔍 Approach 3: Trying table ${tableName}...`)
-            const { data: altResult, error: altError } = await supabase
-              .from(tableName)
-              .select('*')
-            
-            if (!altError && altResult && altResult.length > 0) {
-              console.log(`✅ Success with ${tableName} table:`, altResult)
-              linkedInData = altResult
-              break
-            } else {
-              console.log(`❌ ${tableName} table failed:`, altError?.message || 'No data')
-            }
           }
         }
       }
@@ -301,7 +281,7 @@ export default function Dashboard() {
       console.log('📋 Available tables:', data?.map(t => t.table_name))
       
       // Also try to check specific tables we're looking for
-      const tablesToCheck = ['emails', 'Linkedin', 'linkedin_connections', 'linkedin', 'connections']
+      const tablesToCheck = ['emails', 'Linkedin']
       for (const tableName of tablesToCheck) {
         try {
           const { data: tableData, error: tableError } = await supabase
