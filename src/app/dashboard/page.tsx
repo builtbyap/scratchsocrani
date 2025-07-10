@@ -261,38 +261,20 @@ export default function Dashboard() {
       const supabase = getSupabaseClient()
       console.log('🔍 Checking available tables...')
       
-      // Try to get table information
-      const { data, error } = await supabase
-        .from('information_schema.tables')
-        .select('table_name')
-        .eq('table_schema', 'public')
-      
-      if (error) {
-        console.log('❌ Could not query information_schema:', error)
-        console.log('❌ Error details:', {
-          message: error.message,
-          details: error.details,
-          hint: error.hint,
-          code: error.code
-        })
-        return
-      }
-      
-      console.log('📋 Available tables:', data?.map(t => t.table_name))
-      
-      // Also try to check specific tables we're looking for
+      // Try to check specific tables we're looking for
       const tablesToCheck = ['emails', 'Linkedin']
       for (const tableName of tablesToCheck) {
         try {
           const { data: tableData, error: tableError } = await supabase
             .from(tableName)
-            .select('count')
+            .select('*')
             .limit(1)
           
           if (tableError) {
             console.log(`❌ Table ${tableName}: ${tableError.message}`)
           } else {
             console.log(`✅ Table ${tableName}: exists and accessible`)
+            console.log(`✅ Sample data from ${tableName}:`, tableData)
           }
         } catch (e) {
           console.log(`❌ Table ${tableName}: ${e}`)
@@ -540,9 +522,12 @@ export default function Dashboard() {
     }
   }
 
-  // Deduplicate LinkedIn connections by id
+  // Deduplicate LinkedIn connections by data content (name, company, linkedin)
   const uniqueLinkedInConnections = Array.from(
-    new Map(linkedInConnections.map(conn => [conn.id, conn])).values()
+    new Map(linkedInConnections.map(conn => [
+      `${conn.name}-${conn.company}-${conn.linkedin}`, 
+      conn
+    ])).values()
   )
 
   // Filter LinkedIn connections based on search term (company name) only
@@ -557,12 +542,21 @@ export default function Dashboard() {
   })
   
   console.log('🔗 Total LinkedIn connections:', linkedInConnections.length)
+  console.log('🔗 Unique LinkedIn connections:', uniqueLinkedInConnections.length)
   console.log('🔗 Filtered LinkedIn connections:', filteredLinkedInConnections.length)
   
 
 
+  // Deduplicate emails by data content (name, email, company)
+  const uniqueEmails = Array.from(
+    new Map(emails.map(email => [
+      `${email.name}-${email.email}-${email.company}`, 
+      email
+    ])).values()
+  )
+
   // Filter emails based on search term (company name) only
-  const filteredEmails = emails.filter((email: any) => {
+  const filteredEmails = uniqueEmails.filter((email: any) => {
     // If there's a search term, check if it matches the company name
     if (emailSearchTerm.trim()) {
       return email.company?.toLowerCase().includes(emailSearchTerm.toLowerCase())
@@ -573,6 +567,7 @@ export default function Dashboard() {
   })
   
   console.log('📧 Total emails:', emails.length)
+  console.log('📧 Unique emails:', uniqueEmails.length)
   console.log('📧 Filtered emails:', filteredEmails.length)
   
 
