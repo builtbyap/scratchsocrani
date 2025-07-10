@@ -133,62 +133,19 @@ export default function Dashboard() {
         console.log('✅ Number of emails:', emailsData.length)
         console.log('✅ Email data sample:', emailsData[0])
         setEmails(emailsData)
-        // Cache the data in localStorage
+        // Cache the real data in localStorage
         if (user) {
           localStorage.setItem(`emails_${user.id}`, JSON.stringify(emailsData))
-          console.log('✅ Cached emails data')
+          console.log('✅ Cached real emails data')
         }
       } else {
-        console.log('❌ No emails found with any approach, using demo data')
-        // Fallback to demo data if no emails found in database
-        const demoEmails = [
-          {
-            id: 1,
-            name: 'John Smith',
-            email: 'john.smith@techcorp.com',
-            company: 'TechCorp Inc.',
-            position: 'Senior Developer',
-            phone: '+1-555-0123'
-          },
-          {
-            id: 2,
-            name: 'Sarah Johnson',
-            email: 'sarah.j@innovate.com',
-            company: 'Innovate Solutions',
-            position: 'Product Manager',
-            phone: '+1-555-0124'
-          },
-          {
-            id: 3,
-            name: 'Mike Davis',
-            email: 'mike.davis@startup.com',
-            company: 'StartupXYZ',
-            position: 'CEO',
-            phone: '+1-555-0125'
-          },
-          {
-            id: 4,
-            name: 'Lisa Chen',
-            email: 'lisa.chen@enterprise.com',
-            company: 'Enterprise Solutions',
-            position: 'CTO',
-            phone: '+1-555-0126'
-          },
-          {
-            id: 5,
-            name: 'David Wilson',
-            email: 'david.wilson@growth.com',
-            company: 'Growth Labs',
-            position: 'Marketing Director',
-            phone: '+1-555-0127'
-          }
-        ]
-        console.log('✅ Using demo emails:', demoEmails)
-        setEmails(demoEmails)
-        // Cache the demo data in localStorage
+        console.log('❌ No emails found in database')
+        console.log('❌ Please add real data to your emails table')
+        setEmails([])
+        // Clear any cached demo data
         if (user) {
-          localStorage.setItem(`emails_${user.id}`, JSON.stringify(demoEmails))
-          console.log('✅ Cached demo emails data')
+          localStorage.removeItem(`emails_${user.id}`)
+          console.log('✅ Cleared cached demo data')
         }
       }
       
@@ -220,30 +177,55 @@ export default function Dashboard() {
       let linkedInData = null
       let error = null
       
-      // Approach 1: Try the standard Linkedin table
-      console.log('🔍 Approach 1: Trying Linkedin table...')
+      // Approach 1: Try the standard Linkedin table with RLS
+      console.log('🔍 Approach 1: Trying Linkedin table with RLS...')
+      console.log('🔍 User ID:', user.id)
+      
+      // First, try without user_id filter since RLS should handle it
+      console.log('🔍 Trying without user_id filter (RLS should handle it)...')
       const { data: linkedinResult, error: linkedinError } = await supabase
         .from('Linkedin')
         .select('*')
-        .eq('user_id', user.id)
       
       if (!linkedinError && linkedinResult && linkedinResult.length > 0) {
-        console.log('✅ Success with Linkedin table:', linkedinResult)
+        console.log('✅ Success with Linkedin table (RLS handled):', linkedinResult)
+        console.log('✅ Number of records found:', linkedinResult.length)
+        console.log('✅ First record sample:', linkedinResult[0])
         linkedInData = linkedinResult
       } else {
-        console.log('❌ Linkedin table failed:', linkedinError?.message || 'No data found')
+        console.log('❌ Linkedin table failed (RLS approach):', linkedinError?.message || 'No data found')
+        if (linkedinError) {
+          console.log('❌ Error details:', {
+            message: linkedinError.message,
+            details: linkedinError.details,
+            hint: linkedinError.hint,
+            code: linkedinError.code
+          })
+        }
+        console.log('❌ Result data:', linkedinResult)
+        console.log('❌ Result length:', linkedinResult?.length || 0)
         
-        // Approach 2: Try without user_id filter (in case RLS is handling it)
-        console.log('🔍 Approach 2: Trying Linkedin table without user_id filter...')
-        const { data: allLinkedin, error: allLinkedinError } = await supabase
+        // Approach 2: Try with explicit user_id filter
+        console.log('🔍 Approach 2: Trying with explicit user_id filter...')
+        const { data: userLinkedin, error: userLinkedinError } = await supabase
           .from('Linkedin')
           .select('*')
+          .eq('user_id', user.id)
         
-        if (!allLinkedinError && allLinkedin && allLinkedin.length > 0) {
-          console.log('✅ Found LinkedIn connections without user filter:', allLinkedin)
-          linkedInData = allLinkedin
+        if (!userLinkedinError && userLinkedin && userLinkedin.length > 0) {
+          console.log('✅ Success with explicit user filter:', userLinkedin)
+          console.log('✅ Number of records found:', userLinkedin.length)
+          linkedInData = userLinkedin
         } else {
-          console.log('❌ No LinkedIn connections found without user filter:', allLinkedinError?.message || 'No data')
+          console.log('❌ Explicit user filter failed:', userLinkedinError?.message || 'No data')
+          if (userLinkedinError) {
+            console.log('❌ Error details:', {
+              message: userLinkedinError.message,
+              details: userLinkedinError.details,
+              hint: userLinkedinError.hint,
+              code: userLinkedinError.code
+            })
+          }
           
           // Approach 3: Try different table names
           const tableNames = ['linkedin_connections', 'linkedin', 'connections', 'linkedin_contacts', 'professional_contacts']
@@ -252,7 +234,6 @@ export default function Dashboard() {
             const { data: altResult, error: altError } = await supabase
               .from(tableName)
               .select('*')
-              .eq('user_id', user.id)
             
             if (!altError && altResult && altResult.length > 0) {
               console.log(`✅ Success with ${tableName} table:`, altResult)
@@ -270,94 +251,19 @@ export default function Dashboard() {
         console.log('✅ Number of LinkedIn connections:', linkedInData.length)
         console.log('✅ LinkedIn data sample:', linkedInData[0])
         setLinkedInConnections(linkedInData)
-        // Cache the data in localStorage
+        // Cache the real data in localStorage
         if (user) {
           localStorage.setItem(`linkedin_${user.id}`, JSON.stringify(linkedInData))
-          console.log('✅ Cached LinkedIn data')
+          console.log('✅ Cached real LinkedIn data')
         }
       } else {
-        console.log('❌ No LinkedIn connections found with any approach, using demo data')
-        // Fallback to demo data if no LinkedIn connections found in database
-        const demoLinkedIn = [
-          {
-            id: 1,
-            name: 'Alex Johnson',
-            email: 'alex.johnson@techcorp.com',
-            company: 'TechCorp Inc.',
-            position: 'Senior Developer',
-            phone: '+1-555-0101',
-            linkedin: 'https://linkedin.com/in/alexjohnson'
-          },
-          {
-            id: 2,
-            name: 'Sarah Williams',
-            email: 'sarah.w@innovate.com',
-            company: 'Innovate Solutions',
-            position: 'Product Manager',
-            phone: '+1-555-0102',
-            linkedin: 'https://linkedin.com/in/sarahwilliams'
-          },
-          {
-            id: 3,
-            name: 'Michael Chen',
-            email: 'michael.chen@startup.com',
-            company: 'StartupXYZ',
-            position: 'CEO',
-            phone: '+1-555-0103',
-            linkedin: 'https://linkedin.com/in/michaelchen'
-          },
-          {
-            id: 4,
-            name: 'Emily Davis',
-            email: 'emily.davis@enterprise.com',
-            company: 'Enterprise Solutions',
-            position: 'CTO',
-            phone: '+1-555-0104',
-            linkedin: 'https://linkedin.com/in/emilydavis'
-          },
-          {
-            id: 5,
-            name: 'David Brown',
-            email: 'david.brown@growth.com',
-            company: 'Growth Labs',
-            position: 'Marketing Director',
-            phone: '+1-555-0105',
-            linkedin: 'https://linkedin.com/in/davidbrown'
-          },
-          {
-            id: 6,
-            name: 'Lisa Garcia',
-            email: 'lisa.garcia@creative.com',
-            company: 'Creative Agency',
-            position: 'Design Lead',
-            phone: '+1-555-0106',
-            linkedin: 'https://linkedin.com/in/lisagarcia'
-          },
-          {
-            id: 7,
-            name: 'Tom Wilson',
-            email: 'tom.wilson@data.com',
-            company: 'Data Insights',
-            position: 'Data Scientist',
-            phone: '+1-555-0107',
-            linkedin: 'https://linkedin.com/in/tomwilson'
-          },
-          {
-            id: 8,
-            name: 'Rachel Martinez',
-            email: 'rachel.martinez@cloud.com',
-            company: 'Cloud Systems',
-            position: 'DevOps Engineer',
-            phone: '+1-555-0108',
-            linkedin: 'https://linkedin.com/in/rachelmartinez'
-          }
-        ]
-        console.log('✅ Using demo LinkedIn connections:', demoLinkedIn)
-        setLinkedInConnections(demoLinkedIn)
-        // Cache the demo data in localStorage
+        console.log('❌ No LinkedIn connections found in database')
+        console.log('❌ Please add real data to your LinkedIn table')
+        setLinkedInConnections([])
+        // Clear any cached demo data
         if (user) {
-          localStorage.setItem(`linkedin_${user.id}`, JSON.stringify(demoLinkedIn))
-          console.log('✅ Cached demo LinkedIn data')
+          localStorage.removeItem(`linkedin_${user.id}`)
+          console.log('✅ Cleared cached demo data')
         }
       }
       
@@ -429,33 +335,18 @@ export default function Dashboard() {
     if (user) {
       console.log('🔍 User authenticated, starting data fetch...')
       
-      // Load cached data first for immediate display
-      const cachedEmails = localStorage.getItem(`emails_${user.id}`)
-      const cachedLinkedIn = localStorage.getItem(`linkedin_${user.id}`)
-      
-      if (cachedEmails) {
-        try {
-          const parsedEmails = JSON.parse(cachedEmails)
-          console.log('✅ Loading cached emails:', parsedEmails.length)
-          setEmails(parsedEmails)
-          setLoadingEmails(false) // Stop loading state immediately
-        } catch (error) {
-          console.error('❌ Error parsing cached emails:', error)
-        }
+      // Clear any cached demo data to force fresh fetch
+      const clearCachedDemoData = () => {
+        console.log('🧹 Clearing any cached demo data...')
+        localStorage.removeItem(`emails_${user.id}`)
+        localStorage.removeItem(`linkedin_${user.id}`)
+        console.log('✅ Cleared cached demo data')
       }
       
-      if (cachedLinkedIn) {
-        try {
-          const parsedLinkedIn = JSON.parse(cachedLinkedIn)
-          console.log('✅ Loading cached LinkedIn connections:', parsedLinkedIn.length)
-          setLinkedInConnections(parsedLinkedIn)
-          setLoadingLinkedIn(false) // Stop loading state immediately
-        } catch (error) {
-          console.error('❌ Error parsing cached LinkedIn:', error)
-        }
-      }
+      // Clear demo data to ensure we get real data
+      clearCachedDemoData()
       
-      // Then fetch fresh data in background
+      // Then fetch fresh data from database
       debugTables() // Check what tables are available
       fetchEmails()
       fetchLinkedInConnections()
@@ -1401,6 +1292,7 @@ const upcomingTasks = [
                         </div>
                                 <div>
                                   <h3 className="text-white font-medium">{connection.name || 'No name'}</h3>
+                                  <p className="text-gray-400 text-sm">{connection.company || 'No company'}</p>
                         </div>
                       </div>
                             </div>
