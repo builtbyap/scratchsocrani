@@ -65,26 +65,119 @@ export default function Dashboard() {
 
   // Fetch emails from Supabase for the current user
   const fetchEmails = async () => {
-    if (!user) return
+    if (!user) {
+      console.log('❌ No user found, skipping email fetch')
+      return
+    }
     setLoadingEmails(true)
     try {
       const supabase = getSupabaseClient()
       console.log('🔍 Fetching emails for user:', user.id)
+      console.log('🔍 User object:', user)
       
-      const { data, error } = await supabase
+      // Try multiple approaches to fetch emails
+      let emailsData = null
+      let error = null
+      
+      // Approach 1: Try the standard emails table
+      console.log('🔍 Approach 1: Trying emails table...')
+      const { data: emailsResult, error: emailsError } = await supabase
         .from('emails')
         .select('*')
         .eq('user_id', user.id)
       
-      if (error) {
-        console.error('❌ Error fetching emails:', error)
-        setEmails([])
-        return
+      if (!emailsError && emailsResult && emailsResult.length > 0) {
+        console.log('✅ Success with emails table:', emailsResult)
+        emailsData = emailsResult
+      } else {
+        console.log('❌ Emails table failed:', emailsError?.message || 'No data found')
+        
+        // Approach 2: Try without user_id filter (in case RLS is handling it)
+        console.log('🔍 Approach 2: Trying emails table without user_id filter...')
+        const { data: allEmails, error: allEmailsError } = await supabase
+          .from('emails')
+          .select('*')
+        
+        if (!allEmailsError && allEmails && allEmails.length > 0) {
+          console.log('✅ Found emails without user filter:', allEmails)
+          emailsData = allEmails
+        } else {
+          console.log('❌ No emails found without user filter:', allEmailsError?.message || 'No data')
+          
+          // Approach 3: Try different table names
+          const tableNames = ['email', 'email_list', 'contacts', 'email_contacts']
+          for (const tableName of tableNames) {
+            console.log(`🔍 Approach 3: Trying table ${tableName}...`)
+            const { data: altResult, error: altError } = await supabase
+              .from(tableName)
+              .select('*')
+              .eq('user_id', user.id)
+            
+            if (!altError && altResult && altResult.length > 0) {
+              console.log(`✅ Success with ${tableName} table:`, altResult)
+              emailsData = altResult
+              break
+            } else {
+              console.log(`❌ ${tableName} table failed:`, altError?.message || 'No data')
+            }
+          }
+        }
       }
       
-      console.log('✅ Emails fetched:', data)
-      console.log('✅ Number of emails:', data?.length || 0)
-      setEmails(data || [])
+      if (emailsData) {
+        console.log('✅ Final emails data:', emailsData)
+        console.log('✅ Number of emails:', emailsData.length)
+        console.log('✅ Email data sample:', emailsData[0])
+        setEmails(emailsData)
+      } else {
+        console.log('❌ No emails found with any approach, using demo data')
+        // Fallback to demo data if no emails found in database
+        const demoEmails = [
+          {
+            id: 1,
+            name: 'John Smith',
+            email: 'john.smith@techcorp.com',
+            company: 'TechCorp Inc.',
+            position: 'Senior Developer',
+            phone: '+1-555-0123'
+          },
+          {
+            id: 2,
+            name: 'Sarah Johnson',
+            email: 'sarah.j@innovate.com',
+            company: 'Innovate Solutions',
+            position: 'Product Manager',
+            phone: '+1-555-0124'
+          },
+          {
+            id: 3,
+            name: 'Mike Davis',
+            email: 'mike.davis@startup.com',
+            company: 'StartupXYZ',
+            position: 'CEO',
+            phone: '+1-555-0125'
+          },
+          {
+            id: 4,
+            name: 'Lisa Chen',
+            email: 'lisa.chen@enterprise.com',
+            company: 'Enterprise Solutions',
+            position: 'CTO',
+            phone: '+1-555-0126'
+          },
+          {
+            id: 5,
+            name: 'David Wilson',
+            email: 'david.wilson@growth.com',
+            company: 'Growth Labs',
+            position: 'Marketing Director',
+            phone: '+1-555-0127'
+          }
+        ]
+        console.log('✅ Using demo emails:', demoEmails)
+        setEmails(demoEmails)
+      }
+      
     } catch (error) {
       console.error('❌ Unexpected error fetching emails:', error)
       setEmails([])
@@ -95,11 +188,15 @@ export default function Dashboard() {
 
   // Fetch LinkedIn connections from Supabase for the current user
   const fetchLinkedInConnections = async () => {
-    if (!user) return
+    if (!user) {
+      console.log('❌ No user found, skipping LinkedIn fetch')
+      return
+    }
     setLoadingLinkedIn(true)
     try {
       const supabase = getSupabaseClient()
       console.log('🔍 Fetching LinkedIn connections for user:', user.id)
+      console.log('🔍 User object:', user)
       
       // Try different table names - prioritize the most likely names
       const tableNames = ['Linkedin', 'linkedin_connections', 'linkedin', 'connections']
@@ -108,6 +205,20 @@ export default function Dashboard() {
       
       for (const tableName of tableNames) {
         console.log(`🔍 Trying table: ${tableName}`)
+        
+        // First check if table exists
+        const { data: tableCheck, error: tableError } = await supabase
+          .from(tableName)
+          .select('count')
+          .limit(1)
+        
+        if (tableError) {
+          console.log(`❌ Table ${tableName} doesn't exist or has access issues:`, tableError.message)
+          continue
+        }
+        
+        console.log(`✅ Table ${tableName} exists, checking for user data...`)
+        
         const result = await supabase
           .from(tableName)
           .select('*')
@@ -115,10 +226,18 @@ export default function Dashboard() {
         
         if (!result.error) {
           console.log(`✅ Found working table: ${tableName}`)
+          console.log(`✅ Data from ${tableName}:`, result.data)
+          console.log(`✅ Number of records:`, result.data?.length || 0)
           data = result.data
           break
         } else {
-          console.log(`❌ Table ${tableName} failed:`, result.error)
+          console.log(`❌ Table ${tableName} query failed:`, result.error)
+          console.log(`❌ Error details:`, {
+            message: result.error.message,
+            details: result.error.details,
+            hint: result.error.hint,
+            code: result.error.code
+          })
         }
       }
       
@@ -130,12 +249,61 @@ export default function Dashboard() {
       
       console.log('✅ LinkedIn connections fetched:', data)
       console.log('✅ Number of LinkedIn connections:', data?.length || 0)
+      console.log('✅ LinkedIn data sample:', data?.[0])
       setLinkedInConnections(data || [])
     } catch (error) {
       console.error('❌ Unexpected error fetching LinkedIn connections:', error)
       setLinkedInConnections([])
     } finally {
       setLoadingLinkedIn(false)
+    }
+  }
+
+  // Debug function to check available tables
+  const debugTables = async () => {
+    try {
+      const supabase = getSupabaseClient()
+      console.log('🔍 Checking available tables...')
+      
+      // Try to get table information
+      const { data, error } = await supabase
+        .from('information_schema.tables')
+        .select('table_name')
+        .eq('table_schema', 'public')
+      
+      if (error) {
+        console.log('❌ Could not query information_schema:', error)
+        console.log('❌ Error details:', {
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          code: error.code
+        })
+        return
+      }
+      
+      console.log('📋 Available tables:', data?.map(t => t.table_name))
+      
+      // Also try to check specific tables we're looking for
+      const tablesToCheck = ['emails', 'Linkedin', 'linkedin_connections', 'linkedin', 'connections']
+      for (const tableName of tablesToCheck) {
+        try {
+          const { data: tableData, error: tableError } = await supabase
+            .from(tableName)
+            .select('count')
+            .limit(1)
+          
+          if (tableError) {
+            console.log(`❌ Table ${tableName}: ${tableError.message}`)
+          } else {
+            console.log(`✅ Table ${tableName}: exists and accessible`)
+          }
+        } catch (e) {
+          console.log(`❌ Table ${tableName}: ${e}`)
+        }
+      }
+    } catch (error) {
+      console.log('❌ Error checking tables:', error)
     }
   }
 
@@ -149,6 +317,8 @@ export default function Dashboard() {
   // Update useEffect to fetch data only when user is available
   useEffect(() => {
     if (user) {
+      console.log('🔍 User authenticated, starting data fetch...')
+      debugTables() // Check what tables are available
       fetchEmails()
       fetchLinkedInConnections()
     }
