@@ -63,79 +63,22 @@ export default function Dashboard() {
   const router = useRouter()
   const { user, loading, signOut } = useAuth()
 
+  // Fetch emails from Supabase for the current user
   const fetchEmails = async () => {
+    if (!user) return
     setLoadingEmails(true)
     try {
-      // Create static demo data that all users will see
-      const demoEmails = [
-        {
-          id: 1,
-          name: 'Sarah Johnson',
-          email: 'sarah.johnson@techcorp.com',
-          company: 'TechCorp Inc.',
-          position: 'Senior Developer',
-          status: 'Active'
-        },
-        {
-          id: 2,
-          name: 'Michael Chen',
-          email: 'michael.chen@startupxyz.com',
-          company: 'StartupXYZ',
-          position: 'Product Manager',
-          status: 'Active'
-        },
-        {
-          id: 3,
-          name: 'Emily Rodriguez',
-          email: 'emily.rodriguez@enterprise.com',
-          company: 'Enterprise Solutions',
-          position: 'UX Designer',
-          status: 'Active'
-        },
-        {
-          id: 4,
-          name: 'David Kim',
-          email: 'david.kim@innovate.com',
-          company: 'Innovate Labs',
-          position: 'Frontend Developer',
-          status: 'Active'
-        },
-        {
-          id: 5,
-          name: 'Lisa Thompson',
-          email: 'lisa.thompson@digital.com',
-          company: 'Digital Dynamics',
-          position: 'Marketing Director',
-          status: 'Active'
-        },
-        {
-          id: 6,
-          name: 'James Wilson',
-          email: 'james.wilson@cloudtech.com',
-          company: 'CloudTech Solutions',
-          position: 'DevOps Engineer',
-          status: 'Active'
-        },
-        {
-          id: 7,
-          name: 'Amanda Foster',
-          email: 'amanda.foster@dataflow.com',
-          company: 'DataFlow Analytics',
-          position: 'Data Scientist',
-          status: 'Active'
-        },
-        {
-          id: 8,
-          name: 'Robert Martinez',
-          email: 'robert.martinez@webdev.com',
-          company: 'WebDev Studios',
-          position: 'Full Stack Developer',
-          status: 'Active'
-        }
-      ]
-      
-      console.log('✅ Using demo email data for all users')
-      setEmails(demoEmails)
+      const supabase = getSupabaseClient()
+      const { data, error } = await supabase
+        .from('emails')
+        .select('*')
+        .eq('user_id', user.id)
+      if (error) {
+        console.error('❌ Error fetching emails:', error)
+        setEmails([])
+        return
+      }
+      setEmails(data || [])
     } catch (error) {
       console.error('❌ Unexpected error fetching emails:', error)
       setEmails([])
@@ -144,71 +87,22 @@ export default function Dashboard() {
     }
   }
 
+  // Fetch LinkedIn connections from Supabase for the current user
   const fetchLinkedInConnections = async () => {
+    if (!user) return
     setLoadingLinkedIn(true)
     try {
-      // Create static demo data that all users will see
-      const demoLinkedInConnections = [
-        {
-          id: 1,
-          name: 'Alex Turner',
-          company: 'TechCorp Inc.',
-          position: 'Senior Developer',
-          status: 'Active'
-        },
-        {
-          id: 2,
-          name: 'Maria Garcia',
-          company: 'StartupXYZ',
-          position: 'Product Manager',
-          status: 'Active'
-        },
-        {
-          id: 3,
-          name: 'John Smith',
-          company: 'Enterprise Solutions',
-          position: 'UX Designer',
-          status: 'Active'
-        },
-        {
-          id: 4,
-          name: 'Sophie Lee',
-          company: 'Innovate Labs',
-          position: 'Frontend Developer',
-          status: 'Active'
-        },
-        {
-          id: 5,
-          name: 'Carlos Rodriguez',
-          company: 'Digital Dynamics',
-          position: 'Marketing Director',
-          status: 'Active'
-        },
-        {
-          id: 6,
-          name: 'Emma Davis',
-          company: 'CloudTech Solutions',
-          position: 'DevOps Engineer',
-          status: 'Active'
-        },
-        {
-          id: 7,
-          name: 'Kevin Brown',
-          company: 'DataFlow Analytics',
-          position: 'Data Scientist',
-          status: 'Active'
-        },
-        {
-          id: 8,
-          name: 'Rachel Green',
-          company: 'WebDev Studios',
-          position: 'Full Stack Developer',
-          status: 'Active'
-        }
-      ]
-      
-      console.log('✅ Using demo LinkedIn connections data for all users')
-      setLinkedInConnections(demoLinkedInConnections)
+      const supabase = getSupabaseClient()
+      const { data, error } = await supabase
+        .from('Linkedin')
+        .select('*')
+        .eq('user_id', user.id)
+      if (error) {
+        console.error('❌ Error fetching LinkedIn connections:', error)
+        setLinkedInConnections([])
+        return
+      }
+      setLinkedInConnections(data || [])
     } catch (error) {
       console.error('❌ Unexpected error fetching LinkedIn connections:', error)
       setLinkedInConnections([])
@@ -224,11 +118,13 @@ export default function Dashboard() {
     }
   }, [user, loading, router])
 
-  // Fetch demo data for all users
+  // Update useEffect to fetch data only when user is available
   useEffect(() => {
-    fetchEmails()
-    fetchLinkedInConnections()
-  }, [])
+    if (user) {
+      fetchEmails()
+      fetchLinkedInConnections()
+    }
+  }, [user])
 
   // Show loading while checking authentication
   if (loading) {
@@ -305,28 +201,27 @@ export default function Dashboard() {
     console.log('👁️ Viewing email:', email)
   }
 
+  // Delete email from Supabase and local state
   const handleDeleteEmail = async (email: any) => {
-    // Add email ID to deleting set
+    if (!user) return
     setDeletingEmails(prev => new Set(prev).add(email.id))
-    
     try {
-      console.log('🗑️ Deleting email from demo data:', email)
-      
-      // Remove from local state only (demo data)
+      const supabase = getSupabaseClient()
+      const { error } = await supabase
+        .from('emails')
+        .delete()
+        .eq('id', email.id)
+        .eq('user_id', user.id)
+      if (error) {
+        console.error('❌ Error deleting email:', error)
+        return
+      }
       setEmails(prev => prev.filter(e => e.id !== email.id))
-      
-      // Also remove from recently viewed if it's there
       setRecentlyViewedEmails(prev => prev.filter(e => e.id !== email.id))
-      
-      // Also remove from saved emails if it's there
       setSavedEmails(prev => prev.filter(e => e.id !== email.id))
-      
-      console.log('✅ Email removed from demo data successfully')
-      
     } catch (error) {
       console.error('❌ Unexpected error deleting email:', error)
     } finally {
-      // Remove email ID from deleting set
       setDeletingEmails(prev => {
         const newSet = new Set(prev)
         newSet.delete(email.id)
@@ -364,28 +259,27 @@ export default function Dashboard() {
     console.log('👁️ Viewing LinkedIn connection:', connection)
   }
 
+  // Delete LinkedIn connection from Supabase and local state
   const handleDeleteLinkedIn = async (connection: any) => {
-    // Add connection ID to deleting set
+    if (!user) return
     setDeletingLinkedIn(prev => new Set(prev).add(connection.id))
-    
     try {
-      console.log('🗑️ Deleting LinkedIn connection from demo data:', connection)
-      
-      // Remove from local state only (demo data)
+      const supabase = getSupabaseClient()
+      const { error } = await supabase
+        .from('Linkedin')
+        .delete()
+        .eq('id', connection.id)
+        .eq('user_id', user.id)
+      if (error) {
+        console.error('❌ Error deleting LinkedIn connection:', error)
+        return
+      }
       setLinkedInConnections(prev => prev.filter(c => c.id !== connection.id))
-      
-      // Also remove from recently viewed if it's there
       setRecentlyViewedLinkedIn(prev => prev.filter(c => c.id !== connection.id))
-      
-      // Also remove from saved LinkedIn if it's there
       setSavedLinkedIn(prev => prev.filter(c => c.id !== connection.id))
-      
-      console.log('✅ LinkedIn connection removed from demo data successfully')
-      
     } catch (error) {
       console.error('❌ Unexpected error deleting LinkedIn connection:', error)
     } finally {
-      // Remove connection ID from deleting set
       setDeletingLinkedIn(prev => {
         const newSet = new Set(prev)
         newSet.delete(connection.id)
