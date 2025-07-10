@@ -64,54 +64,78 @@ export default function Dashboard() {
   const { user, loading, signOut } = useAuth()
 
   const fetchEmails = async () => {
-    if (!user) return
-    
     setLoadingEmails(true)
     try {
-      const supabase = getSupabaseClient()
-      console.log('🔍 Fetching emails from Supabase...')
-      console.log('👤 Current user:', user)
+      // Create static demo data that all users will see
+      const demoEmails = [
+        {
+          id: 1,
+          name: 'Sarah Johnson',
+          email: 'sarah.johnson@techcorp.com',
+          company: 'TechCorp Inc.',
+          position: 'Senior Developer',
+          status: 'Active'
+        },
+        {
+          id: 2,
+          name: 'Michael Chen',
+          email: 'michael.chen@startupxyz.com',
+          company: 'StartupXYZ',
+          position: 'Product Manager',
+          status: 'Active'
+        },
+        {
+          id: 3,
+          name: 'Emily Rodriguez',
+          email: 'emily.rodriguez@enterprise.com',
+          company: 'Enterprise Solutions',
+          position: 'UX Designer',
+          status: 'Active'
+        },
+        {
+          id: 4,
+          name: 'David Kim',
+          email: 'david.kim@innovate.com',
+          company: 'Innovate Labs',
+          position: 'Frontend Developer',
+          status: 'Active'
+        },
+        {
+          id: 5,
+          name: 'Lisa Thompson',
+          email: 'lisa.thompson@digital.com',
+          company: 'Digital Dynamics',
+          position: 'Marketing Director',
+          status: 'Active'
+        },
+        {
+          id: 6,
+          name: 'James Wilson',
+          email: 'james.wilson@cloudtech.com',
+          company: 'CloudTech Solutions',
+          position: 'DevOps Engineer',
+          status: 'Active'
+        },
+        {
+          id: 7,
+          name: 'Amanda Foster',
+          email: 'amanda.foster@dataflow.com',
+          company: 'DataFlow Analytics',
+          position: 'Data Scientist',
+          status: 'Active'
+        },
+        {
+          id: 8,
+          name: 'Robert Martinez',
+          email: 'robert.martinez@webdev.com',
+          company: 'WebDev Studios',
+          position: 'Full Stack Developer',
+          status: 'Active'
+        }
+      ]
       
-      // Test the connection first
-      const { data: testData, error: testError } = await supabase
-        .from('emails')
-        .select('count')
-        .eq('user_id', user.id)
-        .limit(1)
-      
-      if (testError) {
-        console.error('❌ Test query failed:', testError)
-        console.error('❌ Error details:', {
-          message: testError.message,
-          details: testError.details,
-          hint: testError.hint,
-          code: testError.code
-        })
-        setEmails([])
-        return
-      }
-      
-      console.log('✅ Test query successful, fetching full data...')
-      
-      const { data, error } = await supabase
-        .from('emails')
-        .select('*')
-        .eq('user_id', user.id)
-      
-      if (error) {
-        console.error('❌ Error fetching emails:', error)
-        console.error('❌ Error details:', {
-          message: error.message,
-          details: error.details,
-          hint: error.hint,
-          code: error.code
-        })
-        setEmails([])
-        return
-      }
-      
-      console.log('✅ Successfully fetched emails:', data)
-      setEmails(data || [])
+      console.log('✅ Using demo email data for all users')
+      setEmails(demoEmails)
     } catch (error) {
       console.error('❌ Unexpected error fetching emails:', error)
       setEmails([])
@@ -121,97 +145,70 @@ export default function Dashboard() {
   }
 
   const fetchLinkedInConnections = async () => {
-    if (!user) return
-    
     setLoadingLinkedIn(true)
     try {
-      const supabase = getSupabaseClient()
-      console.log('🔍 Fetching LinkedIn connections from Supabase...')
-      console.log('👤 Current user:', user)
-      
-      // First, let's check what tables are available
-      console.log('🔍 Checking available tables...')
-      const { data: tables, error: tablesError } = await supabase
-        .from('information_schema.tables')
-        .select('table_name')
-        .eq('table_schema', 'public')
-      
-      if (tablesError) {
-        console.error('❌ Error checking tables:', tablesError)
-      } else {
-        console.log('📋 Available tables:', tables)
-      }
-      
-      // Test the connection first
-      const { data: testData, error: testError } = await supabase
-        .from('Linkedin')
-        .select('count')
-        .eq('user_id', user.id)
-        .limit(1)
-      
-      if (testError) {
-        console.error('❌ Test query failed:', testError)
-        console.error('❌ Error details:', {
-          message: testError.message,
-          details: testError.details,
-          hint: testError.hint,
-          code: testError.code
-        })
-        
-        // Try alternative table names
-        console.log('🔍 Trying alternative table names...')
-        const alternativeNames = ['linkedin_connections', 'connections', 'linkedin_data']
-        
-        for (const tableName of alternativeNames) {
-          console.log(`🔍 Trying table: ${tableName}`)
-          const { data: altData, error: altError } = await supabase
-            .from(tableName)
-            .select('count')
-            .eq('user_id', user.id)
-            .limit(1)
-          
-          if (!altError) {
-            console.log(`✅ Found working table: ${tableName}`)
-            // Use this table name for the main query
-            const { data, error } = await supabase
-              .from(tableName)
-              .select('*')
-              .eq('user_id', user.id)
-            
-            if (!error) {
-              console.log(`✅ Successfully fetched from ${tableName}:`, data)
-              setLinkedInConnections(data || [])
-              setLoadingLinkedIn(false)
-              return
-            }
-          }
+      // Create static demo data that all users will see
+      const demoLinkedInConnections = [
+        {
+          id: 1,
+          name: 'Alex Turner',
+          company: 'TechCorp Inc.',
+          position: 'Senior Developer',
+          status: 'Active'
+        },
+        {
+          id: 2,
+          name: 'Maria Garcia',
+          company: 'StartupXYZ',
+          position: 'Product Manager',
+          status: 'Active'
+        },
+        {
+          id: 3,
+          name: 'John Smith',
+          company: 'Enterprise Solutions',
+          position: 'UX Designer',
+          status: 'Active'
+        },
+        {
+          id: 4,
+          name: 'Sophie Lee',
+          company: 'Innovate Labs',
+          position: 'Frontend Developer',
+          status: 'Active'
+        },
+        {
+          id: 5,
+          name: 'Carlos Rodriguez',
+          company: 'Digital Dynamics',
+          position: 'Marketing Director',
+          status: 'Active'
+        },
+        {
+          id: 6,
+          name: 'Emma Davis',
+          company: 'CloudTech Solutions',
+          position: 'DevOps Engineer',
+          status: 'Active'
+        },
+        {
+          id: 7,
+          name: 'Kevin Brown',
+          company: 'DataFlow Analytics',
+          position: 'Data Scientist',
+          status: 'Active'
+        },
+        {
+          id: 8,
+          name: 'Rachel Green',
+          company: 'WebDev Studios',
+          position: 'Full Stack Developer',
+          status: 'Active'
         }
-        
-        setLinkedInConnections([])
-        return
-      }
+      ]
       
-      console.log('✅ Test query successful, fetching full data...')
-      
-      const { data, error } = await supabase
-        .from('Linkedin')
-        .select('*')
-        .eq('user_id', user.id)
-      
-      if (error) {
-        console.error('❌ Error fetching LinkedIn connections:', error)
-        console.error('❌ Error details:', {
-          message: error.message,
-          details: error.details,
-          hint: error.hint,
-          code: error.code
-        })
-        setLinkedInConnections([])
-        return
-      }
-      
-      console.log('✅ Successfully fetched LinkedIn connections:', data)
-      setLinkedInConnections(data || [])
+      console.log('✅ Using demo LinkedIn connections data for all users')
+      setLinkedInConnections(demoLinkedInConnections)
     } catch (error) {
       console.error('❌ Unexpected error fetching LinkedIn connections:', error)
       setLinkedInConnections([])
@@ -227,13 +224,11 @@ export default function Dashboard() {
     }
   }, [user, loading, router])
 
-  // Fetch emails when user is authenticated
+  // Fetch demo data for all users
   useEffect(() => {
-    if (user) {
-      fetchEmails()
-      fetchLinkedInConnections()
-    }
-  }, [user])
+    fetchEmails()
+    fetchLinkedInConnections()
+  }, [])
 
   // Show loading while checking authentication
   if (loading) {
@@ -311,29 +306,13 @@ export default function Dashboard() {
   }
 
   const handleDeleteEmail = async (email: any) => {
-    if (!user) return
-    
     // Add email ID to deleting set
     setDeletingEmails(prev => new Set(prev).add(email.id))
     
     try {
-      console.log('🗑️ Deleting email:', email)
+      console.log('🗑️ Deleting email from demo data:', email)
       
-      const supabase = getSupabaseClient()
-      const { error } = await supabase
-        .from('emails')
-        .delete()
-        .eq('id', email.id)
-        .eq('user_id', user.id)
-      
-      if (error) {
-        console.error('❌ Error deleting email:', error)
-        return
-      }
-      
-      console.log('✅ Email deleted successfully')
-      
-      // Remove from local state
+      // Remove from local state only (demo data)
       setEmails(prev => prev.filter(e => e.id !== email.id))
       
       // Also remove from recently viewed if it's there
@@ -341,6 +320,8 @@ export default function Dashboard() {
       
       // Also remove from saved emails if it's there
       setSavedEmails(prev => prev.filter(e => e.id !== email.id))
+      
+      console.log('✅ Email removed from demo data successfully')
       
     } catch (error) {
       console.error('❌ Unexpected error deleting email:', error)
@@ -384,29 +365,13 @@ export default function Dashboard() {
   }
 
   const handleDeleteLinkedIn = async (connection: any) => {
-    if (!user) return
-    
     // Add connection ID to deleting set
     setDeletingLinkedIn(prev => new Set(prev).add(connection.id))
     
     try {
-      console.log('🗑️ Deleting LinkedIn connection:', connection)
+      console.log('🗑️ Deleting LinkedIn connection from demo data:', connection)
       
-      const supabase = getSupabaseClient()
-      const { error } = await supabase
-        .from('Linkedin')
-        .delete()
-        .eq('id', connection.id)
-        .eq('user_id', user.id)
-      
-      if (error) {
-        console.error('❌ Error deleting LinkedIn connection:', error)
-        return
-      }
-      
-      console.log('✅ LinkedIn connection deleted successfully')
-      
-      // Remove from local state
+      // Remove from local state only (demo data)
       setLinkedInConnections(prev => prev.filter(c => c.id !== connection.id))
       
       // Also remove from recently viewed if it's there
@@ -414,6 +379,8 @@ export default function Dashboard() {
       
       // Also remove from saved LinkedIn if it's there
       setSavedLinkedIn(prev => prev.filter(c => c.id !== connection.id))
+      
+      console.log('✅ LinkedIn connection removed from demo data successfully')
       
     } catch (error) {
       console.error('❌ Unexpected error deleting LinkedIn connection:', error)
@@ -472,15 +439,21 @@ export default function Dashboard() {
     return !isRecentlyViewed && !isSaved
   })
 
-  // Define stats with real data
+  // Define stats with demo data
 const stats = [
   {
-      title: 'Total Emails',
-      value: emails.length.toString(),
-      icon: Users,
+    title: 'Total Emails',
+    value: '8',
+    icon: Users,
     color: 'text-blue-400'
-    }
-  ]
+  },
+  {
+    title: 'LinkedIn Connections',
+    value: '8',
+    icon: Linkedin,
+    color: 'text-blue-400'
+  }
+]
 
   const recentCampaigns = [
     {
@@ -554,12 +527,11 @@ const stats = [
   const linkedInAnalytics = [
     {
       title: 'LinkedIn Connections',
-      value: linkedInConnections.length.toString(),
-      change: '+23%',
+      value: '8',
       icon: Eye,
       color: 'text-blue-400'
-  }
-]
+    }
+  ]
 
 const recentProjects = [
   {
