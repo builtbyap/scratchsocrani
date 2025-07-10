@@ -69,7 +69,11 @@ export default function Dashboard() {
       console.log('❌ No user found, skipping email fetch')
       return
     }
-    setLoadingEmails(true)
+    
+    // Only show loading if we don't have any emails data
+    if (emails.length === 0) {
+      setLoadingEmails(true)
+    }
     try {
       const supabase = getSupabaseClient()
       console.log('🔍 Fetching emails for user:', user.id)
@@ -202,7 +206,11 @@ export default function Dashboard() {
       console.log('❌ No user found, skipping LinkedIn fetch')
       return
     }
-    setLoadingLinkedIn(true)
+    
+    // Only show loading if we don't have any LinkedIn data
+    if (linkedInConnections.length === 0) {
+      setLoadingLinkedIn(true)
+    }
     try {
       const supabase = getSupabaseClient()
       console.log('🔍 Fetching LinkedIn connections for user:', user.id)
@@ -278,7 +286,7 @@ export default function Dashboard() {
             company: 'TechCorp Inc.',
             position: 'Senior Developer',
             phone: '+1-555-0101',
-            linkedin_url: 'https://linkedin.com/in/alexjohnson'
+            linkedin: 'https://linkedin.com/in/alexjohnson'
           },
           {
             id: 2,
@@ -287,7 +295,7 @@ export default function Dashboard() {
             company: 'Innovate Solutions',
             position: 'Product Manager',
             phone: '+1-555-0102',
-            linkedin_url: 'https://linkedin.com/in/sarahwilliams'
+            linkedin: 'https://linkedin.com/in/sarahwilliams'
           },
           {
             id: 3,
@@ -296,7 +304,7 @@ export default function Dashboard() {
             company: 'StartupXYZ',
             position: 'CEO',
             phone: '+1-555-0103',
-            linkedin_url: 'https://linkedin.com/in/michaelchen'
+            linkedin: 'https://linkedin.com/in/michaelchen'
           },
           {
             id: 4,
@@ -305,7 +313,7 @@ export default function Dashboard() {
             company: 'Enterprise Solutions',
             position: 'CTO',
             phone: '+1-555-0104',
-            linkedin_url: 'https://linkedin.com/in/emilydavis'
+            linkedin: 'https://linkedin.com/in/emilydavis'
           },
           {
             id: 5,
@@ -314,7 +322,7 @@ export default function Dashboard() {
             company: 'Growth Labs',
             position: 'Marketing Director',
             phone: '+1-555-0105',
-            linkedin_url: 'https://linkedin.com/in/davidbrown'
+            linkedin: 'https://linkedin.com/in/davidbrown'
           },
           {
             id: 6,
@@ -323,7 +331,7 @@ export default function Dashboard() {
             company: 'Creative Agency',
             position: 'Design Lead',
             phone: '+1-555-0106',
-            linkedin_url: 'https://linkedin.com/in/lisagarcia'
+            linkedin: 'https://linkedin.com/in/lisagarcia'
           },
           {
             id: 7,
@@ -332,7 +340,7 @@ export default function Dashboard() {
             company: 'Data Insights',
             position: 'Data Scientist',
             phone: '+1-555-0107',
-            linkedin_url: 'https://linkedin.com/in/tomwilson'
+            linkedin: 'https://linkedin.com/in/tomwilson'
           },
           {
             id: 8,
@@ -341,7 +349,7 @@ export default function Dashboard() {
             company: 'Cloud Systems',
             position: 'DevOps Engineer',
             phone: '+1-555-0108',
-            linkedin_url: 'https://linkedin.com/in/rachelmartinez'
+            linkedin: 'https://linkedin.com/in/rachelmartinez'
           }
         ]
         console.log('✅ Using demo LinkedIn connections:', demoLinkedIn)
@@ -430,6 +438,7 @@ export default function Dashboard() {
           const parsedEmails = JSON.parse(cachedEmails)
           console.log('✅ Loading cached emails:', parsedEmails.length)
           setEmails(parsedEmails)
+          setLoadingEmails(false) // Stop loading state immediately
         } catch (error) {
           console.error('❌ Error parsing cached emails:', error)
         }
@@ -440,6 +449,7 @@ export default function Dashboard() {
           const parsedLinkedIn = JSON.parse(cachedLinkedIn)
           console.log('✅ Loading cached LinkedIn connections:', parsedLinkedIn.length)
           setLinkedInConnections(parsedLinkedIn)
+          setLoadingLinkedIn(false) // Stop loading state immediately
         } catch (error) {
           console.error('❌ Error parsing cached LinkedIn:', error)
         }
@@ -643,11 +653,18 @@ export default function Dashboard() {
   }
 
   const handleOpenLinkedIn = (connection: any) => {
-    if (connection.linkedin_url) {
-      console.log('🔗 Opening LinkedIn profile:', connection.linkedin_url)
-      window.open(connection.linkedin_url, '_blank', 'noopener,noreferrer')
+    console.log('🔍 Connection object:', connection)
+    console.log('🔍 Available properties:', Object.keys(connection))
+    
+    // Try different possible column names
+    const linkedinUrl = connection.linkedin_url || connection.linkedin || connection.linkedinUrl || connection.url
+    
+    if (linkedinUrl) {
+      console.log('🔗 Opening LinkedIn profile:', linkedinUrl)
+      window.open(linkedinUrl, '_blank', 'noopener,noreferrer')
     } else {
       console.log('❌ No LinkedIn URL found for connection:', connection)
+      console.log('❌ Available properties:', Object.keys(connection))
       alert('No LinkedIn URL available for this connection.')
     }
   }
@@ -1213,7 +1230,7 @@ const upcomingTasks = [
                       </div>
                     </div>
                     <div className="space-y-4 max-h-96 overflow-y-auto">
-                      {loadingEmails ? (
+                      {loadingEmails && emails.length === 0 ? (
                         <div className="flex items-center justify-center p-8">
                           <div className="w-8 h-8 border-4 border-primary-500 border-t-transparent rounded-full animate-spin"></div>
                           <span className="ml-3 text-gray-400">Loading emails...</span>
@@ -1359,7 +1376,7 @@ const upcomingTasks = [
                   </div>
                     </div>
                     <div className="space-y-4 max-h-96 overflow-y-auto">
-                      {loadingLinkedIn ? (
+                      {loadingLinkedIn && linkedInConnections.length === 0 ? (
                         <div className="flex items-center justify-center p-8">
                           <div className="w-8 h-8 border-4 border-primary-500 border-t-transparent rounded-full animate-spin"></div>
                           <span className="ml-3 text-gray-400">Loading connections...</span>

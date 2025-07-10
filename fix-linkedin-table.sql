@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS "Linkedin" (
     company VARCHAR(255),
     position VARCHAR(255),
     phone VARCHAR(50),
-    linkedin_url VARCHAR(500),
+    linkedin VARCHAR(500),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -42,7 +42,7 @@ SELECT 'Available users:' as info;
 SELECT id, email FROM auth.users ORDER BY created_at DESC;
 
 -- 6. Insert sample data (replace YOUR-USER-ID with your actual user ID)
-INSERT INTO "Linkedin" (user_id, name, email, company, position, phone, linkedin_url) VALUES
+INSERT INTO "Linkedin" (user_id, name, email, company, position, phone, linkedin) VALUES
 ('YOUR-USER-ID', 'Alex Johnson', 'alex.johnson@techcorp.com', 'TechCorp Inc.', 'Senior Developer', '+1-555-0101', 'https://linkedin.com/in/alexjohnson'),
 ('YOUR-USER-ID', 'Sarah Williams', 'sarah.w@innovate.com', 'Innovate Solutions', 'Product Manager', '+1-555-0102', 'https://linkedin.com/in/sarahwilliams'),
 ('YOUR-USER-ID', 'Michael Chen', 'michael.chen@startup.com', 'StartupXYZ', 'CEO', '+1-555-0103', 'https://linkedin.com/in/michaelchen'),
