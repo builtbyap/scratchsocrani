@@ -129,6 +129,11 @@ export default function Dashboard() {
         console.log('✅ Number of emails:', emailsData.length)
         console.log('✅ Email data sample:', emailsData[0])
         setEmails(emailsData)
+        // Cache the data in localStorage
+        if (user) {
+          localStorage.setItem(`emails_${user.id}`, JSON.stringify(emailsData))
+          console.log('✅ Cached emails data')
+        }
       } else {
         console.log('❌ No emails found with any approach, using demo data')
         // Fallback to demo data if no emails found in database
@@ -176,6 +181,11 @@ export default function Dashboard() {
         ]
         console.log('✅ Using demo emails:', demoEmails)
         setEmails(demoEmails)
+        // Cache the demo data in localStorage
+        if (user) {
+          localStorage.setItem(`emails_${user.id}`, JSON.stringify(demoEmails))
+          console.log('✅ Cached demo emails data')
+        }
       }
       
     } catch (error) {
@@ -252,6 +262,11 @@ export default function Dashboard() {
         console.log('✅ Number of LinkedIn connections:', linkedInData.length)
         console.log('✅ LinkedIn data sample:', linkedInData[0])
         setLinkedInConnections(linkedInData)
+        // Cache the data in localStorage
+        if (user) {
+          localStorage.setItem(`linkedin_${user.id}`, JSON.stringify(linkedInData))
+          console.log('✅ Cached LinkedIn data')
+        }
       } else {
         console.log('❌ No LinkedIn connections found with any approach, using demo data')
         // Fallback to demo data if no LinkedIn connections found in database
@@ -331,6 +346,11 @@ export default function Dashboard() {
         ]
         console.log('✅ Using demo LinkedIn connections:', demoLinkedIn)
         setLinkedInConnections(demoLinkedIn)
+        // Cache the demo data in localStorage
+        if (user) {
+          localStorage.setItem(`linkedin_${user.id}`, JSON.stringify(demoLinkedIn))
+          console.log('✅ Cached demo LinkedIn data')
+        }
       }
       
     } catch (error) {
@@ -400,6 +420,32 @@ export default function Dashboard() {
   useEffect(() => {
     if (user) {
       console.log('🔍 User authenticated, starting data fetch...')
+      
+      // Load cached data first for immediate display
+      const cachedEmails = localStorage.getItem(`emails_${user.id}`)
+      const cachedLinkedIn = localStorage.getItem(`linkedin_${user.id}`)
+      
+      if (cachedEmails) {
+        try {
+          const parsedEmails = JSON.parse(cachedEmails)
+          console.log('✅ Loading cached emails:', parsedEmails.length)
+          setEmails(parsedEmails)
+        } catch (error) {
+          console.error('❌ Error parsing cached emails:', error)
+        }
+      }
+      
+      if (cachedLinkedIn) {
+        try {
+          const parsedLinkedIn = JSON.parse(cachedLinkedIn)
+          console.log('✅ Loading cached LinkedIn connections:', parsedLinkedIn.length)
+          setLinkedInConnections(parsedLinkedIn)
+        } catch (error) {
+          console.error('❌ Error parsing cached LinkedIn:', error)
+        }
+      }
+      
+      // Then fetch fresh data in background
       debugTables() // Check what tables are available
       fetchEmails()
       fetchLinkedInConnections()
@@ -440,6 +486,12 @@ export default function Dashboard() {
         setSavedLinkedIn([])
         setEmailSearchTerm('')
         setLinkedInSearchTerm('')
+        
+        // Clear cached data from localStorage
+        if (user) {
+          localStorage.removeItem(`emails_${user.id}`)
+          localStorage.removeItem(`linkedin_${user.id}`)
+        }
         
         // Redirect to sign in page after successful sign out
         router.push('/signin')
@@ -496,9 +548,14 @@ export default function Dashboard() {
         console.error('❌ Error deleting email:', error)
         return
       }
-      setEmails(prev => prev.filter(e => e.id !== email.id))
+      const updatedEmails = emails.filter(e => e.id !== email.id)
+      setEmails(updatedEmails)
       setRecentlyViewedEmails(prev => prev.filter(e => e.id !== email.id))
       setSavedEmails(prev => prev.filter(e => e.id !== email.id))
+      // Update cached data
+      if (user) {
+        localStorage.setItem(`emails_${user.id}`, JSON.stringify(updatedEmails))
+      }
     } catch (error) {
       console.error('❌ Unexpected error deleting email:', error)
     } finally {
@@ -554,9 +611,14 @@ export default function Dashboard() {
         console.error('❌ Error deleting LinkedIn connection:', error)
         return
       }
-      setLinkedInConnections(prev => prev.filter(c => c.id !== connection.id))
+      const updatedLinkedIn = linkedInConnections.filter(c => c.id !== connection.id)
+      setLinkedInConnections(updatedLinkedIn)
       setRecentlyViewedLinkedIn(prev => prev.filter(c => c.id !== connection.id))
       setSavedLinkedIn(prev => prev.filter(c => c.id !== connection.id))
+      // Update cached data
+      if (user) {
+        localStorage.setItem(`linkedin_${user.id}`, JSON.stringify(updatedLinkedIn))
+      }
     } catch (error) {
       console.error('❌ Unexpected error deleting LinkedIn connection:', error)
     } finally {
@@ -578,6 +640,16 @@ export default function Dashboard() {
     })
     
     alert(`LinkedIn connection "${connection.name}" from ${connection.company} has been saved!`)
+  }
+
+  const handleOpenLinkedIn = (connection: any) => {
+    if (connection.linkedin_url) {
+      console.log('🔗 Opening LinkedIn profile:', connection.linkedin_url)
+      window.open(connection.linkedin_url, '_blank', 'noopener,noreferrer')
+    } else {
+      console.log('❌ No LinkedIn URL found for connection:', connection)
+      alert('No LinkedIn URL available for this connection.')
+    }
   }
 
   // Deduplicate LinkedIn connections by id
@@ -1191,13 +1263,6 @@ const upcomingTasks = [
                                   <Mail className="w-4 h-4" />
                                 </button>
                                 <button 
-                                  onClick={() => handleSaveEmail(email)}
-                                  disabled={deletingEmails.has(email.id)}
-                                  className="p-1 text-gray-400 hover:text-primary-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                                >
-                                  <Save className="w-4 h-4" />
-                                </button>
-                                <button 
                                   onClick={() => handleDeleteEmail(email)}
                                   disabled={deletingEmails.has(email.id)}
                                   className="p-1 text-gray-400 hover:text-red-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
@@ -1335,11 +1400,12 @@ const upcomingTasks = [
                                   <Eye className="w-4 h-4" />
                                 </button>
                                 <button 
-                                  onClick={() => handleSaveLinkedIn(connection)}
+                                  onClick={() => handleOpenLinkedIn(connection)}
                                   disabled={deletingLinkedIn.has(connection.id)}
-                                  className="p-1 text-gray-400 hover:text-primary-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                  className="p-1 text-gray-400 hover:text-blue-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                  title="Open LinkedIn Profile"
                                 >
-                                  <Save className="w-4 h-4" />
+                                  <Linkedin className="w-4 h-4" />
                                 </button>
                                 <button 
                                   onClick={() => handleDeleteLinkedIn(connection)}
