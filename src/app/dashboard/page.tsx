@@ -83,6 +83,7 @@ export default function Dashboard() {
       }
       
       console.log('✅ Emails fetched:', data)
+      console.log('✅ Number of emails:', data?.length || 0)
       setEmails(data || [])
     } catch (error) {
       console.error('❌ Unexpected error fetching emails:', error)
@@ -100,8 +101,8 @@ export default function Dashboard() {
       const supabase = getSupabaseClient()
       console.log('🔍 Fetching LinkedIn connections for user:', user.id)
       
-      // Try different table names
-      const tableNames = ['Linkedin', 'linkedin', 'linkedin_connections', 'connections']
+      // Try different table names - prioritize the most likely names
+      const tableNames = ['Linkedin', 'linkedin_connections', 'linkedin', 'connections']
       let data = null
       let error = null
       
@@ -128,6 +129,7 @@ export default function Dashboard() {
       }
       
       console.log('✅ LinkedIn connections fetched:', data)
+      console.log('✅ Number of LinkedIn connections:', data?.length || 0)
       setLinkedInConnections(data || [])
     } catch (error) {
       console.error('❌ Unexpected error fetching LinkedIn connections:', error)
@@ -342,9 +344,10 @@ export default function Dashboard() {
     return true
   })
   
-  console.log('🔗 LinkedIn connections state:', linkedInConnections)
-  console.log('🔗 Filtered LinkedIn connections:', filteredLinkedInConnections)
-  console.log('🔗 LinkedIn search term:', linkedInSearchTerm)
+  console.log('🔗 Total LinkedIn connections:', linkedInConnections.length)
+  console.log('🔗 Filtered LinkedIn connections:', filteredLinkedInConnections.length)
+  
+
 
   // Filter emails based on search term (company name) only
   const filteredEmails = emails.filter((email: any) => {
@@ -357,9 +360,10 @@ export default function Dashboard() {
     return true
   })
   
-  console.log('📧 Emails state:', emails)
-  console.log('📧 Filtered emails:', filteredEmails)
-  console.log('📧 Email search term:', emailSearchTerm)
+  console.log('📧 Total emails:', emails.length)
+  console.log('📧 Filtered emails:', filteredEmails.length)
+  
+
 
   // Define stats with demo data
 const stats = [
