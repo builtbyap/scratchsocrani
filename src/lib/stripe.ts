@@ -30,7 +30,7 @@ export const paymentPlans = [
       'Most powerful agent models',
       '24/7 customer support',
     ],
-    stripePriceId: 'price_1RczezCyTrsNmVMYokcKRYa7'
+    stripePriceId: 'price_1RlMIDCyTrsNmVMYMaBwzzfc'
   },
   {
     id: 'annual',
@@ -43,7 +43,7 @@ export const paymentPlans = [
       'Most powerful agent models',
       '24/7 customer support',
     ],
-    stripePriceId: 'price_1RczfGCyTrsNmVMYm5iifueJ'
+    stripePriceId: 'price_1RlMHnCyTrsNmVMYGCyQXLua'
   }
 ]
 

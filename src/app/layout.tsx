@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import { AuthProvider } from '@/contexts/AuthContext'
+import { Analytics } from "@vercel/analytics/next"
 
 export const metadata: Metadata = {
   title: 'Socrani - Skip the Line. Escape the Job Queue.',
@@ -22,6 +23,7 @@ export default function RootLayout({
         <AuthProvider>
           {children}
         </AuthProvider>
+        <Analytics />
       </body>
     </html>
   )

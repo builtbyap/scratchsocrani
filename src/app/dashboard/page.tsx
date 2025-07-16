@@ -376,12 +376,12 @@ export default function Dashboard() {
   }
 
   const handleAddEmail = () => {
-    const formUrl = 'http://localhost:5678/form/6272f3aa-a2f6-417a-9977-2b11ec3488a7'
+    const formUrl = 'https://n8n.socrani.com/form/6272f3aa-a2f6-417a-9977-2b11ec3488a7'
     window.open(formUrl, '_blank', 'noopener,noreferrer')
   }
 
   const handleAddLinkedIn = () => {
-    const formUrl = 'http://localhost:5678/form/c85d7ad6-0b7b-436d-aad6-ee849404d145'
+    const formUrl = 'https://n8n.socrani.com/form/c85d7ad6-0b7b-436d-aad6-ee849404d145'
     window.open(formUrl, '_blank', 'noopener,noreferrer')
   }
 
