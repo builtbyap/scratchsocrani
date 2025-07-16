@@ -1069,13 +1069,6 @@ const upcomingTasks = [
                               </span>
                               <div className="flex items-center space-x-2 mt-2">
                                 <button 
-                                  onClick={() => handleViewEmail(email)}
-                                  disabled={deletingEmails.has(email.id)}
-                                  className="p-1 text-gray-400 hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                                >
-                                  <Eye className="w-4 h-4" />
-                                </button>
-                                <button 
                                   onClick={() => handleSendEmail(email)}
                                   disabled={deletingEmails.has(email.id)}
                                   className="p-1 text-gray-400 hover:text-primary-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
@@ -1192,13 +1185,6 @@ const upcomingTasks = [
                                 Active
                               </span>
                               <div className="flex items-center space-x-2 mt-2">
-                                <button 
-                                  onClick={() => handleViewLinkedIn(connection)}
-                                  disabled={deletingLinkedIn.has(connection.id)}
-                                  className="p-1 text-gray-400 hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                                >
-                                  <Eye className="w-4 h-4" />
-                                </button>
                                 <button 
                                   onClick={() => handleOpenLinkedIn(connection)}
                                   disabled={deletingLinkedIn.has(connection.id)}
