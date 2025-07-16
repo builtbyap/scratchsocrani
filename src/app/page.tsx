@@ -15,17 +15,17 @@ const features = [
   {
     icon: Rocket,
     title: 'Fast Delivery',
-    description: 'Agile teams and proven processes for rapid project turnaround.'
+    description: 'Proven processes for rapid response turnaround.'
   },
   {
     icon: Zap,
     title: 'Cutting-Edge Tech',
-    description: 'We use the latest frameworks and tools to future-proof your business.'
+    description: 'We use the latest frameworks and tools to future-proof your network.'
   },
   {
     icon: Globe,
     title: 'Global Reach',
-    description: 'We help you scale and connect with customers worldwide.'
+    description: 'We help you connect with companies worldwide.'
   },
   {
     icon: Users,
@@ -130,7 +130,7 @@ export default function LandingPage() {
             </div>
             <div>
               <h3 className="text-lg font-semibold mb-2">What payment methods do you accept?</h3>
-              <p className="text-gray-300">We accept all major credit cards through our secure Stripe payment system.</p>
+              <p className="text-gray-300">We accept all major credit cards through our secure payment system.</p>
             </div>
             <div>
               <h3 className="text-lg font-semibold mb-2">Is there a setup fee?</h3>

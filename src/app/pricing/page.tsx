@@ -158,7 +158,7 @@ export default function PricingPage() {
                     <span className="text-lg text-gray-400">/{plan.interval}</span>
                   </div>
                   <p className="text-gray-300">
-                    {plan.id === 'monthly' ? 'Perfect for individual users and small teams' : 
+                    {plan.id === 'monthly' ? 'Perfect for short term' : 
                      'Best value for regular users'}
                   </p>
                 </div>
