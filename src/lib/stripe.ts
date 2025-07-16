@@ -21,8 +21,8 @@ export const stripeConfig = {
 export const paymentPlans = [
   {
     id: 'monthly',
-    name: 'Basic Plan',
-    price: 15,
+    name: 'Monthly',
+    price: 40,
     interval: 'month',
     features: [
       'Unlimited monthly usage',
@@ -34,9 +34,9 @@ export const paymentPlans = [
   },
   {
     id: 'annual',
-    name: 'Professional Plan',
-    price: 50,
-    interval: 'year',
+    name: 'Annual',
+    price: 20,
+    interval: 'month',
     features: [
       'Unlimited yearly usage',
       'Unlimited Emails',

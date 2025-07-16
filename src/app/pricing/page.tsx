@@ -120,7 +120,7 @@ export default function PricingPage() {
               Choose Your <span className="gradient-text">Plan</span>
             </h1>
             <p className="text-xl text-gray-300 max-w-2xl mx-auto">
-              Select the perfect plan for your needs. All plans include our expert development team and ongoing support.
+              Select the perfect plan for your needs. All plans include unlimited email searches and LinkedIn connections.
             </p>
           </div>
         </motion.div>
@@ -158,8 +158,8 @@ export default function PricingPage() {
                     <span className="text-lg text-gray-400">/{plan.interval}</span>
                   </div>
                   <p className="text-gray-300">
-                    {plan.id === 'monthly' ? 'Perfect for startups and small businesses' : 
-                     'Perfect for growing businesses'}
+                    {plan.id === 'monthly' ? 'Perfect for individual users and small teams' : 
+                     'Best value for regular users'}
                   </p>
                 </div>
 
@@ -214,8 +214,8 @@ export default function PricingPage() {
                 <p className="text-gray-300">We accept all major credit cards through our secure Stripe payment system.</p>
               </div>
               <div>
-                <h3 className="text-lg font-semibold mb-2">Is there a setup fee?</h3>
-                <p className="text-gray-300">No setup fees. You only pay the monthly subscription amount.</p>
+                <h3 className="text-lg font-semibold mb-2">How many emails can I find?</h3>
+                <p className="text-gray-300">Unlimited! You can search for as many emails and LinkedIn connections as you need.</p>
               </div>
               <div>
                 <h3 className="text-lg font-semibold mb-2">Can I upgrade or downgrade?</h3>
