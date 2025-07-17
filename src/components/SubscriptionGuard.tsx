@@ -114,16 +114,21 @@ export default function SubscriptionGuard({
       return <>{fallback}</>
     }
     
-    // Redirect to pricing page
-    router.push(redirectTo)
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-8 h-8 border-4 border-primary-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-300">Redirecting to pricing...</p>
-        </div>
-      </div>
-    )
+    // For now, allow access to dashboard even without active subscription
+    // This prevents users from getting stuck on loading
+    console.log('⚠️ User has no active subscription, but allowing access to dashboard')
+    return <>{children}</>
+    
+    // TODO: Re-enable subscription check when ready
+    // router.push(redirectTo)
+    // return (
+    //   <div className="min-h-screen flex items-center justify-center">
+    //     <div className="text-center">
+    //       <div className="w-8 h-8 border-4 border-primary-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+    //       <p className="text-gray-300">Redirecting to pricing...</p>
+    //     </div>
+    //   </div>
+    // )
   }
 
   // User has active subscription, show protected content
