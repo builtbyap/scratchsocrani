@@ -530,14 +530,23 @@ export default function Dashboard() {
     ])).values()
   )
 
-  // Filter LinkedIn connections based on search term (company name) only
+  // Filter LinkedIn connections based on search term (company name) only and remove invalid entries
   const filteredLinkedInConnections = uniqueLinkedInConnections.filter((connection: any) => {
+    // Skip connections with null/empty values or placeholder text
+    const hasValidName = connection.name && connection.name.trim() !== '' && !connection.name.includes('No name')
+    const hasValidCompany = connection.company && connection.company.trim() !== '' && !connection.company.includes('No company')
+    
+    // Only show connections with valid data
+    if (!hasValidName || !hasValidCompany) {
+      return false
+    }
+    
     // If there's a search term, check if it matches the company name
     if (linkedInSearchTerm.trim()) {
       return connection.company?.toLowerCase().includes(linkedInSearchTerm.toLowerCase())
     }
     
-    // If no search term, show all connections
+    // If no search term, show all valid connections
     return true
   })
   
