@@ -399,28 +399,45 @@ export default function Dashboard() {
   // Delete email from Supabase and local state
   const handleDeleteEmail = async (email: any) => {
     if (!user) return
+    
+    // Show confirmation dialog
+    if (!confirm(`Are you sure you want to delete "${email.name || email.email}"?`)) {
+      return
+    }
+    
     setDeletingEmails(prev => new Set(prev).add(email.id))
     try {
       const supabase = getSupabaseClient()
+      console.log('🗑️ Deleting email:', email.id, 'for user:', user.id)
+      
       const { error } = await supabase
         .from('emails')
         .delete()
         .eq('id', email.id)
         .eq('user_id', user.id)
+      
       if (error) {
         console.error('❌ Error deleting email:', error)
+        alert('Failed to delete email. Please try again.')
         return
       }
+      
+      console.log('✅ Email deleted successfully')
       const updatedEmails = emails.filter(e => e.id !== email.id)
       setEmails(updatedEmails)
       setRecentlyViewedEmails(prev => prev.filter(e => e.id !== email.id))
       setSavedEmails(prev => prev.filter(e => e.id !== email.id))
+      
       // Update cached data
       if (user) {
         localStorage.setItem(`emails_${user.id}`, JSON.stringify(updatedEmails))
       }
+      
+      // Show success message
+      console.log('✅ Email removed from dashboard')
     } catch (error) {
       console.error('❌ Unexpected error deleting email:', error)
+      alert('An unexpected error occurred. Please try again.')
     } finally {
       setDeletingEmails(prev => {
         const newSet = new Set(prev)
@@ -462,28 +479,45 @@ export default function Dashboard() {
   // Delete LinkedIn connection from Supabase and local state
   const handleDeleteLinkedIn = async (connection: any) => {
     if (!user) return
+    
+    // Show confirmation dialog
+    if (!confirm(`Are you sure you want to delete "${connection.name || 'this connection'}"?`)) {
+      return
+    }
+    
     setDeletingLinkedIn(prev => new Set(prev).add(connection.id))
     try {
       const supabase = getSupabaseClient()
+      console.log('🗑️ Deleting LinkedIn connection:', connection.id, 'for user:', user.id)
+      
       const { error } = await supabase
         .from('Linkedin')
         .delete()
         .eq('id', connection.id)
         .eq('user_id', user.id)
+      
       if (error) {
         console.error('❌ Error deleting LinkedIn connection:', error)
+        alert('Failed to delete LinkedIn connection. Please try again.')
         return
       }
+      
+      console.log('✅ LinkedIn connection deleted successfully')
       const updatedLinkedIn = linkedInConnections.filter(c => c.id !== connection.id)
       setLinkedInConnections(updatedLinkedIn)
       setRecentlyViewedLinkedIn(prev => prev.filter(c => c.id !== connection.id))
       setSavedLinkedIn(prev => prev.filter(c => c.id !== connection.id))
+      
       // Update cached data
       if (user) {
         localStorage.setItem(`linkedin_${user.id}`, JSON.stringify(updatedLinkedIn))
       }
+      
+      // Show success message
+      console.log('✅ LinkedIn connection removed from dashboard')
     } catch (error) {
       console.error('❌ Unexpected error deleting LinkedIn connection:', error)
+      alert('An unexpected error occurred. Please try again.')
     } finally {
       setDeletingLinkedIn(prev => {
         const newSet = new Set(prev)
