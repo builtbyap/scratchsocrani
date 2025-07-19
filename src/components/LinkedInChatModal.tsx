@@ -99,16 +99,25 @@ export default function LinkedInChatModal({ isOpen, onClose, onComplete }: Linke
         position: userInput
       }
       
-      // Make SerpAPI request to find LinkedIn profiles
-      try {
-        const apiKey = '8e8f53ef8711b4178aca30947abe9f1cd51ac5dafbc4934aa4382ab890c615a0'
-        const searchQuery = `LinkedIn ${finalData.position} ${finalData.company} -jobs -careers -openings site:linkedin.com/in/`
-        const serpApiUrl = `https://serpapi.com/search.json?engine=google&q=${encodeURIComponent(searchQuery)}&api_key=${apiKey}`
-        
-        console.log('🔍 Making SerpAPI request:', serpApiUrl)
-        
-        const response = await fetch(serpApiUrl)
-        const searchData = await response.json()
+              // Make SerpAPI request to find LinkedIn profiles
+        try {
+          const searchQuery = `LinkedIn ${finalData.position} ${finalData.company} -jobs -careers -openings site:linkedin.com/in/`
+          
+          console.log('🔍 Making SerpAPI request via API route:', searchQuery)
+          
+          const response = await fetch('/api/serpapi', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ searchQuery })
+          })
+          
+          if (!response.ok) {
+            throw new Error(`API request failed: ${response.status}`)
+          }
+          
+          const searchData = await response.json()
         
         console.log('🔍 SerpAPI response:', searchData)
         
