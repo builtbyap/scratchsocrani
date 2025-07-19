@@ -421,28 +421,30 @@ export default function Dashboard() {
       
       const supabase = getSupabaseClient()
       
-      // Prepare the data for insertion
-      const supabaseEmailData: any = {
+      // Prepare the data for insertion - only use existing columns
+      const supabaseEmailData = {
         user_id: user.id,
         name: `${first_name} ${last_name}`,
         company: company,
         email: finalEmail,
+        position: emailSource === 'hunter.io' && hunterData.data ? hunterData.data.position || null : null,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       }
       
-      // Add Hunter.io specific data if email was found via API
+      // Log Hunter.io data for debugging (but don't save to database)
       if (emailSource === 'hunter.io' && hunterData.data) {
-        supabaseEmailData.score = hunterData.data.score || null
-        supabaseEmailData.sources = hunterData.data.sources || []
-        supabaseEmailData.verification = hunterData.data.verification || null
-        supabaseEmailData.position = hunterData.data.position || null
-        supabaseEmailData.department = hunterData.data.department || null
-        supabaseEmailData.seniority = hunterData.data.seniority || null
-        supabaseEmailData.linkedin = hunterData.data.linkedin || null
-        supabaseEmailData.twitter = hunterData.data.twitter || null
-        supabaseEmailData.phone_number = hunterData.data.phone_number || null
-        supabaseEmailData.confidence = hunterData.data.confidence || null
+        console.log('🔍 Hunter.io additional data (not saved to DB):', {
+          score: hunterData.data.score,
+          sources: hunterData.data.sources,
+          verification: hunterData.data.verification,
+          department: hunterData.data.department,
+          seniority: hunterData.data.seniority,
+          linkedin: hunterData.data.linkedin,
+          twitter: hunterData.data.twitter,
+          phone_number: hunterData.data.phone_number,
+          confidence: hunterData.data.confidence
+        })
       }
       
       console.log('💾 Saving email data to Supabase:', supabaseEmailData)
