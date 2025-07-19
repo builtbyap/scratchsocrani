@@ -444,8 +444,7 @@ export default function Dashboard() {
       // Prepare the data for insertion
       const supabaseLinkedInData = {
         user_id: user.id,
-        company: company,
-        position: position
+        company: company
       }
       
       console.log('💾 Saving LinkedIn data to Supabase:', supabaseLinkedInData)
@@ -457,7 +456,7 @@ export default function Dashboard() {
         return
       }
       
-      if (!supabaseLinkedInData.company || !supabaseLinkedInData.position) {
+      if (!supabaseLinkedInData.company) {
         console.error('❌ Missing required data:', supabaseLinkedInData)
         alert('Missing required LinkedIn data. Please try again.')
         return
@@ -497,8 +496,8 @@ export default function Dashboard() {
         console.log('💾 Saving LinkedIn profiles to database...')
         const profileDataToInsert = profiles.map((profile: any) => ({
           user_id: user.id,
+          name: `${profile.name} - ${position}`,
           company: company,
-          position: position,
           linkedin_url: profile.linkedin_url
         }))
         

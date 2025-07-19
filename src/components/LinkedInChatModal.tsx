@@ -76,7 +76,7 @@ export default function LinkedInChatModal({ isOpen, onClose, onComplete }: Linke
         break
       case 'position':
         setLinkedInData(prev => ({ ...prev, position: userInput }))
-        botMessage = `Perfect! I've collected all the information. Let me add this LinkedIn connection...`
+        botMessage = `Perfect! I've collected the information. Let me search for LinkedIn profiles...`
         nextStep = 'complete'
         break
     }
