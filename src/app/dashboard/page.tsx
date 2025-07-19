@@ -681,10 +681,10 @@ export default function Dashboard() {
   
 
 
-  // Deduplicate emails by data content (name, email, company)
+  // Deduplicate emails by email address only (show all except exact email duplicates)
   const uniqueEmails = Array.from(
     new Map(emails.map(email => [
-      `${email.name}-${email.email}-${email.company}`, 
+      email.email?.toLowerCase() || '', 
       email
     ])).values()
   )
