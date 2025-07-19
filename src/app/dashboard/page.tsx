@@ -185,7 +185,7 @@ export default function Dashboard() {
     } finally {
       setLoadingEmails(false)
     }
-  }, [user])
+  }, [user?.id])
 
   // Fetch LinkedIn connections from Supabase for the current user
   const fetchLinkedInConnections = useCallback(async (retryCount = 0) => {
@@ -295,7 +295,7 @@ export default function Dashboard() {
     } finally {
       setLoadingLinkedIn(false)
     }
-  }, [user])
+  }, [user?.id])
 
   // Debug function to check available tables
   const debugTables = useCallback(async () => {
@@ -366,14 +366,14 @@ export default function Dashboard() {
     } catch (error) {
       console.log('❌ Error checking tables:', error)
     }
-  }, [user])
+  }, [user?.id])
 
   // Redirect to sign in if not authenticated
   useEffect(() => {
     if (!loading && !user) {
       router.push('/signin')
     }
-  }, [user, loading, router])
+  }, [user?.id, loading])
 
   // Update useEffect to fetch data only when user is available
   useEffect(() => {
@@ -407,7 +407,7 @@ export default function Dashboard() {
       console.log('❌ No user found and not loading, redirecting to signin...')
       router.push('/signin')
     }
-  }, [user, loading, router])
+  }, [user?.id, loading])
 
   // Show error if there's a client-side error
   if (error) {
@@ -461,7 +461,7 @@ export default function Dashboard() {
         }
       }, 3000)
     }
-  }, [sessionRestored, user])
+  }, [sessionRestored])
 
   // Don't render dashboard if not authenticated
   if (!user) {
