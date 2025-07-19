@@ -8,7 +8,6 @@ import SubscriptionGuard from '@/components/SubscriptionGuard'
 import { getSupabaseClient } from '@/lib/supabase-client'
 import ChatModal from '@/components/ChatModal'
 import LinkedInChatModal from '@/components/LinkedInChatModal'
-import AuthRedirect from '@/components/AuthRedirect'
 import { 
   Sparkles, 
   BarChart3, 
@@ -48,14 +47,6 @@ import {
 } from 'lucide-react'
 
 export default function Dashboard() {
-  return (
-    <AuthRedirect requireAuth={true}>
-      <DashboardContent />
-    </AuthRedirect>
-  )
-}
-
-function DashboardContent() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [activeTab, setActiveTab] = useState('overview')
   const [isSigningOut, setIsSigningOut] = useState(false)
@@ -74,11 +65,12 @@ function DashboardContent() {
   const [linkedInSearchTerm, setLinkedInSearchTerm] = useState('')
   const [isChatModalOpen, setIsChatModalOpen] = useState(false)
   const [isLinkedInChatModalOpen, setIsLinkedInChatModalOpen] = useState(false)
+  const [sessionRestored, setSessionRestored] = useState(false)
   const router = useRouter()
   const { user, loading, signOut } = useAuth()
 
   // Fetch emails from Supabase for the current user
-  const fetchEmails = async () => {
+  const fetchEmails = async (retryCount = 0) => {
     if (!user) {
       console.log('❌ No user found, skipping email fetch')
       return
@@ -88,6 +80,8 @@ function DashboardContent() {
     if (emails.length === 0) {
       setLoadingEmails(true)
     }
+    
+    console.log(`🔍 Fetching emails (attempt ${retryCount + 1})...`)
     try {
       const supabase = getSupabaseClient()
       console.log('🔍 Fetching emails for user:', user.id)
@@ -165,6 +159,16 @@ function DashboardContent() {
       
     } catch (error) {
       console.error('❌ Unexpected error fetching emails:', error)
+      
+      // Retry logic for network issues
+      if (retryCount < 2) {
+        console.log(`🔄 Retrying email fetch in 2 seconds... (attempt ${retryCount + 1})`)
+        setTimeout(() => {
+          fetchEmails(retryCount + 1)
+        }, 2000)
+        return
+      }
+      
       setEmails([])
     } finally {
       setLoadingEmails(false)
@@ -172,7 +176,7 @@ function DashboardContent() {
   }
 
   // Fetch LinkedIn connections from Supabase for the current user
-  const fetchLinkedInConnections = async () => {
+  const fetchLinkedInConnections = async (retryCount = 0) => {
     if (!user) {
       console.log('❌ No user found, skipping LinkedIn fetch')
       return
@@ -182,6 +186,8 @@ function DashboardContent() {
     if (linkedInConnections.length === 0) {
       setLoadingLinkedIn(true)
     }
+    
+    console.log(`🔍 Fetching LinkedIn connections (attempt ${retryCount + 1})...`)
     try {
       const supabase = getSupabaseClient()
       console.log('🔍 Fetching LinkedIn connections for user:', user.id)
@@ -263,6 +269,16 @@ function DashboardContent() {
       
     } catch (error) {
       console.error('❌ Unexpected error fetching LinkedIn connections:', error)
+      
+      // Retry logic for network issues
+      if (retryCount < 2) {
+        console.log(`🔄 Retrying LinkedIn fetch in 2 seconds... (attempt ${retryCount + 1})`)
+        setTimeout(() => {
+          fetchLinkedInConnections(retryCount + 1)
+        }, 2000)
+        return
+      }
+      
       setLinkedInConnections([])
     } finally {
       setLoadingLinkedIn(false)
@@ -351,6 +367,8 @@ function DashboardContent() {
   useEffect(() => {
     if (user) {
       console.log('🔍 User authenticated, starting data fetch...')
+      console.log('🔍 User ID:', user.id)
+      console.log('🔍 User email:', user.email)
       
       // Clear any cached demo data to force fresh fetch
       const clearCachedDemoData = () => {
@@ -367,8 +385,17 @@ function DashboardContent() {
       debugTables() // Check what tables are available
       fetchEmails()
       fetchLinkedInConnections()
+      
+      // Mark session as restored after a short delay
+      setTimeout(() => {
+        setSessionRestored(true)
+        console.log('✅ Session restored successfully')
+      }, 1000)
+    } else if (!loading) {
+      console.log('❌ No user found and not loading, redirecting to signin...')
+      router.push('/signin')
     }
-  }, [user])
+  }, [user, loading, router])
 
   // Show loading while checking authentication
   if (loading) {
@@ -376,15 +403,42 @@ function DashboardContent() {
       <div className="min-h-screen bg-gradient-to-br from-dark-900 via-dark-800 to-dark-900 flex items-center justify-center">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-primary-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-300">Loading...</p>
+          <p className="text-gray-300">Loading your dashboard...</p>
+          <p className="text-gray-400 text-sm mt-2">Please wait while we restore your session</p>
         </div>
       </div>
     )
   }
 
+  // Show session restored notification
+  useEffect(() => {
+    if (sessionRestored && user) {
+      // Show a brief success message
+      const notification = document.createElement('div')
+      notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50'
+      notification.textContent = '✅ Session restored successfully!'
+      document.body.appendChild(notification)
+      
+      // Remove notification after 3 seconds
+      setTimeout(() => {
+        if (document.body.contains(notification)) {
+          document.body.removeChild(notification)
+        }
+      }, 3000)
+    }
+  }, [sessionRestored, user])
+
   // Don't render dashboard if not authenticated
   if (!user) {
-    return null
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-dark-900 via-dark-800 to-dark-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-red-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-300">Redirecting to sign in...</p>
+          <p className="text-gray-400 text-sm mt-2">Please sign in to access your dashboard</p>
+        </div>
+      </div>
+    )
   }
 
   const handleSignOut = async () => {
