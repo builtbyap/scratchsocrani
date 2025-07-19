@@ -444,6 +444,7 @@ export default function Dashboard() {
       // Prepare the data for insertion
       const supabaseLinkedInData = {
         user_id: user.id,
+        name: `${position} at ${company}`,
         company: company
       }
       
@@ -456,7 +457,7 @@ export default function Dashboard() {
         return
       }
       
-      if (!supabaseLinkedInData.company) {
+      if (!supabaseLinkedInData.company || !position) {
         console.error('❌ Missing required data:', supabaseLinkedInData)
         alert('Missing required LinkedIn data. Please try again.')
         return
