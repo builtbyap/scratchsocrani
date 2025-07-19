@@ -317,40 +317,8 @@ export default function Dashboard() {
         }
       }
       
-      // Test insert operation
-      console.log('🔍 Testing insert operation...')
-      const testData = {
-        user_id: user?.id || 'test-user',
-        name: 'Test User',
-        email: 'test@example.com',
-        company: 'Test Company'
-      }
-      
-      const { data: insertData, error: insertError } = await supabase
-        .from('emails')
-        .insert(testData)
-        .select()
-      
-      if (insertError) {
-        console.log('❌ Insert test failed:', insertError)
-        console.log('❌ Insert error details:', {
-          message: insertError.message,
-          details: insertError.details,
-          hint: insertError.hint,
-          code: insertError.code
-        })
-      } else {
-        console.log('✅ Insert test successful:', insertData)
-        
-        // Clean up test data
-        if (insertData && insertData[0]) {
-          await supabase
-            .from('emails')
-            .delete()
-            .eq('id', insertData[0].id)
-          console.log('✅ Test data cleaned up')
-        }
-      }
+      // Table accessibility check completed
+      console.log('✅ All table accessibility checks completed')
     } catch (error) {
       console.log('❌ Error checking tables:', error)
     }
@@ -983,9 +951,17 @@ export default function Dashboard() {
     const hasValidName = connection.name && connection.name.trim() !== '' && !connection.name.includes('No name')
     const hasValidCompany = connection.company && connection.company.trim() !== '' && !connection.company.includes('No company')
     
-    // Skip test data entries
-    const isTestUser = connection.name && connection.name.toLowerCase().includes('test user')
-    const isTestCompany = connection.company && connection.company.toLowerCase().includes('test company')
+    // Skip test data entries - comprehensive filtering
+    const isTestUser = connection.name && (
+      connection.name.toLowerCase().includes('test user') ||
+      connection.name.toLowerCase().includes('test@example.com') ||
+      connection.name === 'Test User'
+    )
+    const isTestCompany = connection.company && (
+      connection.company.toLowerCase().includes('test company') ||
+      connection.company.toLowerCase().includes('example.com') ||
+      connection.company === 'Test Company'
+    )
     
     // Only show connections with valid data
     if (!hasValidName || !hasValidCompany || isTestUser || isTestCompany) {
@@ -1020,12 +996,29 @@ export default function Dashboard() {
 
   // Filter emails based on search term (company name) only and remove test data
   const filteredEmails = uniqueEmails.filter((email: any) => {
-    // Skip test data entries
-    const isTestUser = email.name && email.name.toLowerCase().includes('test user')
-    const isTestCompany = email.company && email.company.toLowerCase().includes('test company')
+    // Skip test data entries - comprehensive filtering
+    const isTestUser = email.name && (
+      email.name.toLowerCase().includes('test user') ||
+      email.name.toLowerCase().includes('test@example.com') ||
+      email.name.toLowerCase().includes('test user') ||
+      email.name === 'Test User'
+    )
+    const isTestCompany = email.company && (
+      email.company.toLowerCase().includes('test company') ||
+      email.company.toLowerCase().includes('example.com') ||
+      email.company === 'Test Company'
+    )
+    const isTestEmail = email.email && (
+      email.email.toLowerCase().includes('test@example.com') ||
+      email.email.toLowerCase().includes('test.com')
+    )
     
-    if (isTestUser || isTestCompany) {
-      console.log('🚫 Filtering out test data:', { name: email.name, company: email.company })
+    if (isTestUser || isTestCompany || isTestEmail) {
+      console.log('🚫 Filtering out test data:', { 
+        name: email.name, 
+        company: email.company, 
+        email: email.email 
+      })
       return false
     }
     
