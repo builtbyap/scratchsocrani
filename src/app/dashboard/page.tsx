@@ -7,6 +7,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import SubscriptionGuard from '@/components/SubscriptionGuard'
 import { getSupabaseClient } from '@/lib/supabase-client'
 import ChatModal from '@/components/ChatModal'
+import LinkedInChatModal from '@/components/LinkedInChatModal'
 import { 
   Sparkles, 
   BarChart3, 
@@ -63,6 +64,7 @@ export default function Dashboard() {
   const [savedLinkedIn, setSavedLinkedIn] = useState<any[]>([])
   const [linkedInSearchTerm, setLinkedInSearchTerm] = useState('')
   const [isChatModalOpen, setIsChatModalOpen] = useState(false)
+  const [isLinkedInChatModalOpen, setIsLinkedInChatModalOpen] = useState(false)
   const router = useRouter()
   const { user, loading, signOut } = useAuth()
 
@@ -423,6 +425,98 @@ export default function Dashboard() {
     setIsChatModalOpen(true)
   }
 
+  const handleLinkedInChatComplete = async (linkedInData: any) => {
+    if (!user) return
+    
+    try {
+      console.log('🔗 Processing LinkedIn data from chat:', linkedInData)
+      
+      // Process the data
+      const first_name = linkedInData.firstName
+      const last_name = linkedInData.lastName
+      const company = linkedInData.company
+      const position = linkedInData.position
+      
+      console.log('🔗 Processed LinkedIn data:', { first_name, last_name, company, position })
+      
+      const supabase = getSupabaseClient()
+      
+      // Prepare the data for insertion
+      const supabaseLinkedInData = {
+        user_id: user.id,
+        name: `${first_name} ${last_name}`,
+        company: company,
+        position: position
+      }
+      
+      console.log('💾 Saving LinkedIn data to Supabase:', supabaseLinkedInData)
+      
+      // Validate data before insertion
+      if (!user.id) {
+        console.error('❌ No user ID available')
+        alert('User not authenticated. Please sign in again.')
+        return
+      }
+      
+      if (!supabaseLinkedInData.name || !supabaseLinkedInData.company) {
+        console.error('❌ Missing required data:', supabaseLinkedInData)
+        alert('Missing required LinkedIn data. Please try again.')
+        return
+      }
+      
+      const { data, error } = await supabase
+        .from('linkedin_connections')
+        .insert(supabaseLinkedInData)
+        .select()
+      
+      if (error) {
+        console.error('❌ Error adding LinkedIn connection:', error)
+        console.error('❌ Error details:', {
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          code: error.code
+        })
+        alert(`Failed to add LinkedIn connection: ${error.message}`)
+        return
+      }
+      
+      console.log('✅ LinkedIn connection added successfully:', data)
+      
+      // Immediately add the new LinkedIn connection to the local state for instant display
+      if (data && data[0]) {
+        const newConnection = data[0]
+        console.log('🔗 Adding new LinkedIn connection to local state:', newConnection)
+        setLinkedInConnections(prev => {
+          // Add the new connection at the beginning of the list
+          const updatedConnections = [newConnection, ...prev]
+          console.log('🔗 Updated LinkedIn connections list:', updatedConnections.length, 'connections')
+          return updatedConnections
+        })
+        
+        // Update cached data
+        if (user) {
+          const currentCached = localStorage.getItem(`linkedin_${user.id}`)
+          const cachedConnections = currentCached ? JSON.parse(currentCached) : []
+          const updatedCached = [newConnection, ...cachedConnections]
+          localStorage.setItem(`linkedin_${user.id}`, JSON.stringify(updatedCached))
+          console.log('✅ Updated cached LinkedIn data')
+        }
+      }
+      
+      // Also refresh from database to ensure consistency
+      console.log('🔄 Refreshing LinkedIn connections from database...')
+      await fetchLinkedInConnections()
+      
+      // Show success message
+      alert(`LinkedIn connection for ${first_name} ${last_name} at ${company} has been added successfully!`)
+      
+    } catch (error) {
+      console.error('❌ Unexpected error adding LinkedIn connection:', error)
+      alert('An unexpected error occurred. Please try again.')
+    }
+  }
+
   const handleChatComplete = async (emailData: any) => {
     if (!user) return
     
@@ -561,8 +655,7 @@ export default function Dashboard() {
   }
 
   const handleAddLinkedIn = () => {
-    const formUrl = 'https://n8n.socrani.com/form/c85d7ad6-0b7b-436d-aad6-ee849404d145'
-    window.open(formUrl, '_blank', 'noopener,noreferrer')
+    setIsLinkedInChatModalOpen(true)
   }
 
   const handleViewEmail = (email: any) => {
@@ -1469,6 +1562,13 @@ const upcomingTasks = [
         isOpen={isChatModalOpen}
         onClose={() => setIsChatModalOpen(false)}
         onComplete={handleChatComplete}
+      />
+      
+      {/* LinkedIn Chat Modal */}
+      <LinkedInChatModal
+        isOpen={isLinkedInChatModalOpen}
+        onClose={() => setIsLinkedInChatModalOpen(false)}
+        onComplete={handleLinkedInChatComplete}
       />
     </SubscriptionGuard>
   )
