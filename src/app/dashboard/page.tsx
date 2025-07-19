@@ -424,19 +424,6 @@ export default function Dashboard() {
     }
   }, [user, loading, router])
 
-  // Show loading while checking authentication
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-dark-900 via-dark-800 to-dark-900 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-primary-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-300">Loading your dashboard...</p>
-          <p className="text-gray-400 text-sm mt-2">Please wait while we restore your session</p>
-        </div>
-      </div>
-    )
-  }
-
   // Show session restored notification
   useEffect(() => {
     if (sessionRestored && user) {
@@ -454,6 +441,19 @@ export default function Dashboard() {
       }, 3000)
     }
   }, [sessionRestored, user])
+
+  // Show loading while checking authentication
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-dark-900 via-dark-800 to-dark-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-primary-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-300">Loading your dashboard...</p>
+          <p className="text-gray-400 text-sm mt-2">Please wait while we restore your session</p>
+        </div>
+      </div>
+    )
+  }
 
   // Don't render dashboard if not authenticated
   if (!user) {
