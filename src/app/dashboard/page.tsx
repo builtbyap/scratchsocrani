@@ -385,19 +385,71 @@ export default function Dashboard() {
     if (!user) return
     
     try {
-      console.log('📧 Adding email from chat:', emailData)
+      console.log('📧 Processing email data from chat:', emailData)
+      
+      // Process the data according to the specified logic
+      const first_name = emailData.firstName
+      const last_name = emailData.lastName
+      const company = emailData.company
+      const domain = emailData.domain
+      
+      console.log('📧 Processed data:', { first_name, last_name, company, domain })
+      
+      // Make Hunter.io API request
+      const apiKey = '5681619d1c0433d78656ae319f6b376e4adbc279'
+      const hunterUrl = `https://api.hunter.io/v2/email-finder?domain=${encodeURIComponent(domain)}&first_name=${encodeURIComponent(first_name)}&last_name=${encodeURIComponent(last_name)}&api_key=${apiKey}`
+      
+      console.log('🔍 Making Hunter.io API request:', hunterUrl)
+      
+      const hunterResponse = await fetch(hunterUrl)
+      const hunterData = await hunterResponse.json()
+      
+      console.log('🔍 Hunter.io API response:', hunterData)
+      
+      // Use the specified logic to handle the API response
+      const email = hunterData.data ? hunterData.data.email : null
+      let finalEmail = `${first_name.toLowerCase()}.${last_name.toLowerCase()}@${domain}`
+      let emailSource = 'generated'
+      
+      if (email) {
+        finalEmail = email
+        emailSource = 'hunter.io'
+        console.log('✅ Found email via Hunter.io:', finalEmail)
+      } else {
+        console.log('⚠️ No email found via Hunter.io, using generated email')
+      }
+      
       const supabase = getSupabaseClient()
+      
+      // Prepare the data for insertion
+      const supabaseEmailData: any = {
+        user_id: user.id,
+        name: `${first_name} ${last_name}`,
+        company: company,
+        email: finalEmail,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      }
+      
+      // Add Hunter.io specific data if email was found via API
+      if (emailSource === 'hunter.io' && hunterData.data) {
+        supabaseEmailData.score = hunterData.data.score || null
+        supabaseEmailData.sources = hunterData.data.sources || []
+        supabaseEmailData.verification = hunterData.data.verification || null
+        supabaseEmailData.position = hunterData.data.position || null
+        supabaseEmailData.department = hunterData.data.department || null
+        supabaseEmailData.seniority = hunterData.data.seniority || null
+        supabaseEmailData.linkedin = hunterData.data.linkedin || null
+        supabaseEmailData.twitter = hunterData.data.twitter || null
+        supabaseEmailData.phone_number = hunterData.data.phone_number || null
+        supabaseEmailData.confidence = hunterData.data.confidence || null
+      }
+      
+      console.log('💾 Saving email data to Supabase:', supabaseEmailData)
       
       const { error } = await supabase
         .from('emails')
-        .insert({
-          user_id: user.id,
-          name: emailData.name,
-          company: emailData.company,
-          email: emailData.email,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        })
+        .insert(supabaseEmailData)
       
       if (error) {
         console.error('❌ Error adding email:', error)
@@ -411,7 +463,8 @@ export default function Dashboard() {
       await fetchEmails()
       
       // Show success message
-      alert(`Email for ${emailData.name} at ${emailData.company} has been added successfully!`)
+      const sourceText = emailSource === 'hunter.io' ? 'found via email finder' : 'generated'
+      alert(`Email for ${first_name} ${last_name} at ${company} has been added successfully! (${sourceText})`)
       
     } catch (error) {
       console.error('❌ Unexpected error adding email:', error)

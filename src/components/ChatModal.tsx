@@ -18,9 +18,10 @@ interface ChatMessage {
 }
 
 interface EmailData {
-  name: string
+  firstName: string
+  lastName: string
   company: string
-  email: string
+  domain: string
 }
 
 export default function ChatModal({ isOpen, onClose, onComplete }: ChatModalProps) {
@@ -33,11 +34,12 @@ export default function ChatModal({ isOpen, onClose, onComplete }: ChatModalProp
     }
   ])
   const [currentInput, setCurrentInput] = useState('')
-  const [currentStep, setCurrentStep] = useState<'company' | 'name' | 'email'>('company')
+  const [currentStep, setCurrentStep] = useState<'company' | 'firstName' | 'lastName'>('company')
   const [emailData, setEmailData] = useState<EmailData>({
-    name: '',
+    firstName: '',
+    lastName: '',
     company: '',
-    email: ''
+    domain: ''
   })
   const [isTyping, setIsTyping] = useState(false)
 
@@ -68,17 +70,20 @@ export default function ChatModal({ isOpen, onClose, onComplete }: ChatModalProp
     switch (currentStep) {
       case 'company':
         setEmailData(prev => ({ ...prev, company: userInput }))
-        botMessage = `Great! Now what's the person's name at ${userInput}?`
-        nextStep = 'name'
+        botMessage = `Great! Now what's the person's first name at ${userInput}?`
+        nextStep = 'firstName'
         break
-      case 'name':
-        setEmailData(prev => ({ ...prev, name: userInput }))
-        botMessage = `Perfect! What's ${userInput}'s email address?`
-        nextStep = 'email'
+      case 'firstName':
+        setEmailData(prev => ({ ...prev, firstName: userInput }))
+        botMessage = `Perfect! What's ${userInput}'s last name?`
+        nextStep = 'lastName'
         break
-      case 'email':
-        setEmailData(prev => ({ ...prev, email: userInput }))
-        botMessage = `Excellent! I've collected all the information. Let me add this email to your list.`
+      case 'lastName':
+        setEmailData(prev => ({ ...prev, lastName: userInput }))
+        // Generate domain based on company name
+        const domain = userInput.toLowerCase().replace(/\s+/g, '') + '.com'
+        setEmailData(prev => ({ ...prev, domain }))
+        botMessage = `Excellent! I've collected all the information. Let me process this data.`
         break
     }
 
@@ -94,9 +99,13 @@ export default function ChatModal({ isOpen, onClose, onComplete }: ChatModalProp
     setIsTyping(false)
 
     // If we've collected all data, complete the process
-    if (nextStep === 'email') {
+    if (nextStep === 'lastName') {
       setTimeout(() => {
-        const finalData = { ...emailData, email: userInput }
+        const finalData = { 
+          ...emailData, 
+          lastName: userInput,
+          domain: userInput.toLowerCase().replace(/\s+/g, '') + '.com'
+        }
         onComplete(finalData)
         handleClose()
       }, 2000)
@@ -112,7 +121,7 @@ export default function ChatModal({ isOpen, onClose, onComplete }: ChatModalProp
     }])
     setCurrentInput('')
     setCurrentStep('company')
-    setEmailData({ name: '', company: '', email: '' })
+    setEmailData({ firstName: '', lastName: '', company: '', domain: '' })
     setIsTyping(false)
     onClose()
   }
@@ -210,8 +219,8 @@ export default function ChatModal({ isOpen, onClose, onComplete }: ChatModalProp
                   onKeyPress={handleKeyPress}
                   placeholder={
                     currentStep === 'company' ? 'Enter company name...' :
-                    currentStep === 'name' ? 'Enter person\'s name...' :
-                    'Enter email address...'
+                    currentStep === 'firstName' ? 'Enter first name...' :
+                    'Enter last name...'
                   }
                   className="flex-1 bg-white/10 border border-white/20 rounded-xl px-4 py-2 text-white placeholder-gray-400 focus:outline-none focus:border-primary-400 transition-colors"
                 />
