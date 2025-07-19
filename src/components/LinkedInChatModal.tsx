@@ -18,10 +18,13 @@ interface ChatMessage {
 }
 
 interface LinkedInData {
-  firstName: string
-  lastName: string
   company: string
   position: string
+  searchResults?: any
+  profiles?: Array<{
+    name: string
+    linkedin_url: string
+  }>
 }
 
 export default function LinkedInChatModal({ isOpen, onClose, onComplete }: LinkedInChatModalProps) {
@@ -34,10 +37,8 @@ export default function LinkedInChatModal({ isOpen, onClose, onComplete }: Linke
     }
   ])
   const [currentInput, setCurrentInput] = useState('')
-  const [currentStep, setCurrentStep] = useState<'company' | 'firstName' | 'lastName' | 'position' | 'complete'>('company')
+  const [currentStep, setCurrentStep] = useState<'company' | 'position' | 'complete'>('company')
   const [linkedInData, setLinkedInData] = useState<LinkedInData>({
-    firstName: '',
-    lastName: '',
     company: '',
     position: ''
   })
@@ -58,29 +59,19 @@ export default function LinkedInChatModal({ isOpen, onClose, onComplete }: Linke
     setIsTyping(true)
 
     // Simulate bot typing delay
-    setTimeout(() => {
-      handleBotResponse(currentInput)
+    setTimeout(async () => {
+      await handleBotResponse(currentInput)
     }, 1000)
   }
 
-  const handleBotResponse = (userInput: string) => {
+  const handleBotResponse = async (userInput: string) => {
     let botMessage = ''
     let nextStep = currentStep
 
     switch (currentStep) {
       case 'company':
         setLinkedInData(prev => ({ ...prev, company: userInput }))
-        botMessage = `Great! Now what's the person's first name at ${userInput}?`
-        nextStep = 'firstName'
-        break
-      case 'firstName':
-        setLinkedInData(prev => ({ ...prev, firstName: userInput }))
-        botMessage = `Perfect! What's ${userInput}'s last name?`
-        nextStep = 'lastName'
-        break
-      case 'lastName':
-        setLinkedInData(prev => ({ ...prev, lastName: userInput }))
-        botMessage = `Excellent! What's ${userInput}'s position or job title?`
+        botMessage = `What is their position?`
         nextStep = 'position'
         break
       case 'position':
@@ -101,15 +92,94 @@ export default function LinkedInChatModal({ isOpen, onClose, onComplete }: Linke
     setCurrentStep(nextStep)
     setIsTyping(false)
 
-    // If we've collected all data, complete the process
+    // If we've collected all data, make the SerpAPI request
     if (nextStep === 'complete') {
-      // Start the process immediately
       const finalData = { 
         ...linkedInData, 
         position: userInput
       }
-      onComplete(finalData)
-      handleClose()
+      
+      // Make SerpAPI request to find LinkedIn profiles
+      try {
+        const apiKey = '8e8f53ef8711b4178aca30947abe9f1cd51ac5dafbc4934aa4382ab890c615a0'
+        const searchQuery = `LinkedIn ${finalData.position} ${finalData.company} -jobs -careers -openings site:linkedin.com/in/`
+        const serpApiUrl = `https://serpapi.com/search.json?engine=google&q=${encodeURIComponent(searchQuery)}&api_key=${apiKey}`
+        
+        console.log('🔍 Making SerpAPI request:', serpApiUrl)
+        
+        const response = await fetch(serpApiUrl)
+        const searchData = await response.json()
+        
+        console.log('🔍 SerpAPI response:', searchData)
+        
+        // Process and filter the search results
+        let results = searchData["organic_results"] || [];
+        
+        let profiles = results.map((result: any) => ({
+          name: result.title.replace(" | LinkedIn", "") || "N/A",
+          linkedin_url: result.link || "N/A"
+        }));
+        
+        // Filter out job-related results
+        profiles = profiles.filter((profile: any) => 
+          !profile.name.toLowerCase().includes("hiring") &&
+          !profile.name.toLowerCase().includes("jobs") &&
+          !profile.name.toLowerCase().includes("recruiting") &&
+          !profile.name.toLowerCase().includes("careers") &&
+          !profile.name.toLowerCase().includes("open positions")
+        );
+        
+        // Remove duplicate profiles based on LinkedIn URL
+        let uniqueProfiles: Array<{name: string, linkedin_url: string}> = [];
+        let seenLinks = new Set();
+        
+        profiles.forEach((profile: any) => {
+          if (!seenLinks.has(profile.linkedin_url)) {
+            seenLinks.add(profile.linkedin_url);
+            uniqueProfiles.push(profile);
+          }
+        });
+        
+        console.log('🔍 Filtered LinkedIn profiles:', uniqueProfiles)
+        
+        // Add processed profiles to the data
+        finalData.searchResults = searchData
+        finalData.profiles = uniqueProfiles
+        
+        // Add a message about the search
+        const searchMessage: ChatMessage = {
+          id: (Date.now() + 2).toString(),
+          type: 'bot',
+          content: `I found some LinkedIn profiles for ${finalData.position} positions at ${finalData.company}. Let me save this information...`,
+          timestamp: new Date()
+        }
+        
+        setMessages(prev => [...prev, searchMessage])
+        
+        // Wait a moment to show the search message, then complete
+        setTimeout(() => {
+          onComplete(finalData)
+          handleClose()
+        }, 2000)
+        
+      } catch (error) {
+        console.error('❌ Error making SerpAPI request:', error)
+        
+        // Continue with completion even if search fails
+        const errorMessage: ChatMessage = {
+          id: (Date.now() + 2).toString(),
+          type: 'bot',
+          content: `I encountered an issue searching for profiles, but I'll still save your LinkedIn connection information.`,
+          timestamp: new Date()
+        }
+        
+        setMessages(prev => [...prev, errorMessage])
+        
+        setTimeout(() => {
+          onComplete(finalData)
+          handleClose()
+        }, 2000)
+      }
     }
   }
 
@@ -122,7 +192,7 @@ export default function LinkedInChatModal({ isOpen, onClose, onComplete }: Linke
     }])
     setCurrentInput('')
     setCurrentStep('company')
-    setLinkedInData({ firstName: '', lastName: '', company: '', position: '' })
+    setLinkedInData({ company: '', position: '' })
     setIsTyping(false)
     onClose()
   }
@@ -220,8 +290,6 @@ export default function LinkedInChatModal({ isOpen, onClose, onComplete }: Linke
                   onKeyPress={handleKeyPress}
                   placeholder={
                     currentStep === 'company' ? 'Enter company name...' :
-                    currentStep === 'firstName' ? 'Enter first name...' :
-                    currentStep === 'lastName' ? 'Enter last name...' :
                     currentStep === 'position' ? 'Enter position/title...' :
                     'Processing...'
                   }

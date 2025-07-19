@@ -432,19 +432,18 @@ export default function Dashboard() {
       console.log('🔗 Processing LinkedIn data from chat:', linkedInData)
       
       // Process the data
-      const first_name = linkedInData.firstName
-      const last_name = linkedInData.lastName
       const company = linkedInData.company
       const position = linkedInData.position
+      const searchResults = linkedInData.searchResults
+      const profiles = linkedInData.profiles
       
-      console.log('🔗 Processed LinkedIn data:', { first_name, last_name, company, position })
+      console.log('🔗 Processed LinkedIn data:', { company, position, searchResults, profiles })
       
       const supabase = getSupabaseClient()
       
       // Prepare the data for insertion
       const supabaseLinkedInData = {
         user_id: user.id,
-        name: `${first_name} ${last_name}`,
         company: company,
         position: position
       }
@@ -458,7 +457,7 @@ export default function Dashboard() {
         return
       }
       
-      if (!supabaseLinkedInData.name || !supabaseLinkedInData.company) {
+      if (!supabaseLinkedInData.company || !supabaseLinkedInData.position) {
         console.error('❌ Missing required data:', supabaseLinkedInData)
         alert('Missing required LinkedIn data. Please try again.')
         return
@@ -482,6 +481,66 @@ export default function Dashboard() {
       }
       
       console.log('✅ LinkedIn connection added successfully:', data)
+      
+      // Log filtered profiles if available
+      if (profiles && profiles.length > 0) {
+        console.log('🔍 Filtered LinkedIn profiles found:', profiles.length)
+        profiles.slice(0, 5).forEach((profile: any, index: number) => {
+          console.log(`🔗 Profile ${index + 1}:`, {
+            name: profile.name,
+            linkedin_url: profile.linkedin_url
+          })
+        })
+        
+        // Save profiles to Linkedin table
+        console.log('💾 Saving LinkedIn profiles to database...')
+        const profileDataToInsert = profiles.map((profile: any) => ({
+          user_id: user.id,
+          name: profile.name,
+          company: company,
+          position: position,
+          linkedin_url: profile.linkedin_url
+        }))
+        
+        console.log('💾 Profile data to insert:', profileDataToInsert)
+        
+        const { data: profileInsertData, error: profileInsertError } = await supabase
+          .from('Linkedin')
+          .insert(profileDataToInsert)
+          .select()
+        
+        if (profileInsertError) {
+          console.error('❌ Error adding LinkedIn profiles:', profileInsertError)
+          console.error('❌ Error details:', {
+            message: profileInsertError.message,
+            details: profileInsertError.details,
+            hint: profileInsertError.hint,
+            code: profileInsertError.code
+          })
+        } else {
+          console.log('✅ LinkedIn profiles added successfully:', profileInsertData)
+          
+          // Update local state with new profiles
+          if (profileInsertData && profileInsertData.length > 0) {
+            setLinkedInConnections(prev => {
+              const updatedConnections = [...profileInsertData, ...prev]
+              console.log('🔗 Updated LinkedIn connections list:', updatedConnections.length, 'connections')
+              return updatedConnections
+            })
+            
+            // Update cached data
+            if (user) {
+              const currentCached = localStorage.getItem(`linkedin_${user.id}`)
+              const cachedConnections = currentCached ? JSON.parse(currentCached) : []
+              const updatedCached = [...profileInsertData, ...cachedConnections]
+              localStorage.setItem(`linkedin_${user.id}`, JSON.stringify(updatedCached))
+              console.log('✅ Updated cached LinkedIn data with profiles')
+            }
+          }
+        }
+      } else if (searchResults && searchResults.organic_results) {
+        console.log('🔍 No filtered profiles found, showing raw results:', searchResults.organic_results.length)
+      }
       
       // Immediately add the new LinkedIn connection to the local state for instant display
       if (data && data[0]) {
@@ -509,7 +568,11 @@ export default function Dashboard() {
       await fetchLinkedInConnections()
       
       // Show success message
-      alert(`LinkedIn connection for ${first_name} ${last_name} at ${company} has been added successfully!`)
+      if (profiles && profiles.length > 0) {
+        alert(`LinkedIn connection for ${position} at ${company} has been added successfully! Found and saved ${profiles.length} LinkedIn profiles.`)
+      } else {
+        alert(`LinkedIn connection for ${position} at ${company} has been added successfully!`)
+      }
       
     } catch (error) {
       console.error('❌ Unexpected error adding LinkedIn connection:', error)
