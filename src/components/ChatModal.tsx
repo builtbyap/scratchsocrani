@@ -81,9 +81,9 @@ export default function ChatModal({ isOpen, onClose, onComplete }: ChatModalProp
       case 'lastName':
         setEmailData(prev => ({ ...prev, lastName: userInput }))
         // Generate domain based on company name
-        const domain = userInput.toLowerCase().replace(/\s+/g, '') + '.com'
+        const domain = emailData.company.toLowerCase().replace(/\s+/g, '') + '.com'
         setEmailData(prev => ({ ...prev, domain }))
-        botMessage = `Excellent! I've collected all the information. Let me process this data.`
+        botMessage = `Excellent! I've collected all the information. Let me search for the email address...`
         break
     }
 
@@ -98,17 +98,16 @@ export default function ChatModal({ isOpen, onClose, onComplete }: ChatModalProp
     setCurrentStep(nextStep)
     setIsTyping(false)
 
-    // If we've collected all data, complete the process
+    // If we've collected all data, start the Hunter.io search immediately
     if (nextStep === 'lastName') {
-      setTimeout(() => {
-        const finalData = { 
-          ...emailData, 
-          lastName: userInput,
-          domain: userInput.toLowerCase().replace(/\s+/g, '') + '.com'
-        }
-        onComplete(finalData)
-        handleClose()
-      }, 2000)
+      // Start the search process immediately
+      const finalData = { 
+        ...emailData, 
+        lastName: userInput,
+        domain: emailData.company.toLowerCase().replace(/\s+/g, '') + '.com'
+      }
+      onComplete(finalData)
+      handleClose()
     }
   }
 
