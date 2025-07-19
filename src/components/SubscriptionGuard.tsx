@@ -75,7 +75,7 @@ export default function SubscriptionGuard({
     if (!loading) {
       checkSubscription()
     }
-  }, [user, loading])
+  }, [user?.id, loading])
 
   // Show loading while checking authentication
   if (loading || checking) {

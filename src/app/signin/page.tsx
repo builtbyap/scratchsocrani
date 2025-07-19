@@ -25,7 +25,7 @@ export default function SignInPage() {
       setIsLoading(false)
       router.push('/dashboard')
     }
-  }, [user, loading, router])
+  }, [user?.id, loading])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
