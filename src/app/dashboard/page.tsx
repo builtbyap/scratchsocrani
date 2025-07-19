@@ -461,7 +461,7 @@ export default function Dashboard() {
         }
       }, 3000)
     }
-  }, [sessionRestored])
+  }, [sessionRestored, user?.id])
 
   // Don't render dashboard if not authenticated
   if (!user) {
