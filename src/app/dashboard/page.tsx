@@ -1492,7 +1492,6 @@ const upcomingTasks = [
                             className="pl-9 pr-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-primary-400 transition-colors text-sm w-48"
                           />
                         </div>
-                      <button className="text-primary-400 hover:text-primary-300 text-sm">View All</button>
                     </div>
                           </div>
                     <div className="space-y-4 max-h-96 overflow-y-auto">
@@ -1613,7 +1612,6 @@ const upcomingTasks = [
                             className="pl-9 pr-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-primary-400 transition-colors text-sm w-48"
                           />
                         </div>
-                    <button className="text-primary-400 hover:text-primary-300 text-sm">View All</button>
                   </div>
                     </div>
                     <div className="space-y-4 max-h-96 overflow-y-auto">
