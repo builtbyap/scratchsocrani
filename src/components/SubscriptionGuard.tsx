@@ -39,14 +39,6 @@ export default function SubscriptionGuard({
           return
         }
         
-        // For now, skip subscription validation to prevent errors
-        // TODO: Re-enable when subscription system is ready
-        console.log('⚠️ Skipping subscription validation for now')
-        setHasSubscription(true)
-        setValidationError(null)
-        
-        // Commented out subscription checks to prevent client-side errors
-        /*
         // First validate user access
         const validation = await validateUserAccess(user.email)
         if (!validation.isValid) {
@@ -61,12 +53,10 @@ export default function SubscriptionGuard({
         console.log('📋 Subscription status:', isActive)
         setHasSubscription(isActive)
         setValidationError(null)
-        */
       } catch (error) {
         console.error('❌ Error checking subscription:', error)
-        // For now, allow access even if there's an error
-        setHasSubscription(true)
-        setValidationError(null)
+        setHasSubscription(false)
+        setValidationError('Error checking subscription status')
       } finally {
         setChecking(false)
       }
@@ -75,7 +65,7 @@ export default function SubscriptionGuard({
     if (!loading) {
       checkSubscription()
     }
-  }, [user?.id, loading])
+  }, [user, loading])
 
   // Show loading while checking authentication
   if (loading || checking) {

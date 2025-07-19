@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { ArrowLeft, Mail, Lock, Eye, EyeOff, Sparkles } from 'lucide-react'
 import Link from 'next/link'
@@ -16,55 +16,57 @@ export default function SignInPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
   const router = useRouter()
-  const { user, loading, signIn, signInWithGoogle } = useAuth()
-
-  // Auto-redirect if user is already authenticated
-  useEffect(() => {
-    if (!loading && user) {
-      console.log('✅ User already authenticated, redirecting to dashboard...')
-      setIsLoading(false)
-      router.push('/dashboard')
-    }
-  }, [user?.id, loading])
+  const { signIn, signInWithGoogle } = useAuth()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    console.log('Sign in form submitted with email:', formData.email)
     setIsLoading(true)
     setError('')
     
     try {
+      console.log('Calling signIn function...')
       const { data, error } = await signIn(formData.email, formData.password)
       
+      console.log('Sign in response:', { data, error })
+      
       if (error) {
+        console.error('Sign in error:', error)
         setError(error.message)
-        setIsLoading(false)
       } else {
-        // Sign in successful, auth state will update automatically
-        console.log('✅ Sign in successful, auth state will update automatically...')
-        // Keep loading state active until auth state changes
+        console.log('Sign in successful, redirecting to dashboard...')
+        // Redirect to dashboard on successful sign in
+        router.push('/dashboard')
       }
     } catch (err) {
+      console.error('Sign in error:', err)
       setError('An unexpected error occurred. Please try again.')
+    } finally {
       setIsLoading(false)
     }
   }
 
   const handleGoogleSignIn = async () => {
+    console.log('Google sign in initiated...')
     setIsLoading(true)
     setError('')
     
     try {
+      console.log('Calling signInWithGoogle function...')
       const { data, error } = await signInWithGoogle()
       
+      console.log('Google sign in response:', { data, error })
+      
       if (error) {
+        console.error('Google sign in error:', error)
         setError(error.message)
         setIsLoading(false)
       } else {
-        console.log('✅ Google sign in initiated, OAuth will handle redirect...')
+        console.log('Google sign in successful, OAuth will handle redirect...')
         // Google OAuth will handle the redirect automatically
-        // Keep loading state active until redirect happens
       }
     } catch (err) {
+      console.error('Google sign in error:', err)
       setError('An unexpected error occurred. Please try again.')
       setIsLoading(false)
     }
@@ -229,14 +231,6 @@ export default function SignInPage() {
                   <span>Sign In</span>
                 )}
               </button>
-              
-              {isLoading && (
-                <div className="text-center">
-                  <p className="text-sm text-gray-400">
-                    Please wait while we authenticate your account...
-                  </p>
-                </div>
-              )}
             </form>
 
             {/* Divider */}

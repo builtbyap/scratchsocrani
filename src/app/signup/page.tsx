@@ -6,6 +6,7 @@ import { ArrowLeft, Mail, Lock, Eye, EyeOff, Sparkles, User, Check } from 'lucid
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
+import { getSupabaseClient } from '@/lib/supabase-client'
 
 export default function SignUpPage() {
   const [showPassword, setShowPassword] = useState(false)
@@ -52,8 +53,42 @@ export default function SignUpPage() {
       if (error) {
         setError(error.message)
       } else {
-        console.log('Sign up successful, redirecting to dashboard...')
-        // Show success message and redirect to dashboard
+        console.log('Sign up successful, creating user profile...')
+        
+        // Create user profile with first name and last name
+        try {
+          const supabase = getSupabaseClient()
+          if (data?.user) {
+            const { error: profileError } = await supabase
+              .from('users')
+              .insert({
+                id: data.user.id,
+                email: data.user.email,
+                first_name: formData.firstName,
+                last_name: formData.lastName,
+                full_name: `${formData.firstName} ${formData.lastName}`,
+                subscription_status: 'inactive',
+                subscription_tier: 'free',
+                subscription_end_date: null,
+                stripe_customer_id: null,
+                stripe_subscription_id: null,
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString()
+              })
+            
+            if (profileError) {
+              console.error('Error creating user profile:', profileError)
+              // Don't show error to user as signup was successful
+            } else {
+              console.log('User profile created successfully')
+            }
+          }
+        } catch (profileErr) {
+          console.error('Error creating user profile:', profileErr)
+          // Don't show error to user as signup was successful
+        }
+        
+        console.log('Redirecting to dashboard...')
         router.push('/dashboard')
       }
     } catch (err) {
@@ -65,18 +100,26 @@ export default function SignUpPage() {
   }
 
   const handleGoogleSignIn = async () => {
+    console.log('Google sign up initiated...')
     setIsLoading(true)
     setError('')
     
     try {
+      console.log('Calling signInWithGoogle function...')
       const { data, error } = await signInWithGoogle()
       
+      console.log('Google sign up response:', { data, error })
+      
       if (error) {
+        console.error('Google sign up error:', error)
         setError(error.message)
         setIsLoading(false)
+      } else {
+        console.log('Google sign up successful, OAuth will handle redirect...')
+        // Google OAuth will handle the redirect automatically
       }
-      // Google OAuth will handle the redirect automatically
     } catch (err) {
+      console.error('Google sign up error:', err)
       setError('An unexpected error occurred. Please try again.')
       setIsLoading(false)
     }
