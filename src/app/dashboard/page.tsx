@@ -274,12 +274,53 @@ export default function Dashboard() {
           
           if (tableError) {
             console.log(`❌ Table ${tableName}: ${tableError.message}`)
+            console.log(`❌ Error details for ${tableName}:`, {
+              message: tableError.message,
+              details: tableError.details,
+              hint: tableError.hint,
+              code: tableError.code
+            })
           } else {
             console.log(`✅ Table ${tableName}: exists and accessible`)
             console.log(`✅ Sample data from ${tableName}:`, tableData)
           }
         } catch (e) {
           console.log(`❌ Table ${tableName}: ${e}`)
+        }
+      }
+      
+      // Test insert operation
+      console.log('🔍 Testing insert operation...')
+      const testData = {
+        user_id: user?.id || 'test-user',
+        name: 'Test User',
+        email: 'test@example.com',
+        company: 'Test Company'
+      }
+      
+      const { data: insertData, error: insertError } = await supabase
+        .from('emails')
+        .insert(testData)
+        .select()
+      
+      if (insertError) {
+        console.log('❌ Insert test failed:', insertError)
+        console.log('❌ Insert error details:', {
+          message: insertError.message,
+          details: insertError.details,
+          hint: insertError.hint,
+          code: insertError.code
+        })
+      } else {
+        console.log('✅ Insert test successful:', insertData)
+        
+        // Clean up test data
+        if (insertData && insertData[0]) {
+          await supabase
+            .from('emails')
+            .delete()
+            .eq('id', insertData[0].id)
+          console.log('✅ Test data cleaned up')
         }
       }
     } catch (error) {
@@ -445,18 +486,40 @@ export default function Dashboard() {
       }
       
       console.log('💾 Saving email data to Supabase:', supabaseEmailData)
+      console.log('🔍 User ID:', user.id)
+      console.log('🔍 User authenticated:', !!user)
       
-      const { error } = await supabase
-        .from('emails')
-        .insert(supabaseEmailData)
-      
-      if (error) {
-        console.error('❌ Error adding email:', error)
-        alert('Failed to add email. Please try again.')
+      // Validate data before insertion
+      if (!user.id) {
+        console.error('❌ No user ID available')
+        alert('User not authenticated. Please sign in again.')
         return
       }
       
-      console.log('✅ Email added successfully')
+      if (!supabaseEmailData.name || !supabaseEmailData.email || !supabaseEmailData.company) {
+        console.error('❌ Missing required data:', supabaseEmailData)
+        alert('Missing required email data. Please try again.')
+        return
+      }
+      
+      const { data, error } = await supabase
+        .from('emails')
+        .insert(supabaseEmailData)
+        .select()
+      
+      if (error) {
+        console.error('❌ Error adding email:', error)
+        console.error('❌ Error details:', {
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          code: error.code
+        })
+        alert(`Failed to add email: ${error.message}`)
+        return
+      }
+      
+      console.log('✅ Email added successfully:', data)
       
       // Refresh the emails list
       await fetchEmails()
