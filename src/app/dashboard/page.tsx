@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import SubscriptionGuard from '@/components/SubscriptionGuard'
 import { getSupabaseClient } from '@/lib/supabase-client'
+import ChatModal from '@/components/ChatModal'
 import { 
   Sparkles, 
   BarChart3, 
@@ -60,6 +61,7 @@ export default function Dashboard() {
   const [recentlyViewedLinkedIn, setRecentlyViewedLinkedIn] = useState<any[]>([])
   const [savedLinkedIn, setSavedLinkedIn] = useState<any[]>([])
   const [linkedInSearchTerm, setLinkedInSearchTerm] = useState('')
+  const [isChatModalOpen, setIsChatModalOpen] = useState(false)
   const router = useRouter()
   const { user, loading, signOut } = useAuth()
 
@@ -376,8 +378,45 @@ export default function Dashboard() {
   }
 
   const handleAddEmail = () => {
-    const formUrl = 'https://n8n.socrani.com/form/6272f3aa-a2f6-417a-9977-2b11ec3488a7'
-    window.open(formUrl, '_blank', 'noopener,noreferrer')
+    setIsChatModalOpen(true)
+  }
+
+  const handleChatComplete = async (emailData: any) => {
+    if (!user) return
+    
+    try {
+      console.log('📧 Adding email from chat:', emailData)
+      const supabase = getSupabaseClient()
+      
+      const { error } = await supabase
+        .from('emails')
+        .insert({
+          user_id: user.id,
+          name: emailData.name,
+          company: emailData.company,
+          email: emailData.email,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        })
+      
+      if (error) {
+        console.error('❌ Error adding email:', error)
+        alert('Failed to add email. Please try again.')
+        return
+      }
+      
+      console.log('✅ Email added successfully')
+      
+      // Refresh the emails list
+      await fetchEmails()
+      
+      // Show success message
+      alert(`Email for ${emailData.name} at ${emailData.company} has been added successfully!`)
+      
+    } catch (error) {
+      console.error('❌ Unexpected error adding email:', error)
+      alert('An unexpected error occurred. Please try again.')
+    }
   }
 
   const handleAddLinkedIn = () => {
@@ -1277,6 +1316,13 @@ const upcomingTasks = [
           </div>
         </div>
       </div>
+      
+      {/* Chat Modal */}
+      <ChatModal
+        isOpen={isChatModalOpen}
+        onClose={() => setIsChatModalOpen(false)}
+        onComplete={handleChatComplete}
+      />
     </SubscriptionGuard>
   )
 } 
