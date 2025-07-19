@@ -114,9 +114,14 @@ export default function SignUpPage() {
         console.error('Google sign up error:', error)
         setError(error.message)
         setIsLoading(false)
+      } else if (data?.url) {
+        console.log('Google sign up successful, redirecting to OAuth URL...')
+        // Redirect to Google OAuth URL
+        window.location.href = data.url
       } else {
-        console.log('Google sign up successful, OAuth will handle redirect...')
-        // Google OAuth will handle the redirect automatically
+        console.log('Google sign up successful, but no OAuth URL received...')
+        setError('OAuth redirect failed. Please try again.')
+        setIsLoading(false)
       }
     } catch (err) {
       console.error('Google sign up error:', err)

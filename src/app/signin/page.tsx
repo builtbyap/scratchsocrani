@@ -61,9 +61,14 @@ export default function SignInPage() {
         console.error('Google sign in error:', error)
         setError(error.message)
         setIsLoading(false)
+      } else if (data?.url) {
+        console.log('Google sign in successful, redirecting to OAuth URL...')
+        // Redirect to Google OAuth URL
+        window.location.href = data.url
       } else {
-        console.log('Google sign in successful, OAuth will handle redirect...')
-        // Google OAuth will handle the redirect automatically
+        console.log('Google sign in successful, but no OAuth URL received...')
+        setError('OAuth redirect failed. Please try again.')
+        setIsLoading(false)
       }
     } catch (err) {
       console.error('Google sign in error:', err)
@@ -254,6 +259,19 @@ export default function SignInPage() {
                   <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
                 </svg>
                 <span>Continue with Google</span>
+              </button>
+              
+              {/* Debug button for testing OAuth */}
+              <button 
+                onClick={() => {
+                  console.log('🔍 Testing direct OAuth URL...')
+                  const oauthUrl = `https://jlkebdnvjjdwedmbfqou.supabase.co/auth/v1/authorize?provider=google&redirect_to=${encodeURIComponent(window.location.origin + '/dashboard')}`
+                  console.log('🔍 Direct OAuth URL:', oauthUrl)
+                  window.location.href = oauthUrl
+                }}
+                className="w-full py-2 bg-red-500/10 border border-red-500/20 rounded-xl font-semibold hover:bg-red-500/20 transition-all duration-300 flex items-center justify-center space-x-2 text-red-400 text-sm"
+              >
+                🔧 Debug: Direct OAuth (Remove in production)
               </button>
             </div>
 

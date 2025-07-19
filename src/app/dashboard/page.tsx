@@ -363,6 +363,33 @@ export default function Dashboard() {
     }
   }, [user, loading, router])
 
+  // Handle OAuth callback and session restoration
+  useEffect(() => {
+    const handleOAuthCallback = async () => {
+      try {
+        const supabase = getSupabaseClient()
+        const { data: { session }, error } = await supabase.auth.getSession()
+        
+        if (error) {
+          console.error('❌ Error getting session after OAuth:', error)
+          return
+        }
+        
+        if (session) {
+          console.log('✅ OAuth callback successful, session found:', session.user.email)
+        }
+      } catch (error) {
+        console.error('❌ Error handling OAuth callback:', error)
+      }
+    }
+    
+    // Check if this is an OAuth callback (URL contains auth parameters)
+    if (typeof window !== 'undefined' && window.location.hash.includes('access_token')) {
+      console.log('🔍 OAuth callback detected, handling...')
+      handleOAuthCallback()
+    }
+  }, [])
+
   // Update useEffect to fetch data only when user is available
   useEffect(() => {
     if (user) {
