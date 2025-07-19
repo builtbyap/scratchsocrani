@@ -421,13 +421,12 @@ export default function Dashboard() {
       
       const supabase = getSupabaseClient()
       
-      // Prepare the data for insertion - only use essential columns
+      // Prepare the data for insertion - only use columns that definitely exist
       const supabaseEmailData = {
         user_id: user.id,
         name: `${first_name} ${last_name}`,
         company: company,
-        email: finalEmail,
-        position: emailSource === 'hunter.io' && hunterData.data ? hunterData.data.position || null : null
+        email: finalEmail
       }
       
       // Log Hunter.io data for debugging (but don't save to database)
