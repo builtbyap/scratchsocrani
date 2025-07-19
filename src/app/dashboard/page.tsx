@@ -8,6 +8,7 @@ import SubscriptionGuard from '@/components/SubscriptionGuard'
 import { getSupabaseClient } from '@/lib/supabase-client'
 import ChatModal from '@/components/ChatModal'
 import LinkedInChatModal from '@/components/LinkedInChatModal'
+import AuthRedirect from '@/components/AuthRedirect'
 import { 
   Sparkles, 
   BarChart3, 
@@ -47,6 +48,14 @@ import {
 } from 'lucide-react'
 
 export default function Dashboard() {
+  return (
+    <AuthRedirect requireAuth={true}>
+      <DashboardContent />
+    </AuthRedirect>
+  )
+}
+
+function DashboardContent() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [activeTab, setActiveTab] = useState('overview')
   const [isSigningOut, setIsSigningOut] = useState(false)

@@ -6,6 +6,7 @@ import { ArrowLeft, Mail, Lock, Eye, EyeOff, Sparkles } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
+import AuthRedirect from '@/components/AuthRedirect'
 
 export default function SignInPage() {
   const [showPassword, setShowPassword] = useState(false)
@@ -65,7 +66,8 @@ export default function SignInPage() {
   }
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
+    <AuthRedirect>
+      <div className="min-h-screen relative overflow-hidden">
       {/* Background Elements */}
       <div className="absolute inset-0">
         <div className="absolute top-20 left-20 w-72 h-72 bg-primary-500/20 rounded-full blur-3xl animate-float"></div>
@@ -257,6 +259,7 @@ export default function SignInPage() {
           </motion.div>
         </motion.div>
       </div>
-    </div>
+      </div>
+    </AuthRedirect>
   )
 } 

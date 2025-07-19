@@ -10,6 +10,7 @@ import {
   Sparkles
 } from 'lucide-react'
 import CountdownTimer from '@/components/CountdownTimer'
+import AuthRedirect from '@/components/AuthRedirect'
 
 const features = [
   {
@@ -36,7 +37,8 @@ const features = [
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen relative overflow-hidden">
+    <AuthRedirect>
+      <div className="min-h-screen relative overflow-hidden">
       {/* Background Elements */}
       <div className="absolute inset-0">
         <div className="absolute top-20 left-20 w-72 h-72 bg-primary-500/20 rounded-full blur-3xl animate-float"></div>
@@ -153,6 +155,7 @@ export default function LandingPage() {
       >
         <p>&copy; 2024 Socrani Agency. All rights reserved.</p>
       </motion.footer>
-    </div>
+      </div>
+    </AuthRedirect>
   )
 } 
