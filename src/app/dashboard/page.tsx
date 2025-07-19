@@ -58,6 +58,7 @@ export default function Dashboard() {
   const [linkedInConnections, setLinkedInConnections] = useState<any[]>([])
   const [loadingLinkedIn, setLoadingLinkedIn] = useState(false)
   const [deletingLinkedIn, setDeletingLinkedIn] = useState<Set<number>>(new Set())
+  const [addingEmail, setAddingEmail] = useState(false)
   const [recentlyViewedLinkedIn, setRecentlyViewedLinkedIn] = useState<any[]>([])
   const [savedLinkedIn, setSavedLinkedIn] = useState<any[]>([])
   const [linkedInSearchTerm, setLinkedInSearchTerm] = useState('')
@@ -425,6 +426,7 @@ export default function Dashboard() {
   const handleChatComplete = async (emailData: any) => {
     if (!user) return
     
+    setAddingEmail(true)
     try {
       console.log('📧 Processing email data from chat:', emailData)
       
@@ -521,7 +523,29 @@ export default function Dashboard() {
       
       console.log('✅ Email added successfully:', data)
       
-      // Refresh the emails list
+      // Immediately add the new email to the local state for instant display
+      if (data && data[0]) {
+        const newEmail = data[0]
+        console.log('📧 Adding new email to local state:', newEmail)
+        setEmails(prev => {
+          // Add the new email at the beginning of the list
+          const updatedEmails = [newEmail, ...prev]
+          console.log('📧 Updated emails list:', updatedEmails.length, 'emails')
+          return updatedEmails
+        })
+        
+        // Update cached data
+        if (user) {
+          const currentCached = localStorage.getItem(`emails_${user.id}`)
+          const cachedEmails = currentCached ? JSON.parse(currentCached) : []
+          const updatedCached = [newEmail, ...cachedEmails]
+          localStorage.setItem(`emails_${user.id}`, JSON.stringify(updatedCached))
+          console.log('✅ Updated cached emails data')
+        }
+      }
+      
+      // Also refresh from database to ensure consistency
+      console.log('🔄 Refreshing emails from database...')
       await fetchEmails()
       
       // Show success message
@@ -531,6 +555,8 @@ export default function Dashboard() {
     } catch (error) {
       console.error('❌ Unexpected error adding email:', error)
       alert('An unexpected error occurred. Please try again.')
+    } finally {
+      setAddingEmail(false)
     }
   }
 
@@ -1230,6 +1256,12 @@ const upcomingTasks = [
                     </div>
                           </div>
                     <div className="space-y-4 max-h-96 overflow-y-auto">
+                      {addingEmail && (
+                        <div className="flex items-center justify-center p-4 bg-primary-500/10 rounded-xl border border-primary-500/20">
+                          <div className="w-5 h-5 border-2 border-primary-400 border-t-transparent rounded-full animate-spin"></div>
+                          <span className="ml-3 text-primary-400 text-sm">Adding email to database...</span>
+                        </div>
+                      )}
                       {loadingEmails && emails.length === 0 ? (
                         <div className="flex items-center justify-center p-8">
                           <div className="w-8 h-8 border-4 border-primary-500 border-t-transparent rounded-full animate-spin"></div>
