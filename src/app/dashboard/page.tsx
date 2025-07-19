@@ -444,8 +444,9 @@ export default function Dashboard() {
       // Prepare the data for insertion
       const supabaseLinkedInData = {
         user_id: user.id,
-        name: `${position} at ${company}`,
-        company: company
+        name: `${position} - ${company}`,
+        company: company,
+        linkedin: null
       }
       
       console.log('💾 Saving LinkedIn data to Supabase:', supabaseLinkedInData)
@@ -499,7 +500,7 @@ export default function Dashboard() {
           user_id: user.id,
           name: `${profile.name} - ${position}`,
           company: company,
-          linkedin_url: profile.linkedin_url
+          linkedin: profile.linkedin_url
         }))
         
         console.log('💾 Profile data to insert:', profileDataToInsert)
