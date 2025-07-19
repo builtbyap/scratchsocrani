@@ -260,19 +260,6 @@ export default function SignInPage() {
                 </svg>
                 <span>Continue with Google</span>
               </button>
-              
-              {/* Debug button for testing OAuth */}
-              <button 
-                onClick={() => {
-                  console.log('🔍 Testing direct OAuth URL...')
-                  const oauthUrl = `https://jlkebdnvjjdwedmbfqou.supabase.co/auth/v1/authorize?provider=google&redirect_to=${encodeURIComponent(window.location.origin + '/dashboard')}`
-                  console.log('🔍 Direct OAuth URL:', oauthUrl)
-                  window.location.href = oauthUrl
-                }}
-                className="w-full py-2 bg-red-500/10 border border-red-500/20 rounded-xl font-semibold hover:bg-red-500/20 transition-all duration-300 flex items-center justify-center space-x-2 text-red-400 text-sm"
-              >
-                🔧 Debug: Direct OAuth (Remove in production)
-              </button>
             </div>
 
             {/* Sign Up Link */}

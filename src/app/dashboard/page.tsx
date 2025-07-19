@@ -983,8 +983,15 @@ export default function Dashboard() {
     const hasValidName = connection.name && connection.name.trim() !== '' && !connection.name.includes('No name')
     const hasValidCompany = connection.company && connection.company.trim() !== '' && !connection.company.includes('No company')
     
+    // Skip test data entries
+    const isTestUser = connection.name && connection.name.toLowerCase().includes('test user')
+    const isTestCompany = connection.company && connection.company.toLowerCase().includes('test company')
+    
     // Only show connections with valid data
-    if (!hasValidName || !hasValidCompany) {
+    if (!hasValidName || !hasValidCompany || isTestUser || isTestCompany) {
+      if (isTestUser || isTestCompany) {
+        console.log('🚫 Filtering out LinkedIn test data:', { name: connection.name, company: connection.company })
+      }
       return false
     }
     
@@ -1011,14 +1018,23 @@ export default function Dashboard() {
     ])).values()
   )
 
-  // Filter emails based on search term (company name) only
+  // Filter emails based on search term (company name) only and remove test data
   const filteredEmails = uniqueEmails.filter((email: any) => {
+    // Skip test data entries
+    const isTestUser = email.name && email.name.toLowerCase().includes('test user')
+    const isTestCompany = email.company && email.company.toLowerCase().includes('test company')
+    
+    if (isTestUser || isTestCompany) {
+      console.log('🚫 Filtering out test data:', { name: email.name, company: email.company })
+      return false
+    }
+    
     // If there's a search term, check if it matches the company name
     if (emailSearchTerm.trim()) {
       return email.company?.toLowerCase().includes(emailSearchTerm.toLowerCase())
     }
     
-    // If no search term, show all emails
+    // If no search term, show all valid emails
     return true
   })
   
