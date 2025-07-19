@@ -444,7 +444,11 @@ export default function Dashboard() {
       // Only save real LinkedIn profile data, not basic connection cards
       console.log('🔍 Checking for real LinkedIn profile data...')
       
-      // Log filtered profiles if available
+      // Always save search data to Linkedin table, regardless of results
+      console.log('💾 Saving LinkedIn search data to database...')
+      
+      let dataToInsert = []
+      
       if (profiles && profiles.length > 0) {
         console.log('🔍 Filtered LinkedIn profiles found:', profiles.length)
         profiles.slice(0, 5).forEach((profile: any, index: number) => {
@@ -454,63 +458,80 @@ export default function Dashboard() {
           })
         })
         
-        // Save profiles to Linkedin table
-        console.log('💾 Saving LinkedIn profiles to database...')
-        const profileDataToInsert = profiles.map((profile: any) => ({
+        // Save filtered profiles
+        dataToInsert = profiles.map((profile: any) => ({
           user_id: user.id,
           name: `${profile.name} - ${position}`,
           company: company,
           linkedin: profile.linkedin_url
         }))
+      } else if (searchResults && searchResults.organic_results && searchResults.organic_results.length > 0) {
+        console.log('🔍 No filtered profiles found, saving raw search results:', searchResults.organic_results.length)
         
-        console.log('💾 Profile data to insert:', profileDataToInsert)
-        console.log('📊 Data structure being sent to Linkedin table:')
-        profileDataToInsert.forEach((item: any, index: number) => {
-          console.log(`📊 Item ${index + 1}:`, {
-            user_id: item.user_id,
-            name: item.name,
-            company: item.company,
-            linkedin: item.linkedin
-          })
+        // Save raw search results if no filtered profiles
+        dataToInsert = searchResults.organic_results.slice(0, 10).map((result: any) => ({
+          user_id: user.id,
+          name: `${result.title.replace(" | LinkedIn", "")} - ${position}`,
+          company: company,
+          linkedin: result.link || null
+        }))
+      } else {
+        console.log('🔍 No search results found, saving search attempt record')
+        
+        // Save a record of the search attempt
+        dataToInsert = [{
+          user_id: user.id,
+          name: `${position} - ${company} (Search Attempt)`,
+          company: company,
+          linkedin: null
+        }]
+      }
+      
+      console.log('💾 Data to insert:', dataToInsert)
+      console.log('📊 Data structure being sent to Linkedin table:')
+      dataToInsert.forEach((item: any, index: number) => {
+        console.log(`📊 Item ${index + 1}:`, {
+          user_id: item.user_id,
+          name: item.name,
+          company: item.company,
+          linkedin: item.linkedin
         })
+      })
+      
+      const { data: insertData, error: insertError } = await supabase
+        .from('Linkedin')
+        .insert(dataToInsert)
+        .select()
+      
+      if (insertError) {
+        console.error('❌ Error adding LinkedIn data:', insertError)
+        console.error('❌ Error details:', {
+          message: insertError.message,
+          details: insertError.details,
+          hint: insertError.hint,
+          code: insertError.code
+        })
+        console.error('❌ Data being inserted:', dataToInsert)
+      } else {
+        console.log('✅ LinkedIn data added successfully:', insertData)
         
-        const { data: profileInsertData, error: profileInsertError } = await supabase
-          .from('Linkedin')
-          .insert(profileDataToInsert)
-          .select()
-        
-        if (profileInsertError) {
-          console.error('❌ Error adding LinkedIn profiles:', profileInsertError)
-          console.error('❌ Error details:', {
-            message: profileInsertError.message,
-            details: profileInsertError.details,
-            hint: profileInsertError.hint,
-            code: profileInsertError.code
+        // Update local state with new data
+        if (insertData && insertData.length > 0) {
+          setLinkedInConnections(prev => {
+            const updatedConnections = [...insertData, ...prev]
+            console.log('🔗 Updated LinkedIn connections list:', updatedConnections.length, 'connections')
+            return updatedConnections
           })
-          console.error('❌ Profile data being inserted:', profileDataToInsert)
-        } else {
-          console.log('✅ LinkedIn profiles added successfully:', profileInsertData)
           
-          // Update local state with new profiles
-          if (profileInsertData && profileInsertData.length > 0) {
-            setLinkedInConnections(prev => {
-              const updatedConnections = [...profileInsertData, ...prev]
-              console.log('🔗 Updated LinkedIn connections list:', updatedConnections.length, 'connections')
-              return updatedConnections
-            })
-            
-            // Update cached data
-            if (user) {
-              const currentCached = localStorage.getItem(`linkedin_${user.id}`)
-              const cachedConnections = currentCached ? JSON.parse(currentCached) : []
-              const updatedCached = [...profileInsertData, ...cachedConnections]
-              localStorage.setItem(`linkedin_${user.id}`, JSON.stringify(updatedCached))
-              console.log('✅ Updated cached LinkedIn data with profiles')
-            }
+          // Update cached data
+          if (user) {
+            const currentCached = localStorage.getItem(`linkedin_${user.id}`)
+            const cachedConnections = currentCached ? JSON.parse(currentCached) : []
+            const updatedCached = [...insertData, ...cachedConnections]
+            localStorage.setItem(`linkedin_${user.id}`, JSON.stringify(updatedCached))
+            console.log('✅ Updated cached LinkedIn data')
           }
         }
-      } else if (searchResults && searchResults.organic_results) {
-        console.log('🔍 No filtered profiles found, showing raw results:', searchResults.organic_results.length)
       }
       
       // Note: No basic connection data to add to local state since we only save real profiles
@@ -521,9 +542,11 @@ export default function Dashboard() {
       
       // Show success message
       if (profiles && profiles.length > 0) {
-        alert(`Found and saved ${profiles.length} real LinkedIn profiles for ${position} at ${company}!`)
+        alert(`Found and saved ${profiles.length} filtered LinkedIn profiles for ${position} at ${company}!`)
+      } else if (searchResults && searchResults.organic_results && searchResults.organic_results.length > 0) {
+        alert(`Saved ${Math.min(searchResults.organic_results.length, 10)} raw search results for ${position} at ${company}!`)
       } else {
-        alert(`No real LinkedIn profiles found for ${position} at ${company}. Only real profile data is saved to the database.`)
+        alert(`Search completed for ${position} at ${company}. Search attempt recorded in database.`)
       }
       
     } catch (error) {
