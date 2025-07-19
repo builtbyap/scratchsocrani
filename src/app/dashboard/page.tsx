@@ -464,7 +464,7 @@ export default function Dashboard() {
       }
       
       const { data, error } = await supabase
-        .from('linkedin_connections')
+        .from('Linkedin')
         .insert(supabaseLinkedInData)
         .select()
       
@@ -476,7 +476,8 @@ export default function Dashboard() {
           hint: error.hint,
           code: error.code
         })
-        alert(`Failed to add LinkedIn connection: ${error.message}`)
+        console.error('❌ Data being inserted:', supabaseLinkedInData)
+        alert(`Failed to add LinkedIn connection: ${error.message || 'Unknown error'}`)
         return
       }
       
@@ -496,7 +497,6 @@ export default function Dashboard() {
         console.log('💾 Saving LinkedIn profiles to database...')
         const profileDataToInsert = profiles.map((profile: any) => ({
           user_id: user.id,
-          name: profile.name,
           company: company,
           position: position,
           linkedin_url: profile.linkedin_url
@@ -517,6 +517,7 @@ export default function Dashboard() {
             hint: profileInsertError.hint,
             code: profileInsertError.code
           })
+          console.error('❌ Profile data being inserted:', profileDataToInsert)
         } else {
           console.log('✅ LinkedIn profiles added successfully:', profileInsertData)
           
