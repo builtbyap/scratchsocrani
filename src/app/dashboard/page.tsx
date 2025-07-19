@@ -1561,92 +1561,89 @@ const upcomingTasks = [
                 </motion.div>
 
                 {/* LinkedIn Connections */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                  {/* LinkedIn Connections */}
-                  <motion.div
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.5, delay: 0.3 }}
-                  className="glass-effect rounded-2xl p-6"
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.3 }}
+                  className="glass-effect rounded-2xl p-6 w-full"
                 >
                   <div className="flex items-center justify-between mb-6">
-                      <h2 className="text-xl font-semibold text-white">LinkedIn Connections</h2>
-                      <div className="flex items-center space-x-4">
-                        <div className="relative">
-                          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                          <input
-                            type="text"
-                            placeholder="Search connections..."
-                            value={linkedInSearchTerm}
-                            onChange={(e) => setLinkedInSearchTerm(e.target.value)}
-                            className="pl-9 pr-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-primary-400 transition-colors text-sm w-48"
-                          />
-                        </div>
-                    <button className="text-primary-400 hover:text-primary-300 text-sm">View All</button>
-                  </div>
-                    </div>
-                    <div className="space-y-4 max-h-96 overflow-y-auto">
-                      {loadingLinkedIn && linkedInConnections.length === 0 ? (
-                        <div className="flex items-center justify-center p-8">
-                          <div className="w-8 h-8 border-4 border-primary-500 border-t-transparent rounded-full animate-spin"></div>
-                          <span className="ml-3 text-gray-400">Loading connections...</span>
-                        </div>
-                      ) : filteredLinkedInConnections.length === 0 ? (
-                        <div className="text-center p-8">
-                          <Users2 className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                          <p className="text-gray-400">
-                            {linkedInSearchTerm.trim() ? 'No connections found' : 'Add your first connection to get started'}
-                          </p>
-                          <p className="text-gray-500 text-sm mt-2">
-                            <span className="font-bold">Use the Add LinkedIn button</span>
-                          </p>
-                        </div>
-                      ) : (
-                        filteredLinkedInConnections.map((connection) => (
-                          <div key={connection.id} className="flex items-center justify-between p-4 bg-white/5 rounded-xl">
-                            <div className="flex-1">
-                        <div className="flex items-center space-x-3">
-                                <div className="w-10 h-10 bg-primary-500/20 rounded-full flex items-center justify-center">
-                                  <User className="w-5 h-5 text-primary-400" />
-                        </div>
-                                <div>
-                                  <h3 className="text-white font-medium">{connection.name || 'No name'}</h3>
-                                  <p className="text-gray-400 text-sm">{connection.company || 'No company'}</p>
-                        </div>
+                    <h2 className="text-xl font-semibold text-white">LinkedIn Connections</h2>
+                    <div className="flex items-center space-x-4">
+                      <div className="relative">
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                        <input
+                          type="text"
+                          placeholder="Search connections..."
+                          value={linkedInSearchTerm}
+                          onChange={(e) => setLinkedInSearchTerm(e.target.value)}
+                          className="pl-9 pr-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-primary-400 transition-colors text-sm w-48"
+                        />
                       </div>
-                            </div>
-                            <div className="text-right">
-                              <span className="px-2 py-1 rounded-full text-xs text-green-400 bg-green-400/10">
-                                Active
-                              </span>
-                              <div className="flex items-center space-x-2 mt-2">
-                                <button 
-                                  onClick={() => handleOpenLinkedIn(connection)}
-                                  disabled={deletingLinkedIn.has(connection.id)}
-                                  className="p-1 text-gray-400 hover:text-blue-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                                  title="Open LinkedIn Profile"
-                                >
-                                  <Linkedin className="w-4 h-4" />
-                                </button>
-                                <button 
-                                  onClick={() => handleDeleteLinkedIn(connection)}
-                                  disabled={deletingLinkedIn.has(connection.id)}
-                                  className="p-1 text-gray-400 hover:text-red-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                                >
-                                  {deletingLinkedIn.has(connection.id) ? (
-                                    <div className="w-4 h-4 border-2 border-red-400 border-t-transparent rounded-full animate-spin"></div>
-                                  ) : (
-                                    <Trash2 className="w-4 h-4" />
-                                  )}
-                                </button>
+                      <button className="text-primary-400 hover:text-primary-300 text-sm">View All</button>
+                    </div>
+                  </div>
+                  <div className="space-y-4 max-h-96 overflow-y-auto">
+                    {loadingLinkedIn && linkedInConnections.length === 0 ? (
+                      <div className="flex items-center justify-center p-8">
+                        <div className="w-8 h-8 border-4 border-primary-500 border-t-transparent rounded-full animate-spin"></div>
+                        <span className="ml-3 text-gray-400">Loading connections...</span>
+                      </div>
+                    ) : filteredLinkedInConnections.length === 0 ? (
+                      <div className="text-center p-8">
+                        <Users2 className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                        <p className="text-gray-400">
+                          {linkedInSearchTerm.trim() ? 'No connections found' : 'Add your first connection to get started'}
+                        </p>
+                        <p className="text-gray-500 text-sm mt-2">
+                          <span className="font-bold">Use the Add LinkedIn button</span>
+                        </p>
+                      </div>
+                    ) : (
+                      filteredLinkedInConnections.map((connection) => (
+                        <div key={connection.id} className="flex items-center justify-between p-4 bg-white/5 rounded-xl">
+                          <div className="flex-1">
+                            <div className="flex items-center space-x-3">
+                              <div className="w-10 h-10 bg-primary-500/20 rounded-full flex items-center justify-center">
+                                <User className="w-5 h-5 text-primary-400" />
+                              </div>
+                              <div>
+                                <h3 className="text-white font-medium">{connection.name || 'No name'}</h3>
+                                <p className="text-gray-400 text-sm">{connection.company || 'No company'}</p>
                               </div>
                             </div>
                           </div>
-                        ))
-                      )}
+                          <div className="text-right">
+                            <span className="px-2 py-1 rounded-full text-xs text-green-400 bg-green-400/10">
+                              Active
+                            </span>
+                            <div className="flex items-center space-x-2 mt-2">
+                              <button 
+                                onClick={() => handleOpenLinkedIn(connection)}
+                                disabled={deletingLinkedIn.has(connection.id)}
+                                className="p-1 text-gray-400 hover:text-blue-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                title="Open LinkedIn Profile"
+                              >
+                                <Linkedin className="w-4 h-4" />
+                              </button>
+                              <button 
+                                onClick={() => handleDeleteLinkedIn(connection)}
+                                disabled={deletingLinkedIn.has(connection.id)}
+                                className="p-1 text-gray-400 hover:text-red-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                              >
+                                {deletingLinkedIn.has(connection.id) ? (
+                                  <div className="w-4 h-4 border-2 border-red-400 border-t-transparent rounded-full animate-spin"></div>
+                                ) : (
+                                  <Trash2 className="w-4 h-4" />
+                                )}
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                    )}
                   </div>
                 </motion.div>
-                </div>
               </motion.div>
             )}
 
