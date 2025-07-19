@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { ArrowLeft, Mail, Lock, Eye, EyeOff, Sparkles } from 'lucide-react'
 import Link from 'next/link'
@@ -16,7 +16,16 @@ export default function SignInPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
   const router = useRouter()
-  const { signIn, signInWithGoogle } = useAuth()
+  const { user, loading, signIn, signInWithGoogle } = useAuth()
+
+  // Auto-redirect if user is already authenticated
+  useEffect(() => {
+    if (!loading && user) {
+      console.log('✅ User already authenticated, redirecting to dashboard...')
+      setIsLoading(false)
+      router.push('/dashboard')
+    }
+  }, [user, loading, router])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -28,13 +37,14 @@ export default function SignInPage() {
       
       if (error) {
         setError(error.message)
+        setIsLoading(false)
       } else {
-        // Redirect to dashboard on successful sign in
-        router.push('/dashboard')
+        // Sign in successful, auth state will update automatically
+        console.log('✅ Sign in successful, auth state will update automatically...')
+        // Keep loading state active until auth state changes
       }
     } catch (err) {
       setError('An unexpected error occurred. Please try again.')
-    } finally {
       setIsLoading(false)
     }
   }
@@ -49,8 +59,11 @@ export default function SignInPage() {
       if (error) {
         setError(error.message)
         setIsLoading(false)
+      } else {
+        console.log('✅ Google sign in initiated, OAuth will handle redirect...')
+        // Google OAuth will handle the redirect automatically
+        // Keep loading state active until redirect happens
       }
-      // Google OAuth will handle the redirect automatically
     } catch (err) {
       setError('An unexpected error occurred. Please try again.')
       setIsLoading(false)
@@ -216,6 +229,14 @@ export default function SignInPage() {
                   <span>Sign In</span>
                 )}
               </button>
+              
+              {isLoading && (
+                <div className="text-center">
+                  <p className="text-sm text-gray-400">
+                    Please wait while we authenticate your account...
+                  </p>
+                </div>
+              )}
             </form>
 
             {/* Divider */}

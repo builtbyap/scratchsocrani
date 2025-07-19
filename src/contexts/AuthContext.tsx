@@ -64,6 +64,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         async (event, session) => {
           if (!supabase) return;
           console.log('🔄 Auth state changed:', event, !!session)
+          console.log('🔄 Event type:', event)
+          console.log('🔄 Session user:', session?.user?.email)
+          
           setSession(session)
           setUser(session?.user ?? null)
           
@@ -225,13 +228,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     signIn: async (email: string, password: string) => {
       if (!supabase) return { data: null, error: 'Supabase not initialized' }
       try {
+        console.log('🔐 Attempting sign in for:', email)
         const { data, error } = await supabase.auth.signInWithPassword({
           email,
           password,
         })
-        return { data, error }
+        
+        if (error) {
+          console.error('❌ Sign in error:', error)
+          return { data: null, error }
+        }
+        
+        console.log('✅ Sign in successful:', data)
+        return { data, error: null }
       } catch (error) {
-        console.error('Sign in error:', error)
+        console.error('❌ Unexpected sign in error:', error)
         return { data: null, error: error as any }
       }
     },
