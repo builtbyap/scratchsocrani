@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
@@ -82,7 +82,7 @@ export default function Dashboard() {
   }, [])
 
   // Fetch emails from Supabase for the current user
-  const fetchEmails = async (retryCount = 0) => {
+  const fetchEmails = useCallback(async (retryCount = 0) => {
     if (!user) {
       console.log('❌ No user found, skipping email fetch')
       return
@@ -185,10 +185,10 @@ export default function Dashboard() {
     } finally {
       setLoadingEmails(false)
     }
-  }
+  }, [user])
 
   // Fetch LinkedIn connections from Supabase for the current user
-  const fetchLinkedInConnections = async (retryCount = 0) => {
+  const fetchLinkedInConnections = useCallback(async (retryCount = 0) => {
     if (!user) {
       console.log('❌ No user found, skipping LinkedIn fetch')
       return
@@ -295,10 +295,10 @@ export default function Dashboard() {
     } finally {
       setLoadingLinkedIn(false)
     }
-  }
+  }, [user])
 
   // Debug function to check available tables
-  const debugTables = async () => {
+  const debugTables = useCallback(async () => {
     try {
       const supabase = getSupabaseClient()
       console.log('🔍 Checking available tables...')
@@ -366,7 +366,7 @@ export default function Dashboard() {
     } catch (error) {
       console.log('❌ Error checking tables:', error)
     }
-  }
+  }, [user])
 
   // Redirect to sign in if not authenticated
   useEffect(() => {
