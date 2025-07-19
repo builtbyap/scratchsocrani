@@ -426,10 +426,14 @@ export default function Dashboard() {
   }
 
   const handleLinkedInChatComplete = async (linkedInData: any) => {
+    console.log('🚀 handleLinkedInChatComplete called!')
+    alert('LinkedIn chat complete function called!')
+    
     if (!user) return
     
     try {
       console.log('🔗 Processing LinkedIn data from chat:', linkedInData)
+      console.log('🔗 Full linkedInData object:', JSON.stringify(linkedInData, null, 2))
       
       // Process the data
       const company = linkedInData.company
@@ -438,6 +442,10 @@ export default function Dashboard() {
       const profiles = linkedInData.profiles
       
       console.log('🔗 Processed LinkedIn data:', { company, position, searchResults, profiles })
+      console.log('🔗 Search results type:', typeof searchResults)
+      console.log('🔗 Profiles type:', typeof profiles)
+      console.log('🔗 Search results keys:', searchResults ? Object.keys(searchResults) : 'null')
+      console.log('🔗 Profiles length:', profiles ? profiles.length : 'null')
       
       const supabase = getSupabaseClient()
       
@@ -497,6 +505,10 @@ export default function Dashboard() {
           linkedin: item.linkedin
         })
       })
+      
+      console.log('🔍 About to insert into Supabase Linkedin table...')
+      console.log('🔍 User ID for insertion:', user.id)
+      console.log('🔍 Number of items to insert:', dataToInsert.length)
       
       const { data: insertData, error: insertError } = await supabase
         .from('Linkedin')
