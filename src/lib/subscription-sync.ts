@@ -7,6 +7,12 @@ let stripeClient: Stripe | null = null
 
 function getStripeClient(): Stripe {
   if (!stripeClient) {
+    // Check if we're on the client side
+    if (typeof window !== 'undefined') {
+      console.warn('⚠️ Stripe client should not be initialized on client side')
+      throw new Error('Stripe client cannot be initialized on client side')
+    }
+    
     if (!process.env.STRIPE_SECRET_KEY) {
       throw new Error('STRIPE_SECRET_KEY is not set')
     }

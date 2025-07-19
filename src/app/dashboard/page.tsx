@@ -66,8 +66,20 @@ export default function Dashboard() {
   const [isChatModalOpen, setIsChatModalOpen] = useState(false)
   const [isLinkedInChatModalOpen, setIsLinkedInChatModalOpen] = useState(false)
   const [sessionRestored, setSessionRestored] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const router = useRouter()
   const { user, loading, signOut } = useAuth()
+
+  // Error boundary effect
+  useEffect(() => {
+    const handleError = (event: ErrorEvent) => {
+      console.error('🚨 Client-side error caught:', event.error)
+      setError('An unexpected error occurred. Please refresh the page.')
+    }
+
+    window.addEventListener('error', handleError)
+    return () => window.removeEventListener('error', handleError)
+  }, [])
 
   // Fetch emails from Supabase for the current user
   const fetchEmails = async (retryCount = 0) => {
@@ -396,6 +408,29 @@ export default function Dashboard() {
       router.push('/signin')
     }
   }, [user, loading, router])
+
+  // Show error if there's a client-side error
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-dark-900 via-dark-800 to-dark-900 flex items-center justify-center">
+        <div className="text-center max-w-md mx-auto p-6">
+          <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg className="w-8 h-8 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+            </svg>
+          </div>
+          <h2 className="text-xl font-semibold text-white mb-2">Something went wrong</h2>
+          <p className="text-gray-300 mb-4">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded-lg transition-colors"
+          >
+            Refresh Page
+          </button>
+        </div>
+      </div>
+    )
+  }
 
   // Show loading while checking authentication
   if (loading) {
@@ -1184,7 +1219,7 @@ const upcomingTasks = [
     }
   }
 
-  return (
+    return (
     <SubscriptionGuard>
       <div className="min-h-screen bg-gradient-to-br from-dark-900 via-dark-800 to-dark-900">
         {/* Background Elements */}
