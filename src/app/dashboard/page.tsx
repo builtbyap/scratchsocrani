@@ -450,6 +450,13 @@ export default function Dashboard() {
       }
       
       console.log('💾 Saving LinkedIn data to Supabase:', supabaseLinkedInData)
+      console.log('📊 Basic connection data structure:')
+      console.log('📊 Basic Item:', {
+        user_id: supabaseLinkedInData.user_id,
+        name: supabaseLinkedInData.name,
+        company: supabaseLinkedInData.company,
+        linkedin: supabaseLinkedInData.linkedin
+      })
       
       // Validate data before insertion
       if (!user.id) {
@@ -504,6 +511,15 @@ export default function Dashboard() {
         }))
         
         console.log('💾 Profile data to insert:', profileDataToInsert)
+        console.log('📊 Data structure being sent to Linkedin table:')
+        profileDataToInsert.forEach((item: any, index: number) => {
+          console.log(`📊 Item ${index + 1}:`, {
+            user_id: item.user_id,
+            name: item.name,
+            company: item.company,
+            linkedin: item.linkedin
+          })
+        })
         
         const { data: profileInsertData, error: profileInsertError } = await supabase
           .from('Linkedin')
