@@ -441,55 +441,8 @@ export default function Dashboard() {
       
       const supabase = getSupabaseClient()
       
-      // Prepare the data for insertion
-      const supabaseLinkedInData = {
-        user_id: user.id,
-        name: `${position} - ${company}`,
-        company: company,
-        linkedin: null
-      }
-      
-      console.log('💾 Saving LinkedIn data to Supabase:', supabaseLinkedInData)
-      console.log('📊 Basic connection data structure:')
-      console.log('📊 Basic Item:', {
-        user_id: supabaseLinkedInData.user_id,
-        name: supabaseLinkedInData.name,
-        company: supabaseLinkedInData.company,
-        linkedin: supabaseLinkedInData.linkedin
-      })
-      
-      // Validate data before insertion
-      if (!user.id) {
-        console.error('❌ No user ID available')
-        alert('User not authenticated. Please sign in again.')
-        return
-      }
-      
-      if (!supabaseLinkedInData.company || !position) {
-        console.error('❌ Missing required data:', supabaseLinkedInData)
-        alert('Missing required LinkedIn data. Please try again.')
-        return
-      }
-      
-      const { data, error } = await supabase
-        .from('Linkedin')
-        .insert(supabaseLinkedInData)
-        .select()
-      
-      if (error) {
-        console.error('❌ Error adding LinkedIn connection:', error)
-        console.error('❌ Error details:', {
-          message: error.message,
-          details: error.details,
-          hint: error.hint,
-          code: error.code
-        })
-        console.error('❌ Data being inserted:', supabaseLinkedInData)
-        alert(`Failed to add LinkedIn connection: ${error.message || 'Unknown error'}`)
-        return
-      }
-      
-      console.log('✅ LinkedIn connection added successfully:', data)
+      // Only save real LinkedIn profile data, not basic connection cards
+      console.log('🔍 Checking for real LinkedIn profile data...')
       
       // Log filtered profiles if available
       if (profiles && profiles.length > 0) {
@@ -560,26 +513,7 @@ export default function Dashboard() {
         console.log('🔍 No filtered profiles found, showing raw results:', searchResults.organic_results.length)
       }
       
-      // Immediately add the new LinkedIn connection to the local state for instant display
-      if (data && data[0]) {
-        const newConnection = data[0]
-        console.log('🔗 Adding new LinkedIn connection to local state:', newConnection)
-        setLinkedInConnections(prev => {
-          // Add the new connection at the beginning of the list
-          const updatedConnections = [newConnection, ...prev]
-          console.log('🔗 Updated LinkedIn connections list:', updatedConnections.length, 'connections')
-          return updatedConnections
-        })
-        
-        // Update cached data
-        if (user) {
-          const currentCached = localStorage.getItem(`linkedin_${user.id}`)
-          const cachedConnections = currentCached ? JSON.parse(currentCached) : []
-          const updatedCached = [newConnection, ...cachedConnections]
-          localStorage.setItem(`linkedin_${user.id}`, JSON.stringify(updatedCached))
-          console.log('✅ Updated cached LinkedIn data')
-        }
-      }
+      // Note: No basic connection data to add to local state since we only save real profiles
       
       // Also refresh from database to ensure consistency
       console.log('🔄 Refreshing LinkedIn connections from database...')
@@ -587,9 +521,9 @@ export default function Dashboard() {
       
       // Show success message
       if (profiles && profiles.length > 0) {
-        alert(`LinkedIn connection for ${position} at ${company} has been added successfully! Found and saved ${profiles.length} LinkedIn profiles.`)
+        alert(`Found and saved ${profiles.length} real LinkedIn profiles for ${position} at ${company}!`)
       } else {
-        alert(`LinkedIn connection for ${position} at ${company} has been added successfully!`)
+        alert(`No real LinkedIn profiles found for ${position} at ${company}. Only real profile data is saved to the database.`)
       }
       
     } catch (error) {
