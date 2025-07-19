@@ -34,7 +34,7 @@ export default function ChatModal({ isOpen, onClose, onComplete }: ChatModalProp
     }
   ])
   const [currentInput, setCurrentInput] = useState('')
-  const [currentStep, setCurrentStep] = useState<'company' | 'firstName' | 'lastName'>('company')
+  const [currentStep, setCurrentStep] = useState<'company' | 'firstName' | 'lastName' | 'complete'>('company')
   const [emailData, setEmailData] = useState<EmailData>({
     firstName: '',
     lastName: '',
@@ -84,6 +84,7 @@ export default function ChatModal({ isOpen, onClose, onComplete }: ChatModalProp
         const domain = emailData.company.toLowerCase().replace(/\s+/g, '') + '.com'
         setEmailData(prev => ({ ...prev, domain }))
         botMessage = `Excellent! I've collected all the information. Let me search for the email address...`
+        nextStep = 'complete'
         break
     }
 
@@ -99,7 +100,7 @@ export default function ChatModal({ isOpen, onClose, onComplete }: ChatModalProp
     setIsTyping(false)
 
     // If we've collected all data, start the Hunter.io search immediately
-    if (nextStep === 'lastName') {
+    if (nextStep === 'complete') {
       // Start the search process immediately
       const finalData = { 
         ...emailData, 
@@ -219,13 +220,14 @@ export default function ChatModal({ isOpen, onClose, onComplete }: ChatModalProp
                   placeholder={
                     currentStep === 'company' ? 'Enter company name...' :
                     currentStep === 'firstName' ? 'Enter first name...' :
-                    'Enter last name...'
+                    currentStep === 'lastName' ? 'Enter last name...' :
+                    'Processing...'
                   }
                   className="flex-1 bg-white/10 border border-white/20 rounded-xl px-4 py-2 text-white placeholder-gray-400 focus:outline-none focus:border-primary-400 transition-colors"
                 />
                 <button
                   onClick={handleSendMessage}
-                  disabled={!currentInput.trim() || isTyping}
+                  disabled={!currentInput.trim() || isTyping || currentStep === 'complete'}
                   className="p-2 bg-primary-500 hover:bg-primary-600 disabled:bg-gray-600 disabled:cursor-not-allowed rounded-xl transition-colors"
                 >
                   <Send className="w-4 h-4 text-white" />
