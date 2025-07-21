@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import './globals.css'
 import { AuthProvider } from '@/contexts/AuthContext'
 import { Analytics } from "@vercel/analytics/next"
+import JoinPopup from '@/components/JoinPopup'
 
 export const metadata: Metadata = {
   title: 'Socrani - Skip the Line. Escape the Job Queue.',
@@ -23,6 +24,7 @@ export default function RootLayout({
         <AuthProvider>
           {children}
         </AuthProvider>
+        <JoinPopup />
         <Analytics />
       </body>
     </html>
