@@ -10,6 +10,7 @@ import {
   Sparkles
 } from 'lucide-react'
 import CountdownTimer from '@/components/CountdownTimer'
+import Link from 'next/link'
 
 const features = [
   {
@@ -52,10 +53,10 @@ export default function LandingPage() {
         className="relative z-20 p-6"
       >
         <div className="container mx-auto flex justify-between items-center">
-          <div className="inline-flex items-center space-x-2 text-2xl font-bold">
+          <Link href="/" className="inline-flex items-center space-x-2 text-2xl font-bold hover:opacity-80 transition-opacity">
             <Sparkles className="w-8 h-8 text-primary-400" />
             <span className="gradient-text">Socrani</span>
-          </div>
+          </Link>
           
           {/* Navigation Buttons */}
           <div className="flex items-center space-x-3">
@@ -81,9 +82,12 @@ export default function LandingPage() {
           transition={{ duration: 0.8 }}
           className="text-center mb-24"
         >
-          <h1 className="text-5xl md:text-7xl font-bold mb-12">
+          <h1 className="text-5xl md:text-7xl font-bold mb-4">
             <span className="gradient-text">AI</span> <span className="text-white font-normal">for Job Referrals</span>
           </h1>
+          <p className="text-xl text-gray-300 mb-12">
+            Always have the contacts you need, to get anywhere you want
+          </p>
         </motion.section>
 
         {/* About Section */}
@@ -96,7 +100,7 @@ export default function LandingPage() {
         >
           <h2 className="text-3xl md:text-4xl font-bold mb-4 gradient-text">About Us</h2>
           <p className="text-lg text-gray-300 leading-relaxed mb-12">
-            We built a digital solution that connects the unemployed and employed with major companies. Our mission is to help people get their dream jobs.
+            We built a digital solution that connects you with employers from major companies
           </p>
         </motion.section>
 
