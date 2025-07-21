@@ -44,6 +44,34 @@ export default function LandingPage() {
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-primary-400/10 rounded-full blur-3xl animate-float-more-delayed"></div>
       </div>
 
+      {/* Header with Logo */}
+      <motion.header
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="relative z-20 p-6"
+      >
+        <div className="container mx-auto flex justify-between items-center">
+          <div className="inline-flex items-center space-x-2 text-2xl font-bold">
+            <Sparkles className="w-8 h-8 text-primary-400" />
+            <span className="gradient-text">Socrani</span>
+          </div>
+          
+          {/* Navigation Buttons */}
+          <div className="flex items-center space-x-3">
+            <a href="/signup" className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-primary-500 to-primary-600 rounded-lg font-medium hover:from-primary-600 hover:to-primary-700 transition-all duration-300 text-white text-sm shadow-lg">
+              Get Started <ArrowRight className="w-4 h-4 ml-1" />
+            </a>
+            <a href="/pricing" className="inline-flex items-center px-4 py-2 bg-white/10 border border-white/20 rounded-lg font-medium hover:bg-white/20 transition-all duration-300 text-white text-sm">
+              View Pricing
+            </a>
+            <a href="/signin" className="inline-flex items-center px-4 py-2 bg-white/10 border border-white/20 rounded-lg font-medium hover:bg-white/20 transition-all duration-300 text-white text-sm">
+              Sign In
+            </a>
+          </div>
+        </div>
+      </motion.header>
+
       {/* Main Content */}
       <div className="relative z-10 container mx-auto px-4 py-16">
         {/* Hero Section */}
@@ -53,24 +81,9 @@ export default function LandingPage() {
           transition={{ duration: 0.8 }}
           className="text-center mb-24"
         >
-          <div className="inline-flex items-center space-x-2 text-3xl font-bold mb-12">
-            <Sparkles className="w-10 h-10 text-primary-400" />
-            <span className="gradient-text">Socrani</span>
-          </div>
           <h1 className="text-5xl md:text-7xl font-bold mb-12">
             <span className="gradient-text">AI</span> <span className="text-white font-normal">for Job Referrals</span>
           </h1>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="/signup" className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-primary-500 to-primary-600 rounded-xl font-semibold hover:from-primary-600 hover:to-primary-700 transition-all duration-300 text-white text-lg shadow-lg">
-              Get Started <ArrowRight className="w-5 h-5 ml-2" />
-            </a>
-            <a href="/pricing" className="inline-flex items-center px-8 py-4 bg-white/10 border border-white/20 rounded-xl font-semibold hover:bg-white/20 transition-all duration-300 text-white text-lg">
-              View Pricing
-            </a>
-            <a href="/signin" className="inline-flex items-center px-8 py-4 bg-white/10 border border-white/20 rounded-xl font-semibold hover:bg-white/20 transition-all duration-300 text-white text-lg">
-              Sign In
-            </a>
-          </div>
         </motion.section>
 
         {/* About Section */}
