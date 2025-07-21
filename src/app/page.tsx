@@ -83,11 +83,34 @@ export default function LandingPage() {
           className="text-center mb-24"
         >
           <h1 className="text-5xl md:text-7xl font-bold mb-4">
-            <span className="gradient-text">AI</span> <span className="text-white font-normal">for Job Referrals</span>
+            <span className="gradient-text">AI</span> <span className="text-white font-normal">that gets you jobs</span>
           </h1>
           <p className="text-xl text-gray-300 mb-12">
             Always have the contacts you need, to get anywhere you want
           </p>
+          
+          {/* Dashboard Screenshot */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+            className="max-w-6xl mx-auto mb-12"
+          >
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-primary-500/20 to-primary-600/20 rounded-3xl blur-3xl"></div>
+              <div className="relative glass-effect rounded-3xl p-4 border border-white/10 shadow-2xl">
+                <img 
+                  src="/dashboard-screenshot.png" 
+                  alt="Socrani Dashboard - AI for Job Referrals"
+                  className="w-full h-auto rounded-2xl shadow-lg"
+                  style={{
+                    filter: 'brightness(1.1) contrast(1.1) saturate(1.1)',
+                    mixBlendMode: 'multiply'
+                  }}
+                />
+              </div>
+            </div>
+          </motion.div>
         </motion.section>
 
         {/* About Section */}
@@ -100,7 +123,7 @@ export default function LandingPage() {
         >
           <h2 className="text-3xl md:text-4xl font-bold mb-4 gradient-text">About Us</h2>
           <p className="text-lg text-gray-300 leading-relaxed mb-12">
-            We built a digital solution that connects you with employers from major companies
+            We built a digital solution that connects you with employers from major companies. Our mission is to help people get their dream jobs.
           </p>
         </motion.section>
 
