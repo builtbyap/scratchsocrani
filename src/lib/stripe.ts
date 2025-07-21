@@ -22,7 +22,7 @@ export const paymentPlans = [
   {
     id: 'monthly',
     name: 'Monthly',
-    price: 40,
+    price: 15,
     interval: 'month',
     features: [
       'Unlimited monthly usage',
@@ -30,12 +30,12 @@ export const paymentPlans = [
       'Most powerful agent models',
       '24/7 customer support',
     ],
-    stripePriceId: 'price_1RlMIDCyTrsNmVMYMaBwzzfc'
+    stripePriceId: 'price_1RczezCyTrsNmVMYokcKRYa7'
   },
   {
     id: 'annual',
     name: 'Annual',
-    price: 20,
+    price: 50,
     interval: 'month',
     features: [
       'Unlimited yearly usage',
@@ -43,7 +43,7 @@ export const paymentPlans = [
       'Most powerful agent models',
       '24/7 customer support',
     ],
-    stripePriceId: 'price_1RlMHnCyTrsNmVMYGCyQXLua'
+    stripePriceId: 'price_1RczfGCyTrsNmVMYm5iifueJ'
   }
 ]
 
