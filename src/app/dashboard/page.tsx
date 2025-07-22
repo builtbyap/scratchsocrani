@@ -744,6 +744,34 @@ export default function Dashboard() {
         alert(`⚠️ Email not found via Hunter.io for ${first_name} ${last_name} at ${company}. Using generated email: ${finalEmail}`)
       }
       
+      // Create email data immediately for display
+      const emailDataForDisplay = {
+        id: Date.now(), // Temporary ID for display
+        user_id: user.id,
+        name: `${first_name} ${last_name}`,
+        company: company,
+        email: finalEmail,
+        created_at: new Date().toISOString(),
+        source: emailSource
+      }
+      
+      // Immediately add to local state for instant display
+      console.log('📧 Adding email to local state immediately:', emailDataForDisplay)
+      setEmails(prev => {
+        const updatedEmails = [emailDataForDisplay, ...prev]
+        console.log('📧 Updated emails list:', updatedEmails.length, 'emails')
+        return updatedEmails
+      })
+      
+      // Also update localStorage immediately
+      if (user) {
+        const currentCached = localStorage.getItem(`emails_${user.id}`)
+        const cachedEmails = currentCached ? JSON.parse(currentCached) : []
+        const updatedCached = [emailDataForDisplay, ...cachedEmails]
+        localStorage.setItem(`emails_${user.id}`, JSON.stringify(updatedCached))
+        console.log('✅ Updated cached emails data immediately')
+      }
+      
       const supabase = getSupabaseClient()
       
       // Prepare the data for insertion - only use columns that definitely exist
@@ -897,30 +925,8 @@ export default function Dashboard() {
         }
       }
       
-      // Immediately add the new email to the local state for instant display
-      if (data && data[0]) {
-        const newEmail = data[0]
-        console.log('📧 Adding new email to local state:', newEmail)
-        setEmails(prev => {
-          // Add the new email at the beginning of the list
-          const updatedEmails = [newEmail, ...prev]
-          console.log('📧 Updated emails list:', updatedEmails.length, 'emails')
-          return updatedEmails
-        })
-        
-        // Update cached data
-        if (user) {
-          const currentCached = localStorage.getItem(`emails_${user.id}`)
-          const cachedEmails = currentCached ? JSON.parse(currentCached) : []
-          const updatedCached = [newEmail, ...cachedEmails]
-          localStorage.setItem(`emails_${user.id}`, JSON.stringify(updatedCached))
-          console.log('✅ Updated cached emails data')
-        }
-      }
-      
-      // Also refresh from database to ensure consistency
-      console.log('🔄 Refreshing emails from database...')
-      await fetchEmails()
+      // Email card already created immediately above, no need to duplicate
+      console.log('✅ Email processing completed - card already displayed')
       
       // Show success message with more detail
       if (emailSource === 'hunter.io') {
