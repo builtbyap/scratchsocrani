@@ -1678,10 +1678,9 @@ const upcomingTasks = [
                           </div>
                     <div className="space-y-4 max-h-96 overflow-y-auto">
                     {addingEmail && (
-                      <div className="flex items-center justify-center p-4 bg-primary-500/10 rounded-xl border border-primary-500/20">
-                        <div className="w-5 h-5 border-2 border-primary-400 border-t-transparent rounded-full animate-spin"></div>
-                        <span className="ml-3 text-primary-400 text-sm">Adding email to database...</span>
-                      </div>
+                                              <div className="flex items-center justify-center p-4 bg-primary-500/10 rounded-xl border border-primary-500/20">
+                          <div className="w-5 h-5 border-2 border-primary-400 border-t-transparent rounded-full animate-spin"></div>
+                        </div>
                     )}
                       {loadingEmails && emails.length === 0 ? (
                         <div className="flex items-center justify-center p-8">
