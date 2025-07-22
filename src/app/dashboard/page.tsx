@@ -73,6 +73,7 @@ export default function Dashboard() {
   const fetchEmails = async (retryCount = 0) => {
     if (!user) {
       console.log('❌ No user found, skipping email fetch')
+      setLoadingEmails(false)
       return
     }
     
@@ -179,6 +180,7 @@ export default function Dashboard() {
   const fetchLinkedInConnections = async (retryCount = 0) => {
     if (!user) {
       console.log('❌ No user found, skipping LinkedIn fetch')
+      setLoadingLinkedIn(false)
       return
     }
     
@@ -365,32 +367,80 @@ export default function Dashboard() {
       console.log('🔍 User ID:', user.id)
       console.log('🔍 User email:', user.email)
       
-      // Clear any cached demo data to force fresh fetch
-      const clearCachedDemoData = () => {
-        console.log('🧹 Clearing any cached demo data...')
+      // Only clear cache if we don't have any data
+      const shouldClearCache = emails.length === 0 && linkedInConnections.length === 0
+      
+      if (shouldClearCache) {
+        console.log('🧹 Clearing cached demo data...')
         localStorage.removeItem(`emails_${user.id}`)
         localStorage.removeItem(`linkedin_${user.id}`)
-        console.log('✅ Cleared cached demo data')
       }
       
-      // Clear demo data to ensure we get real data
-      clearCachedDemoData()
+      // Fetch data with retry logic
+      const fetchData = async () => {
+        try {
+          await Promise.all([
+            fetchEmails(),
+            fetchLinkedInConnections()
+          ])
+          
+          // Mark session as restored
+          setSessionRestored(true)
+          console.log('✅ Session restored successfully')
+        } catch (error) {
+          console.error('❌ Error fetching data:', error)
+          // Retry once after a delay
+          setTimeout(() => {
+            fetchEmails(1)
+            fetchLinkedInConnections(1)
+          }, 2000)
+        }
+      }
       
-      // Then fetch fresh data from database
-      debugTables() // Check what tables are available
-      fetchEmails()
-      fetchLinkedInConnections()
-      
-      // Mark session as restored after a short delay
-      setTimeout(() => {
-        setSessionRestored(true)
-        console.log('✅ Session restored successfully')
-      }, 1000)
+      fetchData()
     } else if (!loading) {
       console.log('❌ No user found and not loading, redirecting to signin...')
       router.push('/signin')
     }
   }, [user, loading, router])
+
+  // Handle visibility change to refresh data when tab becomes active
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden && user && !loading) {
+        console.log('🔄 Tab became visible, refreshing data...')
+        // Only refresh if we have stale data or no data
+        if (emails.length === 0 || linkedInConnections.length === 0) {
+          fetchEmails()
+          fetchLinkedInConnections()
+        }
+      }
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+    }
+  }, [user, loading, emails.length, linkedInConnections.length])
+
+  // Handle page focus to refresh data when returning to tab
+  useEffect(() => {
+    const handleFocus = () => {
+      if (user && !loading) {
+        console.log('🔄 Page focused, checking data freshness...')
+        // Only refresh if we have no data
+        if (emails.length === 0 || linkedInConnections.length === 0) {
+          fetchEmails()
+          fetchLinkedInConnections()
+        }
+      }
+    }
+
+    window.addEventListener('focus', handleFocus)
+    return () => {
+      window.removeEventListener('focus', handleFocus)
+    }
+  }, [user, loading, emails.length, linkedInConnections.length])
 
   // Show session restored notification
   useEffect(() => {
@@ -1001,6 +1051,7 @@ export default function Dashboard() {
       email.name.toLowerCase().includes('test user') ||
       email.name.toLowerCase().includes('test@example.com') ||
       email.name.toLowerCase().includes('test user') ||
+      email.name.toLowerCase().includes('test@example.com') ||
       email.name === 'Test User'
     )
     const isTestCompany = email.company && (
