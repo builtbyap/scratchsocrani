@@ -412,8 +412,8 @@ export default function Dashboard() {
         console.log('🔄 Tab became visible, checking data...')
         // Only refresh if we have no data (don't clear cache, just check if we need to fetch)
         if (emails.length === 0 || linkedInConnections.length === 0) {
-          fetchEmails()
-          fetchLinkedInConnections()
+      fetchEmails()
+      fetchLinkedInConnections()
         }
       }
     }
@@ -740,8 +740,6 @@ export default function Dashboard() {
         console.log('✅ Found email via Hunter.io:', finalEmail)
       } else {
         console.log('⚠️ No email found via Hunter.io, using generated email')
-        // Show user that email wasn't found
-        alert(`⚠️ Email not found via Hunter.io for ${first_name} ${last_name} at ${company}. Using generated email: ${finalEmail}`)
       }
       
       // Create email data immediately for display
