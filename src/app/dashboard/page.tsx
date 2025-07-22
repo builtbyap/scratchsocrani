@@ -740,6 +740,8 @@ export default function Dashboard() {
         console.log('✅ Found email via Hunter.io:', finalEmail)
       } else {
         console.log('⚠️ No email found via Hunter.io, using generated email')
+        // Show user that email wasn't found
+        alert(`⚠️ Email not found via Hunter.io for ${first_name} ${last_name} at ${company}. Using generated email: ${finalEmail}`)
       }
       
       const supabase = getSupabaseClient()
@@ -806,24 +808,28 @@ export default function Dashboard() {
           .insert(supabaseEmailData)
           .select()
         
-        if (directError) {
-          console.error('❌ Direct insertion also failed:', directError)
-          // Store in localStorage as fallback
-          console.log('💾 Storing in localStorage as fallback...')
-          if (user) {
-            const currentEmails = JSON.parse(localStorage.getItem(`emails_${user.id}`) || '[]')
-            const newEmail = {
-              id: Date.now(), // Generate temporary ID
-              ...supabaseEmailData,
-              created_at: new Date().toISOString()
+                  if (directError) {
+            console.error('❌ Direct insertion also failed:', directError)
+            // Store in localStorage as fallback
+            console.log('💾 Storing in localStorage as fallback...')
+            if (user) {
+              const currentEmails = JSON.parse(localStorage.getItem(`emails_${user.id}`) || '[]')
+              const newEmail = {
+                id: Date.now(), // Generate temporary ID
+                ...supabaseEmailData,
+                created_at: new Date().toISOString()
+              }
+              const updatedEmails = [newEmail, ...currentEmails]
+              localStorage.setItem(`emails_${user.id}`, JSON.stringify(updatedEmails))
+              setEmails(updatedEmails)
+              console.log('✅ Email stored in localStorage fallback')
+              if (emailSource === 'hunter.io') {
+                alert(`✅ Email found and saved locally for ${first_name} ${last_name} at ${company}! (Found via Hunter.io: ${finalEmail})`)
+              } else {
+                alert(`⚠️ Generated email saved locally for ${first_name} ${last_name} at ${company}. (Generated: ${finalEmail})`)
+              }
+              return
             }
-            const updatedEmails = [newEmail, ...currentEmails]
-            localStorage.setItem(`emails_${user.id}`, JSON.stringify(updatedEmails))
-            setEmails(updatedEmails)
-            console.log('✅ Email stored in localStorage fallback')
-            alert(`Email for ${first_name} ${last_name} at ${company} has been saved locally! (${sourceText})`)
-            return
-          }
         } else {
           console.log('✅ Direct insertion successful:', directData)
           data = directData
@@ -860,7 +866,11 @@ export default function Dashboard() {
             localStorage.setItem(`emails_${user.id}`, JSON.stringify(updatedEmails))
             setEmails(updatedEmails)
             console.log('✅ Email stored in localStorage fallback')
-            alert(`Email for ${first_name} ${last_name} at ${company} has been saved locally! (${sourceText})`)
+            if (emailSource === 'hunter.io') {
+              alert(`✅ Email found and saved locally for ${first_name} ${last_name} at ${company}! (Found via Hunter.io: ${finalEmail})`)
+            } else {
+              alert(`⚠️ Generated email saved locally for ${first_name} ${last_name} at ${company}. (Generated: ${finalEmail})`)
+            }
             return
           }
         } else {
@@ -912,8 +922,12 @@ export default function Dashboard() {
       console.log('🔄 Refreshing emails from database...')
       await fetchEmails()
       
-      // Show success message
-      alert(`Email for ${first_name} ${last_name} at ${company} has been added successfully! (${sourceText})`)
+      // Show success message with more detail
+      if (emailSource === 'hunter.io') {
+        alert(`✅ Email found and saved for ${first_name} ${last_name} at ${company}! (Found via Hunter.io: ${finalEmail})`)
+      } else {
+        alert(`⚠️ Generated email saved for ${first_name} ${last_name} at ${company}. (Generated: ${finalEmail})`)
+      }
       
     } catch (error) {
       console.error('❌ Unexpected error adding email:', error)
