@@ -367,15 +367,6 @@ export default function Dashboard() {
       console.log('🔍 User ID:', user.id)
       console.log('🔍 User email:', user.email)
       
-      // Only clear cache if we don't have any data
-      const shouldClearCache = emails.length === 0 && linkedInConnections.length === 0
-      
-      if (shouldClearCache) {
-        console.log('🧹 Clearing cached demo data...')
-        localStorage.removeItem(`emails_${user.id}`)
-        localStorage.removeItem(`linkedin_${user.id}`)
-      }
-      
       // Fetch data with retry logic
       const fetchData = async () => {
         try {
@@ -408,8 +399,8 @@ export default function Dashboard() {
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (!document.hidden && user && !loading) {
-        console.log('🔄 Tab became visible, refreshing data...')
-        // Only refresh if we have stale data or no data
+        console.log('🔄 Tab became visible, checking data...')
+        // Only refresh if we have no data (don't clear cache, just check if we need to fetch)
         if (emails.length === 0 || linkedInConnections.length === 0) {
           fetchEmails()
           fetchLinkedInConnections()
@@ -441,6 +432,33 @@ export default function Dashboard() {
       window.removeEventListener('focus', handleFocus)
     }
   }, [user, loading, emails.length, linkedInConnections.length])
+
+  // Handle tab close to clear cache
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      if (user) {
+        console.log('🧹 Tab closing, clearing cache...')
+        localStorage.removeItem(`emails_${user.id}`)
+        localStorage.removeItem(`linkedin_${user.id}`)
+      }
+    }
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'hidden' && user) {
+        console.log('🧹 Tab hidden, clearing cache...')
+        localStorage.removeItem(`emails_${user.id}`)
+        localStorage.removeItem(`linkedin_${user.id}`)
+      }
+    }
+
+    window.addEventListener('beforeunload', handleBeforeUnload)
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload)
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+    }
+  }, [user])
 
   // Show session restored notification
   useEffect(() => {
