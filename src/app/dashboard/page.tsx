@@ -784,6 +784,10 @@ export default function Dashboard() {
         return
       }
       
+      // Define sourceText early
+      const sourceText = emailSource === 'hunter.io' ? 'found via email finder' : 'generated'
+      let data = null
+      
       // Check if table exists and is accessible
       console.log('🔍 Checking emails table accessibility...')
       const { data: tableCheck, error: tableError } = await supabase
@@ -793,29 +797,75 @@ export default function Dashboard() {
       
       if (tableError) {
         console.error('❌ Emails table not accessible:', tableError)
-        alert(`Database error: ${tableError.message}`)
-        return
-      }
-      
-      console.log('✅ Emails table is accessible')
-      
-      // Insert the email data
-      console.log('💾 Inserting email data...')
-      const { data, error } = await supabase
-        .from('emails')
-        .insert(supabaseEmailData)
-        .select()
-      
-      if (error) {
-        console.error('❌ Error adding email:', error)
-        console.error('❌ Error details:', {
-          message: error.message,
-          details: error.details,
-          hint: error.hint,
-          code: error.code
-        })
-        alert(`Failed to add email: ${error.message}`)
-        return
+        console.log('🔄 Trying alternative approach...')
+        
+        // Try to insert directly without checking table first
+        console.log('💾 Attempting direct insertion...')
+        const { data: directData, error: directError } = await supabase
+          .from('emails')
+          .insert(supabaseEmailData)
+          .select()
+        
+        if (directError) {
+          console.error('❌ Direct insertion also failed:', directError)
+          // Store in localStorage as fallback
+          console.log('💾 Storing in localStorage as fallback...')
+          if (user) {
+            const currentEmails = JSON.parse(localStorage.getItem(`emails_${user.id}`) || '[]')
+            const newEmail = {
+              id: Date.now(), // Generate temporary ID
+              ...supabaseEmailData,
+              created_at: new Date().toISOString()
+            }
+            const updatedEmails = [newEmail, ...currentEmails]
+            localStorage.setItem(`emails_${user.id}`, JSON.stringify(updatedEmails))
+            setEmails(updatedEmails)
+            console.log('✅ Email stored in localStorage fallback')
+            alert(`Email for ${first_name} ${last_name} at ${company} has been saved locally! (${sourceText})`)
+            return
+          }
+        } else {
+          console.log('✅ Direct insertion successful:', directData)
+          data = directData
+        }
+      } else {
+        console.log('✅ Emails table is accessible')
+        
+        // Insert the email data
+        console.log('💾 Inserting email data...')
+        const { data: insertData, error } = await supabase
+          .from('emails')
+          .insert(supabaseEmailData)
+          .select()
+        
+        if (error) {
+          console.error('❌ Error adding email:', error)
+          console.error('❌ Error details:', {
+            message: error.message,
+            details: error.details,
+            hint: error.hint,
+            code: error.code
+          })
+          
+          // Try fallback to localStorage
+          console.log('💾 Storing in localStorage as fallback...')
+          if (user) {
+            const currentEmails = JSON.parse(localStorage.getItem(`emails_${user.id}`) || '[]')
+            const newEmail = {
+              id: Date.now(), // Generate temporary ID
+              ...supabaseEmailData,
+              created_at: new Date().toISOString()
+            }
+            const updatedEmails = [newEmail, ...currentEmails]
+            localStorage.setItem(`emails_${user.id}`, JSON.stringify(updatedEmails))
+            setEmails(updatedEmails)
+            console.log('✅ Email stored in localStorage fallback')
+            alert(`Email for ${first_name} ${last_name} at ${company} has been saved locally! (${sourceText})`)
+            return
+          }
+        } else {
+          data = insertData
+        }
       }
       
       console.log('✅ Email added successfully:', data)
@@ -863,7 +913,6 @@ export default function Dashboard() {
       await fetchEmails()
       
       // Show success message
-      const sourceText = emailSource === 'hunter.io' ? 'found via email finder' : 'generated'
       alert(`Email for ${first_name} ${last_name} at ${company} has been added successfully! (${sourceText})`)
       
     } catch (error) {
