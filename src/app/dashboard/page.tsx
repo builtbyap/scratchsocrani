@@ -99,11 +99,21 @@ export default function Dashboard() {
         .select('*')
         .eq('user_id', user.id)
       
+      console.log('🔍 Emails query result:', { data: emailsResult, error: emailsError, count: emailsResult?.length })
+      
       if (!emailsError && emailsResult && emailsResult.length > 0) {
         console.log('✅ Success with emails table:', emailsResult)
         emailsData = emailsResult
       } else {
         console.log('❌ Emails table failed:', emailsError?.message || 'No data found')
+        if (emailsError) {
+          console.log('❌ Error details:', {
+            message: emailsError.message,
+            details: emailsError.details,
+            hint: emailsError.hint,
+            code: emailsError.code
+          })
+        }
         
         // Approach 2: Try without user_id filter (in case RLS is handling it)
         console.log('🔍 Approach 2: Trying emails table without user_id filter...')
@@ -774,6 +784,23 @@ export default function Dashboard() {
         return
       }
       
+      // Check if table exists and is accessible
+      console.log('🔍 Checking emails table accessibility...')
+      const { data: tableCheck, error: tableError } = await supabase
+        .from('emails')
+        .select('*')
+        .limit(1)
+      
+      if (tableError) {
+        console.error('❌ Emails table not accessible:', tableError)
+        alert(`Database error: ${tableError.message}`)
+        return
+      }
+      
+      console.log('✅ Emails table is accessible')
+      
+      // Insert the email data
+      console.log('💾 Inserting email data...')
       const { data, error } = await supabase
         .from('emails')
         .insert(supabaseEmailData)
@@ -792,6 +819,23 @@ export default function Dashboard() {
       }
       
       console.log('✅ Email added successfully:', data)
+      console.log('✅ Inserted email ID:', data?.[0]?.id)
+      
+      // Verify the insertion by fetching the specific record
+      if (data && data[0]) {
+        console.log('🔍 Verifying insertion by fetching the record...')
+        const { data: verifyData, error: verifyError } = await supabase
+          .from('emails')
+          .select('*')
+          .eq('id', data[0].id)
+          .single()
+        
+        if (verifyError) {
+          console.error('❌ Verification failed:', verifyError)
+        } else {
+          console.log('✅ Verification successful:', verifyData)
+        }
+      }
       
       // Immediately add the new email to the local state for instant display
       if (data && data[0]) {
