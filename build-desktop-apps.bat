@@ -1,0 +1,40 @@
+@echo off
+echo Building Socrani Desktop Apps...
+echo.
+
+echo Step 1: Installing dependencies...
+cd public\downloads
+npm install
+if %errorlevel% neq 0 (
+    echo Error: Failed to install dependencies
+    pause
+    exit /b 1
+)
+
+echo.
+echo Step 2: Building Windows executable...
+npm run build:win
+if %errorlevel% neq 0 (
+    echo Error: Failed to build Windows executable
+    pause
+    exit /b 1
+)
+
+echo.
+echo Step 3: Building macOS DMG...
+npm run build:mac
+if %errorlevel% neq 0 (
+    echo Error: Failed to build macOS DMG
+    pause
+    exit /b 1
+)
+
+echo.
+echo Build completed successfully!
+echo Check the dist/ directory for your executables.
+echo.
+echo Files created:
+echo - Windows: dist/Socrani Setup 1.0.0.exe
+echo - macOS: dist/Socrani-1.0.0.dmg
+echo.
+pause 

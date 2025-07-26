@@ -1458,6 +1458,17 @@ const upcomingTasks = [
                 <Linkedin className="w-5 h-5" />
                 <span>LinkedIn</span>
               </button>
+              <button
+                onClick={() => setActiveTab('socrani-app')}
+                className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 ${
+                  activeTab === 'socrani-app'
+                    ? 'bg-primary-500/20 text-primary-400 border border-primary-500/30'
+                    : 'text-gray-300 hover:bg-white/10 hover:text-white'
+                }`}
+              >
+                <Sparkles className="w-5 h-5" />
+                <span>Socrani App</span>
+              </button>
             </nav>
 
             {/* Bottom Actions */}
@@ -1857,8 +1868,342 @@ const upcomingTasks = [
               </motion.div>
             )}
 
+            {/* Socrani App Tab */}
+            {activeTab === 'socrani-app' && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
+                className="space-y-8"
+              >
+                {/* Header */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.2 }}
+                  className="glass-effect rounded-2xl p-6"
+                >
+                  <div className="flex items-center space-x-4 mb-6">
+                    <div className="w-12 h-12 bg-primary-500/20 rounded-xl flex items-center justify-center">
+                      <Sparkles className="w-6 h-6 text-primary-400" />
+                    </div>
+                    <div>
+                      <h2 className="text-2xl font-bold text-white">Socrani App</h2>
+                      <p className="text-gray-400">Your AI-powered social media assistant</p>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="bg-white/5 rounded-xl p-4">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 bg-green-500/20 rounded-lg flex items-center justify-center">
+                          <CheckCircle className="w-4 h-4 text-green-400" />
+                        </div>
+                        <div>
+                          <p className="text-white font-medium">Active</p>
+                          <p className="text-gray-400 text-sm">Ready to use</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="bg-white/5 rounded-xl p-4">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 bg-blue-500/20 rounded-lg flex items-center justify-center">
+                          <Activity className="w-4 h-4 text-blue-400" />
+                        </div>
+                        <div>
+                          <p className="text-white font-medium">Connected</p>
+                          <p className="text-gray-400 text-sm">All systems online</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="bg-white/5 rounded-xl p-4">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 bg-purple-500/20 rounded-lg flex items-center justify-center">
+                          <Zap className="w-4 h-4 text-purple-400" />
+                        </div>
+                        <div>
+                          <p className="text-white font-medium">AI Powered</p>
+                          <p className="text-gray-400 text-sm">Advanced features</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+
+                {/* Download App Section */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.3 }}
+                  className="glass-effect rounded-2xl p-6"
+                >
+                  <div className="flex items-center space-x-4 mb-6">
+                    <div className="w-12 h-12 bg-primary-500/20 rounded-xl flex items-center justify-center">
+                      <Save className="w-6 h-6 text-primary-400" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-semibold text-white">Download Desktop App</h3>
+                      <p className="text-gray-400">Get the full Socrani experience on your desktop</p>
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* Windows Download */}
+                    <div className="bg-white/5 rounded-xl p-6 border border-white/10 hover:border-primary-500/30 transition-colors">
+                      <div className="flex items-center space-x-4 mb-4">
+                        <div className="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center">
+                          <svg className="w-6 h-6 text-blue-400" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M0 3.545L9.818 2.182v9.818H0V3.545zM10.909 2.182L24 0v12h-13.091V2.182zM0 12.545h9.818V24L0 21.818V12.545zM10.909 12.545H24V24L10.909 21.818V12.545z"/>
+                          </svg>
+                        </div>
+                        <div>
+                          <h4 className="text-white font-semibold">Windows</h4>
+                          <p className="text-gray-400 text-sm">Windows 10/11 (64-bit) - Portable</p>
+                        </div>
+                      </div>
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-gray-400">Version</span>
+                          <span className="text-white">1.0.0</span>
+                        </div>
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-gray-400">Size</span>
+                          <span className="text-white">102 MB</span>
+                        </div>
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-gray-400">Updated</span>
+                          <span className="text-white">Today</span>
+                        </div>
+                      </div>
+                      <button 
+                        onClick={() => {
+                          // Download the Windows executable
+                          const link = document.createElement('a');
+                          link.href = '/downloads/dist/Socrani-Windows-Portable.zip';
+                          link.download = 'Socrani-Windows-Portable.zip';
+                          link.click();
+                          
+                          // Show success message
+                          alert('Download started! Extract the zip file and run Socrani.exe to start the app.');
+                        }}
+                        className="w-full mt-4 bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 px-4 rounded-lg transition-colors flex items-center justify-center space-x-2"
+                      >
+                        <Save className="w-4 h-4" />
+                        <span>Download for Windows</span>
+                      </button>
+                    </div>
+
+                    {/* macOS Download */}
+                    <div className="bg-white/5 rounded-xl p-6 border border-white/10 hover:border-primary-500/30 transition-colors">
+                      <div className="flex items-center space-x-4 mb-4">
+                        <div className="w-10 h-10 bg-gray-500/20 rounded-lg flex items-center justify-center">
+                          <svg className="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+                          </svg>
+                        </div>
+                        <div>
+                          <h4 className="text-white font-semibold">macOS</h4>
+                          <p className="text-gray-400 text-sm">macOS 11.0+ (Intel/Apple Silicon)</p>
+                        </div>
+                      </div>
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-gray-400">Version</span>
+                          <span className="text-white">1.0.0</span>
+                        </div>
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-gray-400">Size</span>
+                          <span className="text-white">52.8 MB</span>
+                        </div>
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-gray-400">Updated</span>
+                          <span className="text-white">Today</span>
+                        </div>
+                      </div>
+                      <button 
+                        onClick={() => {
+                          // Download the macOS DMG
+                          const link = document.createElement('a');
+                          link.href = '/downloads/Socrani-macOS.dmg.txt';
+                          link.download = 'Socrani-macOS.dmg';
+                          link.click();
+                          
+                          // Show success message
+                          alert('Download started! Check your downloads folder for the installation instructions.');
+                        }}
+                        className="w-full mt-4 bg-gray-500 hover:bg-gray-600 text-white font-medium py-3 px-4 rounded-lg transition-colors flex items-center justify-center space-x-2"
+                      >
+                        <Save className="w-4 h-4" />
+                        <span>Download for macOS</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* System Requirements */}
+                  <div className="mt-6 p-4 bg-white/5 rounded-lg">
+                    <h4 className="text-white font-medium mb-3">System Requirements</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                      <div>
+                        <p className="text-gray-400 mb-1">Windows:</p>
+                        <ul className="text-gray-300 space-y-1">
+                          <li>• Windows 10 or later (64-bit)</li>
+                          <li>• 4GB RAM minimum</li>
+                          <li>• 100MB free disk space</li>
+                        </ul>
+                      </div>
+                      <div>
+                        <p className="text-gray-400 mb-1">macOS:</p>
+                        <ul className="text-gray-300 space-y-1">
+                          <li>• macOS 11.0 or later</li>
+                          <li>• 4GB RAM minimum</li>
+                          <li>• 100MB free disk space</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+
+                {/* Quick Actions */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.4 }}
+                  className="glass-effect rounded-2xl p-6"
+                >
+                  <h3 className="text-xl font-semibold text-white mb-6">Quick Actions</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <button className="flex flex-col items-center space-y-3 p-6 bg-white/5 rounded-xl hover:bg-white/10 transition-colors group">
+                      <div className="w-12 h-12 bg-primary-500/20 rounded-xl flex items-center justify-center group-hover:bg-primary-500/30 transition-colors">
+                        <MessageSquare className="w-6 h-6 text-primary-400" />
+                      </div>
+                      <span className="text-white font-medium">Create Post</span>
+                      <p className="text-gray-400 text-sm text-center">Generate engaging content</p>
+                    </button>
+                    <button className="flex flex-col items-center space-y-3 p-6 bg-white/5 rounded-xl hover:bg-white/10 transition-colors group">
+                      <div className="w-12 h-12 bg-green-500/20 rounded-xl flex items-center justify-center group-hover:bg-green-500/30 transition-colors">
+                        <Target className="w-6 h-6 text-green-400" />
+                      </div>
+                      <span className="text-white font-medium">Schedule</span>
+                      <p className="text-gray-400 text-sm text-center">Plan your content</p>
+                    </button>
+                    <button className="flex flex-col items-center space-x-3 p-6 bg-white/5 rounded-xl hover:bg-white/10 transition-colors group">
+                      <div className="w-12 h-12 bg-blue-500/20 rounded-xl flex items-center justify-center group-hover:bg-blue-500/30 transition-colors">
+                        <BarChart3 className="w-6 h-6 text-blue-400" />
+                      </div>
+                      <span className="text-white font-medium">Analytics</span>
+                      <p className="text-gray-400 text-sm text-center">View performance</p>
+                    </button>
+                    <button className="flex flex-col items-center space-y-3 p-6 bg-white/5 rounded-xl hover:bg-white/10 transition-colors group">
+                      <div className="w-12 h-12 bg-purple-500/20 rounded-xl flex items-center justify-center group-hover:bg-purple-500/30 transition-colors">
+                        <Settings className="w-6 h-6 text-purple-400" />
+                      </div>
+                      <span className="text-white font-medium">Settings</span>
+                      <p className="text-gray-400 text-sm text-center">Configure app</p>
+                    </button>
+                  </div>
+                </motion.div>
+
+                {/* Recent Activity */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.4 }}
+                  className="glass-effect rounded-2xl p-6"
+                >
+                  <h3 className="text-xl font-semibold text-white mb-6">Recent Activity</h3>
+                  <div className="space-y-4">
+                    <div className="flex items-center space-x-4 p-4 bg-white/5 rounded-xl">
+                      <div className="w-10 h-10 bg-green-500/20 rounded-full flex items-center justify-center">
+                        <CheckCircle className="w-5 h-5 text-green-400" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-white font-medium">Post published successfully</p>
+                        <p className="text-gray-400 text-sm">LinkedIn post about AI trends</p>
+                      </div>
+                      <span className="text-gray-400 text-sm">2 hours ago</span>
+                    </div>
+                    <div className="flex items-center space-x-4 p-4 bg-white/5 rounded-xl">
+                      <div className="w-10 h-10 bg-blue-500/20 rounded-full flex items-center justify-center">
+                        <Clock className="w-5 h-5 text-blue-400" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-white font-medium">Content scheduled</p>
+                        <p className="text-gray-400 text-sm">Weekly newsletter scheduled for tomorrow</p>
+                      </div>
+                      <span className="text-gray-400 text-sm">4 hours ago</span>
+                    </div>
+                    <div className="flex items-center space-x-4 p-4 bg-white/5 rounded-xl">
+                      <div className="w-10 h-10 bg-purple-500/20 rounded-full flex items-center justify-center">
+                        <Sparkles className="w-5 h-5 text-purple-400" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-white font-medium">AI content generated</p>
+                        <p className="text-gray-400 text-sm">New post ideas for next week</p>
+                      </div>
+                      <span className="text-gray-400 text-sm">1 day ago</span>
+                    </div>
+                  </div>
+                </motion.div>
+
+                {/* Performance Overview */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.5 }}
+                  className="grid grid-cols-1 lg:grid-cols-2 gap-8"
+                >
+                  <div className="glass-effect rounded-2xl p-6">
+                    <h3 className="text-xl font-semibold text-white mb-6">This Month</h3>
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <span className="text-gray-400">Posts Created</span>
+                        <span className="text-white font-semibold">24</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-gray-400">Engagement Rate</span>
+                        <span className="text-green-400 font-semibold">+12.5%</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-gray-400">Reach</span>
+                        <span className="text-white font-semibold">15.2K</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-gray-400">Time Saved</span>
+                        <span className="text-blue-400 font-semibold">8.5 hrs</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="glass-effect rounded-2xl p-6">
+                    <h3 className="text-xl font-semibold text-white mb-6">Connected Platforms</h3>
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+                        <div className="flex items-center space-x-3">
+                          <Linkedin className="w-5 h-5 text-blue-400" />
+                          <span className="text-white">LinkedIn</span>
+                        </div>
+                        <span className="text-green-400 text-sm">Connected</span>
+                      </div>
+                      <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+                        <div className="flex items-center space-x-3">
+                          <Mail className="w-5 h-5 text-red-400" />
+                          <span className="text-white">Email</span>
+                        </div>
+                        <span className="text-green-400 text-sm">Connected</span>
+                      </div>
+                      <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+                        <div className="flex items-center space-x-3">
+                          <Globe className="w-5 h-5 text-gray-400" />
+                          <span className="text-gray-400">Twitter</span>
+                        </div>
+                        <span className="text-gray-500 text-sm">Coming Soon</span>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              </motion.div>
+            )}
+
             {/* Other tabs would go here */}
-            {activeTab !== 'overview' && activeTab !== 'email-list' && activeTab !== 'linkedin' && (
+            {activeTab !== 'overview' && activeTab !== 'email-list' && activeTab !== 'linkedin' && activeTab !== 'socrani-app' && (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}

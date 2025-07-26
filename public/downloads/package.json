@@ -1,0 +1,54 @@
+{
+  "name": "socrani-desktop",
+  "version": "1.0.0",
+  "description": "Socrani Desktop App - AI-powered social media assistant",
+  "main": "electron.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder",
+    "build:win": "electron-builder --win",
+    "build:mac": "electron-builder --mac",
+    "build:linux": "electron-builder --linux"
+  },
+  "keywords": [
+    "socrani",
+    "ai",
+    "social-media",
+    "desktop",
+    "electron"
+  ],
+  "author": "Socrani Team",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^28.0.0",
+    "electron-builder": "^24.6.4"
+  },
+  "build": {
+    "appId": "com.socrani.desktop",
+    "productName": "Socrani",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "electron.js",
+      "preload.js",
+      "manifest.json",
+      "electron-is-dev.js",
+      "package.json"
+    ],
+    "win": {
+      "target": "portable",
+      "icon": "icon.ico",
+      "sign": false
+    },
+    "mac": {
+      "target": "dmg",
+      "icon": "icon.icns",
+      "sign": false
+    },
+    "linux": {
+      "target": "AppImage",
+      "icon": "icon.png"
+    }
+  }
+} 
