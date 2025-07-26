@@ -1,0 +1,24 @@
+directories:
+  output: dist
+  buildResources: build
+appId: com.socrani.desktop
+productName: Socrani
+files:
+  - filter:
+      - electron.js
+      - preload.js
+      - manifest.json
+      - electron-is-dev.js
+      - package.json
+win:
+  target: portable
+  icon: icon.ico
+  sign: false
+mac:
+  target: dmg
+  icon: icon.icns
+  sign: false
+linux:
+  target: AppImage
+  icon: icon.png
+electronVersion: 28.3.3

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Socrani Desktop App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: white;
+        }
+        .container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        h1 {
+            margin-bottom: 20px;
+            font-size: 2.5em;
+        }
+        .button {
+            display: inline-block;
+            background: #4CAF50;
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 18px;
+            margin: 10px;
+            transition: background 0.3s;
+        }
+        .button:hover {
+            background: #45a049;
+        }
+        .instructions {
+            margin-top: 30px;
+            text-align: left;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+        }
+        .instructions h3 {
+            margin-top: 0;
+        }
+        .instructions ol {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        .instructions li {
+            margin: 8px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Socrani Desktop App</h1>
+        <p style="font-size: 18px; margin-bottom: 30px;">AI that gets you jobs</p>
+        
+        <a href="https://socrani.com" class="button" target="_blank">Open Socrani Website</a>
+        <a href="https://socrani.com/dashboard" class="button" target="_blank">Open Dashboard</a>
+        
+        <div class="instructions">
+            <h3>📋 How to Use as Desktop App:</h3>
+            <ol>
+                <li><strong>Click "Open Socrani Website"</strong> above</li>
+                <li><strong>Right-click</strong> on the browser tab</li>
+                <li><strong>Select "Pin tab"</strong> to keep it open</li>
+                <li><strong>Or use Chrome:</strong> Press F11 for fullscreen mode</li>
+                <li><strong>For true desktop app:</strong> Download the launcher files below</li>
+            </ol>
+            
+            <h3>🔧 Alternative Desktop Options:</h3>
+            <ul>
+                <li><strong>Batch File:</strong> Download <code>Socrani-Launcher.bat</code> and double-click to run</li>
+                <li><strong>PowerShell:</strong> Download <code>Socrani-Launcher.ps1</code> and right-click → "Run with PowerShell"</li>
+                <li><strong>Chrome App Mode:</strong> Open Chrome, go to socrani.com, then press F11</li>
+            </ul>
+        </div>
+        
+        <div style="margin-top: 30px; font-size: 14px; opacity: 0.8;">
+            <p>💡 <strong>Tip:</strong> You can also create a desktop shortcut to this HTML file for easy access!</p>
+        </div>
+    </div>
+    
+    <script>
+        // Auto-open Socrani in new window when page loads
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                if (confirm('Would you like to open Socrani in a new window?')) {
+                    window.open('https://socrani.com', '_blank', 'width=1200,height=800,scrollbars=yes,resizable=yes');
+                }
+            }, 2000);
+        });
+    </script>
+</body>
+</html> 

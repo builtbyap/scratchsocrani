@@ -2003,6 +2003,53 @@ const upcomingTasks = [
                         <Save className="w-4 h-4" />
                         <span>Download for Windows</span>
                       </button>
+                      
+                      {/* Alternative Download Options */}
+                      <div className="mt-4 p-4 bg-yellow-500/10 rounded-lg border border-yellow-500/20">
+                        <h4 className="text-yellow-400 font-semibold mb-2">Having trouble with the zip file?</h4>
+                        <p className="text-yellow-300 text-sm mb-3">Try these alternative download options:</p>
+                        
+                        <div className="space-y-2">
+                          <button
+                            onClick={() => {
+                              const link = document.createElement('a');
+                              link.href = '/downloads/Socrani-App.html';
+                              link.download = 'Socrani-App.html';
+                              link.click();
+                              alert('HTML launcher downloaded! Double-click the file to open Socrani in your browser.');
+                            }}
+                            className="w-full bg-yellow-500 hover:bg-yellow-600 text-white font-medium py-2 px-3 rounded text-sm transition-colors"
+                          >
+                            📄 Download HTML Launcher (No extraction needed)
+                          </button>
+                          
+                          <button
+                            onClick={() => {
+                              const link = document.createElement('a');
+                              link.href = '/downloads/Socrani-Launcher.bat';
+                              link.download = 'Socrani-Launcher.bat';
+                              link.click();
+                              alert('Batch launcher downloaded! Double-click the .bat file to run Socrani.');
+                            }}
+                            className="w-full bg-green-500 hover:bg-green-600 text-white font-medium py-2 px-3 rounded text-sm transition-colors"
+                          >
+                            ⚡ Download Batch Launcher (Windows)
+                          </button>
+                          
+                          <button
+                            onClick={() => {
+                              const link = document.createElement('a');
+                              link.href = '/downloads/Socrani-Launcher.ps1';
+                              link.download = 'Socrani-Launcher.ps1';
+                              link.click();
+                              alert('PowerShell launcher downloaded! Right-click and "Run with PowerShell".');
+                            }}
+                            className="w-full bg-purple-500 hover:bg-purple-600 text-white font-medium py-2 px-3 rounded text-sm transition-colors"
+                          >
+                            🔧 Download PowerShell Launcher (Windows)
+                          </button>
+                        </div>
+                      </div>
                     </div>
 
                     {/* macOS Download */}
