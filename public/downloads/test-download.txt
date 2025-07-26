@@ -1,0 +1,19 @@
+This is a test download file for Socrani Desktop App.
+
+If you can download this file, the download functionality is working correctly.
+
+The actual Windows app is a 102MB zip file that contains the full Socrani desktop application.
+
+To download the full app:
+1. Go to the Socrani App tab in your dashboard
+2. Click "Download for Windows"
+3. Extract the zip file
+4. Run Socrani.exe
+
+Features of the desktop app:
+- Always-on-top overlay
+- Global shortcuts (Ctrl+Shift+A to show/hide)
+- Screenshot capture functionality
+- Portable - no installation required
+
+For more information, see the INSTALLATION-GUIDE.md file. 

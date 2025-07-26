@@ -1977,13 +1977,26 @@ const upcomingTasks = [
                       <button 
                         onClick={() => {
                           // Download the Windows executable
-                          const link = document.createElement('a');
-                          link.href = '/downloads/dist/Socrani-Windows-Portable.zip';
-                          link.download = 'Socrani-Windows-Portable.zip';
-                          link.click();
+                          const downloadUrl = '/downloads/dist/Socrani-Windows-Portable.zip';
                           
-                          // Show success message
-                          alert('Download started! Extract the zip file and run Socrani.exe to start the app.');
+                          // Method 1: Try direct download
+                          try {
+                            const link = document.createElement('a');
+                            link.href = downloadUrl;
+                            link.download = 'Socrani-Windows-Portable.zip';
+                            link.style.display = 'none';
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+                            
+                            setTimeout(() => {
+                              alert('Download started! Extract the zip file and run Socrani.exe to start the app.');
+                            }, 500);
+                          } catch (error) {
+                            // Method 2: Fallback to window.open
+                            window.open(downloadUrl, '_blank');
+                            alert('Download opened in new tab. Right-click and "Save As" if download doesn\'t start automatically.');
+                          }
                         }}
                         className="w-full mt-4 bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 px-4 rounded-lg transition-colors flex items-center justify-center space-x-2"
                       >
@@ -2022,13 +2035,26 @@ const upcomingTasks = [
                       <button 
                         onClick={() => {
                           // Download the macOS DMG
-                          const link = document.createElement('a');
-                          link.href = '/downloads/Socrani-macOS.dmg.txt';
-                          link.download = 'Socrani-macOS.dmg';
-                          link.click();
+                          const downloadUrl = '/downloads/Socrani-macOS.dmg.txt';
                           
-                          // Show success message
-                          alert('Download started! Check your downloads folder for the installation instructions.');
+                          // Method 1: Try direct download
+                          try {
+                            const link = document.createElement('a');
+                            link.href = downloadUrl;
+                            link.download = 'Socrani-macOS.dmg';
+                            link.style.display = 'none';
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+                            
+                            setTimeout(() => {
+                              alert('Download started! Check your downloads folder for the installation instructions.');
+                            }, 500);
+                          } catch (error) {
+                            // Method 2: Fallback to window.open
+                            window.open(downloadUrl, '_blank');
+                            alert('Download opened in new tab. Right-click and "Save As" if download doesn\'t start automatically.');
+                          }
                         }}
                         className="w-full mt-4 bg-gray-500 hover:bg-gray-600 text-white font-medium py-3 px-4 rounded-lg transition-colors flex items-center justify-center space-x-2"
                       >
@@ -2059,6 +2085,40 @@ const upcomingTasks = [
                         </ul>
                       </div>
                     </div>
+                  </div>
+                  
+                  {/* Test Download */}
+                  <div className="mt-4 p-4 bg-yellow-500/10 rounded-lg border border-yellow-500/20">
+                    <h4 className="text-yellow-400 font-semibold mb-2">Test Download</h4>
+                    <p className="text-yellow-300 text-sm mb-3">If the main download isn't working, try this test file first:</p>
+                    <button 
+                      onClick={() => {
+                        // Download test file
+                        const downloadUrl = '/downloads/test-download.txt';
+                        
+                        // Method 1: Try direct download
+                        try {
+                          const link = document.createElement('a');
+                          link.href = downloadUrl;
+                          link.download = 'test-download.txt';
+                          link.style.display = 'none';
+                          document.body.appendChild(link);
+                          link.click();
+                          document.body.removeChild(link);
+                          
+                          setTimeout(() => {
+                            alert('Test download should start. If this works, the main download should also work.');
+                          }, 500);
+                        } catch (error) {
+                          // Method 2: Fallback to window.open
+                          window.open(downloadUrl, '_blank');
+                          alert('Test download opened in new tab. Right-click and "Save As" if download doesn\'t start automatically.');
+                        }
+                      }}
+                      className="w-full bg-yellow-500 hover:bg-yellow-600 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+                    >
+                      Download Test File
+                    </button>
                   </div>
                 </motion.div>
 

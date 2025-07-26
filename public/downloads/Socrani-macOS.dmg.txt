@@ -1,0 +1,11 @@
+This is a placeholder for the macOS DMG file.
+
+To build the actual macOS DMG:
+
+1. Navigate to the public/downloads directory
+2. Run: npm install
+3. Run: npm run build:mac
+
+This will create a macOS DMG installer in the dist/ directory.
+
+The actual DMG should be built using electron-builder and will be much larger than this text file. 
