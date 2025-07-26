@@ -93,4 +93,7 @@ public/downloads/package-lock.json
 *.app
 *.zip
 !public/downloads/dist/Socrani-Windows-Portable.zip
-!public/downloads/test-download.txt 
+!public/downloads/test-download.txt
+
+# Allow LFS tracked files
+!public/downloads/dist/ 
