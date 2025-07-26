@@ -1,0 +1,33 @@
+{
+  "name": "socrani-test-app",
+  "version": "1.0.0",
+  "description": "Socrani Desktop App Test Version",
+  "main": "test-app.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder",
+    "build:win": "electron-builder --win"
+  },
+  "keywords": ["socrani", "test", "electron"],
+  "author": "Socrani Team",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^28.0.0",
+    "electron-builder": "^24.6.4"
+  },
+  "build": {
+    "appId": "com.socrani.test",
+    "productName": "Socrani Test",
+    "directories": {
+      "output": "test-dist"
+    },
+    "files": [
+      "test-app.js",
+      "package.json"
+    ],
+    "win": {
+      "target": "portable",
+      "sign": false
+    }
+  }
+} 
