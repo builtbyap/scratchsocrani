@@ -33,7 +33,7 @@ export default function LoginPage() {
     })
 
     // Listen for auth state changes (e.g., after redirect from OAuth)
-    const { data: authListener } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    const { data: { subscription: authListener } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       if (session) {
         // After successful login, check subscription status before redirecting to main app
         const { data: userProfile, error: profileError } = await supabase
