@@ -85,11 +85,12 @@ jspm_packages/
 
 # Electron build artifacts
 public/downloads/node_modules/
-public/downloads/dist/
 public/downloads/package-lock.json
 
-# Desktop app build files
+# Desktop app build files (but allow specific download files)
 *.exe
 *.dmg
 *.app
-*.zip 
+*.zip
+!public/downloads/dist/Socrani-Windows-Portable.zip
+!public/downloads/test-download.txt 
