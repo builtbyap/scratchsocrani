@@ -2060,27 +2060,40 @@ const upcomingTasks = [
                           <button
                             onClick={() => {
                               const link = document.createElement('a');
-                              link.href = '/downloads/translucent-ai-assistant/INSTALLATION-GUIDE.md';
-                              link.download = 'Translucent-AI-Installation-Guide.md';
+                              link.href = '/downloads/Translucent-AI-Browser-Launcher.html';
+                              link.download = 'Translucent-AI-Browser-Launcher.html';
                               link.click();
-                              alert('Installation guide downloaded! Read this first to understand the app.');
+                              alert('Browser launcher downloaded! Double-click the HTML file to open the app directly in your browser.');
                             }}
-                            className="w-full bg-purple-500 hover:bg-purple-600 text-white font-medium py-2 px-3 rounded text-sm transition-colors"
+                            className="w-full bg-green-500 hover:bg-green-600 text-white font-medium py-2 px-3 rounded text-sm transition-colors"
                           >
-                            📖 Download Installation Guide
+                            🌐 Download Browser Launcher (Opens App Instantly)
                           </button>
                           
                           <button
                             onClick={() => {
                               const link = document.createElement('a');
-                              link.href = '/downloads/Translucent-AI-Launcher.bat';
-                              link.download = 'Translucent-AI-Launcher.bat';
+                              link.href = '/downloads/Translucent-AI-Auto-Launcher.bat';
+                              link.download = 'Translucent-AI-Auto-Launcher.bat';
                               link.click();
-                              alert('Translucent AI launcher downloaded! This will help you run the app.');
+                              alert('Auto launcher downloaded! This will extract and open the app automatically.');
                             }}
-                            className="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-3 rounded text-sm transition-colors"
+                            className="w-full bg-orange-500 hover:bg-orange-600 text-white font-medium py-2 px-3 rounded text-sm transition-colors"
                           >
-                            ⚡ Download Translucent AI Launcher
+                            🚀 Download Auto Launcher (Extracts & Opens Automatically)
+                          </button>
+                          
+                          <button
+                            onClick={() => {
+                              const link = document.createElement('a');
+                              link.href = '/downloads/Translucent-AI-Auto-Launcher.ps1';
+                              link.download = 'Translucent-AI-Auto-Launcher.ps1';
+                              link.click();
+                              alert('PowerShell auto launcher downloaded! Right-click and "Run with PowerShell" for automatic setup.');
+                            }}
+                            className="w-full bg-purple-500 hover:bg-purple-600 text-white font-medium py-2 px-3 rounded text-sm transition-colors"
+                          >
+                            ⚡ Download PowerShell Auto Launcher (Advanced)
                           </button>
                           
                           <button
@@ -2089,11 +2102,11 @@ const upcomingTasks = [
                               link.href = '/downloads/translucent-ai-assistant-source.zip';
                               link.download = 'translucent-ai-assistant-source.zip';
                               link.click();
-                              alert('Source code download started! This contains the complete app.');
+                              alert('Source code download started! This contains the complete app for manual setup.');
                             }}
                             className="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-medium py-2 px-3 rounded text-sm transition-colors"
                           >
-                            📦 Download Complete Source Code
+                            📦 Download Complete Source Code (Manual Setup)
                           </button>
                         </div>
                         

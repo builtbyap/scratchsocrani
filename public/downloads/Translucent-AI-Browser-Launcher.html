@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Translucent AI Assistant - Browser Launcher</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            max-width: 500px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .logo {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .title {
+            font-size: 1.8em;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+        
+        .subtitle {
+            font-size: 1.1em;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+        
+        .launch-btn {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .launch-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .features {
+            margin-top: 30px;
+            text-align: left;
+        }
+        
+        .feature {
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            border-left: 4px solid #ff6b6b;
+        }
+        
+        .shortcuts {
+            margin-top: 20px;
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+        
+        .shortcut {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 5px 10px;
+            border-radius: 5px;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">🚀</div>
+        <h1 class="title">Translucent AI Assistant</h1>
+        <p class="subtitle">Your undetectable AI desktop overlay assistant</p>
+        
+        <a href="https://socrani.com" class="launch-btn" onclick="launchApp()">
+            🎯 Launch Translucent AI Assistant
+        </a>
+        
+        <div class="features">
+            <div class="feature">
+                🎤 <strong>Voice Input:</strong> Speak your questions using built-in speech recognition
+            </div>
+            <div class="feature">
+                📁 <strong>File Analysis:</strong> Upload and analyze images, documents, or text files
+            </div>
+            <div class="feature">
+                👁️ <strong>Screen Watching:</strong> Automatically detect and respond to on-screen questions
+            </div>
+            <div class="feature">
+                🛡️ <strong>Undetectable:</strong> Invisible to Google Meet, Zoom, Teams, and other screen sharing software
+            </div>
+        </div>
+        
+        <div class="shortcuts">
+            <h4>Keyboard Shortcuts:</h4>
+            <span class="shortcut">Ctrl+Shift+A</span> Show/Hide
+            <span class="shortcut">Ctrl+Shift+Q</span> Quit
+            <span class="shortcut">Ctrl+Shift+M</span> Microphone
+            <span class="shortcut">Ctrl+Shift+F</span> File Upload
+        </div>
+    </div>
+
+    <script>
+        function launchApp() {
+            // Try to open the app in a new window with app-like behavior
+            const appWindow = window.open('https://socrani.com', 'TranslucentAI', 
+                'width=1200,height=800,resizable=yes,scrollbars=yes,status=yes,location=yes,toolbar=no,menubar=no');
+            
+            if (appWindow) {
+                // Focus the new window
+                appWindow.focus();
+                
+                // Show success message
+                setTimeout(() => {
+                    alert('Translucent AI Assistant launched! The app should now be open in a new window.');
+                }, 1000);
+            } else {
+                // Fallback if popup is blocked
+                alert('Popup blocked! Please allow popups for this site and try again, or visit https://socrani.com directly.');
+            }
+        }
+        
+        // Auto-launch after 3 seconds if user doesn't click
+        setTimeout(() => {
+            if (confirm('Would you like to launch the Translucent AI Assistant now?')) {
+                launchApp();
+            }
+        }, 3000);
+    </script>
+</body>
+</html> 
