@@ -96,4 +96,7 @@ public/downloads/package-lock.json
 !public/downloads/test-download.txt
 
 # Allow LFS tracked files
-!public/downloads/dist/ 
+!public/downloads/dist/
+
+# Exclude translucent AI assistant from build
+translucent-ai-assistant-standalone/ 
