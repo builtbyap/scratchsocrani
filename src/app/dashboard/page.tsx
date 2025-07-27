@@ -2050,6 +2050,58 @@ const upcomingTasks = [
                           </button>
                         </div>
                       </div>
+                      
+                      {/* Translucent AI Assistant Section */}
+                      <div className="mt-6 p-4 bg-gradient-to-r from-purple-500/10 to-blue-500/10 rounded-lg border border-purple-500/20">
+                        <h4 className="text-purple-400 font-semibold mb-2">🚀 Translucent AI Assistant</h4>
+                        <p className="text-purple-300 text-sm mb-3">Undetectable AI desktop overlay for instant answers</p>
+                        
+                        <div className="space-y-2">
+                          <button
+                            onClick={() => {
+                              const link = document.createElement('a');
+                              link.href = '/downloads/translucent-ai-assistant/INSTALLATION-GUIDE.md';
+                              link.download = 'Translucent-AI-Installation-Guide.md';
+                              link.click();
+                              alert('Installation guide downloaded! Read this first to understand the app.');
+                            }}
+                            className="w-full bg-purple-500 hover:bg-purple-600 text-white font-medium py-2 px-3 rounded text-sm transition-colors"
+                          >
+                            📖 Download Installation Guide
+                          </button>
+                          
+                          <button
+                            onClick={() => {
+                              const link = document.createElement('a');
+                              link.href = '/downloads/Translucent-AI-Launcher.bat';
+                              link.download = 'Translucent-AI-Launcher.bat';
+                              link.click();
+                              alert('Translucent AI launcher downloaded! This will help you run the app.');
+                            }}
+                            className="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-3 rounded text-sm transition-colors"
+                          >
+                            ⚡ Download Translucent AI Launcher
+                          </button>
+                          
+                          <button
+                            onClick={() => {
+                              const link = document.createElement('a');
+                              link.href = '/downloads/translucent-ai-assistant-source.zip';
+                              link.download = 'translucent-ai-assistant-source.zip';
+                              link.click();
+                              alert('Source code download started! This contains the complete app.');
+                            }}
+                            className="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-medium py-2 px-3 rounded text-sm transition-colors"
+                          >
+                            📦 Download Complete Source Code
+                          </button>
+                        </div>
+                        
+                        <div className="mt-3 text-xs text-purple-300">
+                          <p><strong>Features:</strong> Voice input, file analysis, screen watching, undetectable by screen sharing</p>
+                          <p><strong>Requirements:</strong> Node.js, OpenAI API key, Windows 10/11 or macOS</p>
+                        </div>
+                      </div>
                     </div>
 
                     {/* macOS Download */}
